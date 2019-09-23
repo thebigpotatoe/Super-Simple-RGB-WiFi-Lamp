@@ -1,21 +1,3 @@
-/*
-  testing:
-    - Test name chnage - change hostname on wifi
-    - test mdns
-    - test from scratch arduino environment
-
-  changes:
-
-  debugging ideas
-    - wifi not connecting 
-      - double check how you have spelt the name of the access point and teh password 
-      - wipe the chip flash 
-      - how far away from the access point are you
-    - Flash size incorrect 
-      - Got to tools and select the flash size from the menu 
-
-*/
-
 // Included Libraries
 #define FASTLED_ESP8266_RAW_PIN_ORDER
 #include <FastLED.h>
