@@ -1,2 +1,2 @@
 # Super Simple RGB WiFi Lamp
- A project based on the ESP8266 and WS2812b
+ This is the GitHub repo to support my Instructables publish. Be sure to head over there and check it out!
