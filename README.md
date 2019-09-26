@@ -1,5 +1,5 @@
 # Super Simple RGB WiFi Lamp
-![Super Simple RGB WiFi Lamp](https://www.youtube.com/watch?v=WLXLV6ASLJM&feature=youtu.be)
+[![Super Simple RGB WiFi Lamp](http://img.youtube.com/vi/WLXLV6ASLJM/0.jpg)](https://www.youtube.com/watch?v=WLXLV6ASLJM)
  
 ## Getting started
 This is the GitHub repo to support my Instructables publish. Be sure to head over there to [see how to build and wire it](https://www.instructables.com/id/Super-Simple-RGB-WiFi-Lamp/)!
@@ -29,19 +29,19 @@ If you connect your ESP8266 through your home Wi-Fi network, this will be availa
 If you are connected to the ESP8266 via its access point, the webpage should be sent via a captive DNS. This is automatic on windows and apple products, but will require clicking "sign into network" on android phones. It should be noted that mDNS does not work in this mode, and the default IP address is http://192.168.4.1.
 
 #### Home Page
-![Alt text](Pictures/Website%20Home%20Page.png)
+![Alt text](Pictures/Website%20Home%20Page.PNG)
 Here on the home page you can easily select which mode you would like or select the Wi-Fi config tab to change your Wi-Fi network. At the top of this page you will see the three global settings. These are the current mode the light is in, The fading time between modes and power cycles, and the power button. These functions are at the top of each page. Please note, if the website is not connected to your ESP8266's WebSocket server, the Mode text will say WS closed.
 
 #### Colour Mode
-![Alt text](Pictures/Website%20Colour.png)
+![Alt text](Pictures/Website%20Colour.PNG)
 The colour page sets the mode to colour automatically. In this mode all of the LED's are set to the same colour and brightness. The colour can be changed by clicking on any of the buttons, the top one providing a colour picker. 
 
 #### Rainbow Mode 
-![Alt text](Pictures/Website%20Rainbow.png)
+![Alt text](Pictures/Website%20Rainbow.PNG)
 Rainbow Mode has two methods of being used. The user can either set the starting hue, being the colour that the RGB strip starts at, or set the speed at which the rainbow shifts around the entire strip. The total brightness of the LED's in rainbow mode can also be controlled here.
 
 #### Clock Mode
-![Alt text](Pictures/Website%20Clock.png)
+![Alt text](Pictures/Website%20Clock.PNG)
 In clock mode the time of day is shown using the top and bottom of the light. On the top, the lights progression along the length is the total number of hours passed since 12am/pm. This is 12 hour, so 6am/pm will be in the middle. The minutes are shown in the same manor, just with the total period of time being the number of minutes that have passed in the hour. In minutes 0 is at the start, and 30 will be the middle.
 
 #### Bell Curve Mode 
@@ -49,7 +49,7 @@ In clock mode the time of day is shown using the top and bottom of the light. On
 Bell Curve mode is the same as colour, where all the LED's are set to the same brightness. They are however dimmed in a bell curve shape to provide a more aesthetically pleasing cove of light. 
 
 #### Night Rider Mode
-![Alt text](Pictures\Website%20Night%20Rider.PNG)
+![Alt text](Pictures/Website%20Night%20Rider.PNG)
 This is a gimmick mode that I just had to put in. It fades the lights left and right across the length just like the front of Kit from night rider. This mode has no but instead just nostalgia.
 
 ## Messaging Specification
