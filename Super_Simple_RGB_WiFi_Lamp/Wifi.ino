@@ -1,14 +1,16 @@
 // Wifi Methods
 void wifiInit() {
+  // Make sure the wifi does not autoconnect but always reconnects
+  WiFi.setAutoConnect(false);
+  WiFi.setAutoReconnect(true);
+  
   // Set callbacks for connection and disconnection of wifi
   stationConnectedHandler = WiFi.onStationModeGotIP(onWifiConnected);
   stationDisconnectedHandler = WiFi.onStationModeDisconnected(onWifiDisconnected);
 }
+
 void handleWifiConnection() {
-  if (!wifiStarting && SSID != WiFi.SSID() && SSID != "") {
-    // Debug 
-    Serial.println("[handleWifiConnection] - SSID changed from \"" + WiFi.SSID() + "\" to \"" + SSID + "\"");
-    
+  if (!WiFi.isConnected() && !wifiStarting && SSID != "") {
     // Set the Host name to the device name
     String hostName = Name != "" ? Name : DEFAULT_NAME;
     hostName.replace(" ", "-");
