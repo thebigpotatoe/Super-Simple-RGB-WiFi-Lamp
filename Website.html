@@ -16,15 +16,13 @@
     <script>
         var websock;
         
-        $(function () {
-            onStart()
-        })
+        // $(function () {
+        //     onStart()
+        // })
 
         function onStart() {
-            $("#currentModeLabel").html("WS Closed!")
-            // websock = new WebSocket('ws://' + window.location.hostname + ':81/');
-            // websock = new WebSocket('ws://192.168.0.100:1880/node/wstest');
-            websock = new WebSocket('ws://192.168.0.102:81/');
+            $("#currentModeLabel").html("WS Connecting...")
+            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
             websock.onopen = function (evt) {
                 console.log('websock opened');
             }
@@ -310,7 +308,7 @@
     Choose wifi button
 -->
 
-<body class="bg-dark text-light text-justify">
+<body class="bg-dark text-light text-justify" onload="javascript:onStart();">
     <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top" id="navbarHeader">
         <div class="container-fluid">
             <a class="navbar-brand" href="#" id="HomeButton">Wooden Light Controller</a>
