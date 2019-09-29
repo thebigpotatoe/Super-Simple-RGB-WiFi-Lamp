@@ -14,7 +14,7 @@ void webServerInit() {
 void servePage() {
   // Search and replace:
     // find " and replace   \"                                    (no regex)
-    // find ^ and replace   restServer.sendContent_P(PSTR("       (regex)
+    // find ^ and replace     restServer.sendContent_P(PSTR("     (regex)
     // find $ and replace   \                                     (regex)
     // find $ and replace   n"));                                 (regex)
     // add  restServer.sendContent(String("            websock = new WebSocket('ws://' + " + WiFi.localIP().toString() + " + ':81/');\n"));
@@ -42,16 +42,12 @@ void servePage() {
   restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("    <script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js\"></script>\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("    <title>Super Simple RGB Wifi Lamp</title>\n"));
+  restServer.sendContent_P(PSTR("    <title>RGB WiFi Lamp</title>\n"));
   restServer.sendContent_P(PSTR("    <script>\n"));
   restServer.sendContent_P(PSTR("        var websock;\n"));
-  restServer.sendContent_P(PSTR("        \n"));
-  restServer.sendContent_P(PSTR("        $(function () {\n"));
-  restServer.sendContent_P(PSTR("            onStart()\n"));
-  restServer.sendContent_P(PSTR("        })\n"));
   restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("        function onStart() {\n"));
-  restServer.sendContent_P(PSTR("            $(\"#currentModeLabel\").html(\"WS Closed!\")\n"));
+  restServer.sendContent_P(PSTR("            $(\"#currentModeLabel\").html(\"WS Connecting...\")\n"));
   restServer.sendContent_P(PSTR("            websock = new WebSocket('ws://' + window.location.hostname + ':81/');\n"));
   restServer.sendContent_P(PSTR("            websock.onopen = function (evt) {\n"));
   restServer.sendContent_P(PSTR("                console.log('websock opened');\n"));
@@ -338,10 +334,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("    Choose wifi button\n"));
   restServer.sendContent_P(PSTR("-->\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("<body class=\"bg-dark text-light text-justify\">\n"));
+  restServer.sendContent_P(PSTR("<body class=\"bg-dark text-light text-justify\" onload=\"javascript:onStart();\">\n"));
   restServer.sendContent_P(PSTR("    <nav class=\"navbar navbar-expand-sm bg-secondary navbar-dark fixed-top\" id=\"navbarHeader\">\n"));
   restServer.sendContent_P(PSTR("        <div class=\"container-fluid\">\n"));
-  restServer.sendContent_P(PSTR("            <a class=\"navbar-brand\" href=\"#\" id=\"HomeButton\">Super Simple RGB Wifi Lamp Controller</a>\n"));
+  restServer.sendContent_P(PSTR("            <a class=\"navbar-brand\" href=\"#\" id=\"HomeButton\">RGB WiFi Lamp</a>\n"));
   restServer.sendContent_P(PSTR("            <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#collapsibleNavbar\">\n"));
   restServer.sendContent_P(PSTR("                <span class=\"navbar-toggler-icon\"></span>\n"));
   restServer.sendContent_P(PSTR("            </button>\n"));
@@ -457,7 +453,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("        </div>     \n"));
   restServer.sendContent_P(PSTR("        <div id=\"Home\" class=\"container tab-pane active\">\n"));
   restServer.sendContent_P(PSTR("            <h1>Home</h1>\n"));
-  restServer.sendContent_P(PSTR("            <p>Welocme to your Super Simple RGB Wifi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>\n"));
+  restServer.sendContent_P(PSTR("            <p>Welocme to your RGB WiFi Lamp light web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"colourButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Colour</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"rainbowButton\" type=\"submit\"class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Rainbow</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"clockButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Clock</button>\n"));
@@ -572,13 +568,13 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    onColourButtonEvent(255, 0, 255)\n"));
   restServer.sendContent_P(PSTR("                });\n"));
   restServer.sendContent_P(PSTR("                $(\"#2500Button\").click(function () {\n"));
-  restServer.sendContent_P(PSTR("                    onColourButtonEvent(255, 255, 255)\n"));
+  restServer.sendContent_P(PSTR("                    onColourButtonEvent(206, 57, 18)\n"));
   restServer.sendContent_P(PSTR("                });\n"));
   restServer.sendContent_P(PSTR("                $(\"#3000Button\").click(function () {\n"));
-  restServer.sendContent_P(PSTR("                    onColourButtonEvent(255, 255, 255)\n"));
+  restServer.sendContent_P(PSTR("                    onColourButtonEvent(235, 71, 30)\n"));
   restServer.sendContent_P(PSTR("                });\n"));
   restServer.sendContent_P(PSTR("                $(\"#4000Button\").click(function () {\n"));
-  restServer.sendContent_P(PSTR("                    onColourButtonEvent(255, 255, 255)\n"));
+  restServer.sendContent_P(PSTR("                    onColourButtonEvent(238, 99, 63)\n"));
   restServer.sendContent_P(PSTR("                });\n"));
   restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("                function onColourButtonEvent(red, green, blue) {\n"));

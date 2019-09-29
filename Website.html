@@ -12,13 +12,9 @@
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
 
-    <title>Wooden Light</title>
+    <title>RGB WiFi Lamp</title>
     <script>
         var websock;
-        
-        // $(function () {
-        //     onStart()
-        // })
 
         function onStart() {
             $("#currentModeLabel").html("WS Connecting...")
@@ -311,7 +307,7 @@
 <body class="bg-dark text-light text-justify" onload="javascript:onStart();">
     <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top" id="navbarHeader">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#" id="HomeButton">Wooden Light Controller</a>
+            <a class="navbar-brand" href="#" id="HomeButton">RGB WiFi Lamp</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -427,7 +423,7 @@
         </div>     
         <div id="Home" class="container tab-pane active">
             <h1>Home</h1>
-            <p>Welocme to your wood light web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>
+            <p>Welocme to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>
             <button id="colourButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Colour</button>
             <button id="rainbowButton" type="submit"class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rainbow</button>
             <button id="clockButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Clock</button>
