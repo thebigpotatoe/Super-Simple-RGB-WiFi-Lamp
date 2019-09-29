@@ -168,6 +168,9 @@ void setClock() {
     int minuteCurrentLEDBrightness = 255 * (1 - minutePercentOfGap);
     int minuteNextLEDBrightness = 255 * (minutePercentOfGap);
 
+    // Clear all the LED's
+    FastLED.clear();
+
     // Set the colour of the LED
     ledString[hourCurrentLED] = CRGB( clockHourRed, clockHourGreen, clockHourBlue);
     ledString[hourNextLED] = ledString[hourCurrentLED];
@@ -192,7 +195,7 @@ void setClock() {
     // Set the brightness up and down
     // Serial.println(sin8(clockOnPauseBrightness));
     nscale8(ledString, NUM_LEDS, triwave8(clockOnPauseBrightness));
-    clockOnPauseBrightness += 10;
+    clockOnPauseBrightness += 1;
   }
 }
 
