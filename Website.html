@@ -460,12 +460,6 @@
             </script>
         </div>
         <div id="Colour" class="container pb-5 tab-pane fade">
-            <!-- 
-                Colour Buttons
-                Warm Whites
-                brightness
-                RGB Picker 
-            -->
             <h2>Colour Mode</h2>
             <p>Here you can set the light to any colour you desire. There are also a couple of buttons for setting the
                 light to different shades of white</p>
@@ -571,10 +565,6 @@
             </Script>
         </div>
         <div id="Rainbow" class="container pb-5 tab-pane fade">
-            <!-- 
-                Speed
-                Brightness
-            -->
             <h2>Rainbow Mode</h2>
             <p>Here you can set the mode to rainbow. This mode produces a rainbow all the way around the light and
                 slowly shifts the colours clockwise. On this page you can set the speed of this as well as the
@@ -593,6 +583,7 @@
             </div>
             <script>
                 var rainbowDebunce = Date.now()
+                var rainbowLastMessage = ""
 
                 $("#rainbowHue").on("input", function () {
                     onRainboWHueEvent()
@@ -633,7 +624,7 @@
                         }
                     }
 
-                    if (Date.now() - rainbowDebunce > 50) {
+                    if (msg != rainbowLastMessage && Date.now() - rainbowDebunce > 50) {
                         rainbowDebunce = Date.now()
                         sendMessage(msg)
                     }
@@ -655,20 +646,15 @@
                         }
                     }
 
-                    if (Date.now() - rainbowDebunce > 50) {
+                    if (msg != rainbowLastMessage && Date.now() - rainbowDebunce > 50) {
                         rainbowDebunce = Date.now()
+                        rainbowLastMessage = msg
                         sendMessage(msg)
                     }
                 }
             </script>
         </div>
         <div id="Clock" class="container pb-5 tab-pane fade">
-            <!-- 
-                Show system time  
-                Resync Time Button
-                Pick Hour Colour 
-                Pick Minute Colour
-            -->
             <h2>Clock Mode</h2>
             <p>In this mode the light will display the current time in 12 hr format uisng the
                 top and bottom side of the light. On the top is the current hour, and the bottom is the minute. The left
