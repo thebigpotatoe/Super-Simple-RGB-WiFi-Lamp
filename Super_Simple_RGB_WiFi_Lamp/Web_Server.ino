@@ -11,6 +11,10 @@ void webServerInit() {
   Serial.println("[webServerInit] - Webserver was set up correctly");
 }
 
+void serve404() {
+  restServer.send(404, "text/html", ""); 
+}
+
 void servePage() {
   // Search and replace:
     // find " and replace   \"                                    (no regex)
