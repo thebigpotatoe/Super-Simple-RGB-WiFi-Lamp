@@ -13,6 +13,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
   switch (type) {
     case WStype_DISCONNECTED : {
       Serial.println("[webSocketEvent] - Disconnected from client number " + String(num));
+      webSocketConnecting = false;
     }
     break;
     case WStype_CONNECTED : {
@@ -57,7 +58,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     }
     break; 
     default : {
-      Serial.println("[webSocketEvent] - Invalid WStype Used");
+      // Serial.println("[webSocketEvent] - Invalid WStype Used");
     }
     break;
   }
@@ -84,5 +85,8 @@ bool updateClients() {
 
     // Reset the Boolean
     clientNeedsUpdate = false;
+
+    // Set the connecting boolean 
+    webSocketConnecting = false;
   }
 }

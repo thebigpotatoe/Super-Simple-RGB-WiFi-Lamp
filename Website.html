@@ -72,6 +72,10 @@
                 // console.log("Found Night Rider Message")
                 handleNightRiderMessage(jsonMessage["Night Rider"])
             }
+            if ("Visualiser" in jsonMessage) {
+                // console.log("Found Visualiser Message")
+                handleVisualiserMessage(jsonMessage["Visualiser"])
+            }
             if ("Wifi" in jsonMessage) {
                 // console.log("Found Wifi Message")
                 handleWifiMessage(jsonMessage.Wifi)
@@ -243,6 +247,47 @@
             }
         }
 
+        function handleVisualiserMessage(jsonMessage) {
+            if (typeof jsonMessage === "object") {
+                if (("Period" in jsonMessage)) {
+                    if (typeof jsonMessage.Period === "number") {
+                        $("#visualiserPeriod").val(jsonMessage.Period)
+                        $("#visualiserPeriodLabel").html(Math.round(1000000/jsonMessage.Period/2))
+                    }
+                }
+                if (("MinThreshold" in jsonMessage)) {
+                    if (typeof jsonMessage.MinThreshold === "number") {
+                        $("#visualiserMinThreshold").val(jsonMessage.MinThreshold)
+                        $("#visualiserMinThresholdLabel").html(jsonMessage.MinThreshold)
+                    }
+                }
+                if (("MaxThreshold" in jsonMessage)) {
+                    if (typeof jsonMessage.MaxThreshold === "number") {
+                        $("#visualiserMaxThreshold").val(jsonMessage.MaxThreshold)
+                        $("#visualiserMaxThresholdLabel").html(jsonMessage.MaxThreshold)
+                    }
+                }
+                if (("FadeUp" in jsonMessage)) {
+                    if (typeof jsonMessage.FadeUp === "number") {
+                        $("#visualiserFadeUp").val(jsonMessage.FadeUp)
+                        $("#visualiserFadeUpLabel").html(jsonMessage.FadeUp)
+                    }
+                }
+                if (("FadeDown" in jsonMessage)) {
+                    if (typeof jsonMessage.FadeDown === "number") {
+                        $("#visualiserFadeDown").val(jsonMessage.FadeDown)
+                        $("#visualiserFadeDownLabel").html(jsonMessage.FadeDown)
+                    }
+                }
+                if (("HueOffset" in jsonMessage)) {
+                    if (typeof jsonMessage.HueOffset === "number") {
+                        $("#visualiserHueOffset").val(Math.round(jsonMessage.HueOffset/255*360))
+                        $("#visualiserHueOffsetLabel").html(Math.round(jsonMessage.HueOffset/255*360))
+                    }
+                }
+            }
+        }
+
         function handleWifiMessage(jsonMessage) {
             // {
             //     "Wifi" : {
@@ -296,14 +341,6 @@
 
 </head>
 
-<!-- 
-    Off/On Button 
-    Select Colour Button
-    Rainbow Button
-    Clock Button
-    Choose wifi button
--->
-
 <body class="bg-dark text-light text-justify" onload="javascript:onStart();">
     <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top" id="navbarHeader">
         <div class="container-fluid">
@@ -331,6 +368,9 @@
                     <li id="nightRiderTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#NightRider">Night Rider</a>
                     </li>
+                    <li id="visualiserTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Visualiser">Visualiser</a>
+                    </li>
                     <li id="wifiTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#WfiConfig">Wifi</a>
                     </li>
@@ -350,6 +390,9 @@
                     });
                     $("#nightRiderTabNavItem").click(function () {
                         sendMessage({"Mode":"Night Rider"})
+                    });
+                    $("#visualiserTabNavItem").click(function () {
+                        sendMessage({"Mode":"Visualiser"})
                     });
                 </script>
             </div>
@@ -429,6 +472,7 @@
             <button id="clockButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Clock</button>
             <button id="bellCurveButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Bell Curve</button>
             <button id="nightRiderButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Night Rider</button>
+            <button id="visualiserButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
             <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi Config</button>
             <script>
                 $("#HomeButton").click(function () {
@@ -453,6 +497,10 @@
                 $("#nightRiderButton").click(function () {
                     $('#navbarHeader a[href="#NightRider"]').tab('show')
                     sendMessage({"Mode":"Night Rider"})
+                });
+                $("#visualiserButton").click(function () {
+                    $('#navbarHeader a[href="#Visualiser"]').tab('show')
+                    sendMessage({"Mode":"Visualiser"})
                 });
                 $("#wifiButton").click(function () {
                     $('#navbarHeader a[href="#WfiConfig"]').tab('show')
@@ -626,6 +674,7 @@
 
                     if (msg != rainbowLastMessage && Date.now() - rainbowDebunce > 50) {
                         rainbowDebunce = Date.now()
+                        rainbowLastMessage = msg
                         sendMessage(msg)
                     }
                 }
@@ -879,13 +928,124 @@
                 Michael Knight: a young loner on a crusade to champion the cause of the innocent, 
                 the helpless, the powerless, in a world of criminals who operate above the law.</p>
         </div>
+        <div id="Visualiser" class="container pb-5 tab-pane fade">
+            <h2>Rainbow Mode</h2>
+            <p> Here you can set the mode to Visualiser. This mode is does and FFT on the ADC of the ESP8266 and maps the frequencies
+                to the number of top and bottom LED's. To use this mode, an input source must be present on the ADC such as an amplified mic 
+                or an input from a music source such as a chromecast. 
+            </p>
+            <div>
+                <label for="visualiserPeriod"><b>Frequency Range</b>: <span id="visualiserPeriodLabel">2000</span>Hz</label>
+                <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250" class="form-control-range">
+            </div>
+            <div>
+                <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span id="visualiserMinThresholdLabel">100</span></label>
+                <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100" class="form-control-range">
+            </div>
+            <div>
+                <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span id="visualiserMaxThresholdLabel">750</span></label>
+                <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750" class="form-control-range">
+            </div>
+            <div>
+                <label for="visualiserFadeUp"><b>Fade Up Delay</b>: <span id="visualiserFadeUpLabel">32</span></label>
+                <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32" class="form-control-range">
+            </div>
+            <div>
+                <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span id="visualiserFadeDownLabel">32</span></label>
+                <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32" class="form-control-range">
+            </div>
+            <div>
+                <label for="visualiserHueOffset"><b>Hue Offset</b>: <span id="visualiserHueOffsetLabel">170</span></label>
+                <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170" class="form-control-range">
+            </div>
+            <h6 class="pt-4">Variable Description</h6>
+            <ul>
+                <li><b>Frequency Range</b> - The displayed frequency spectrum from left to right starting from 0Hz</li>
+                <li><b>Minimum Threshold</b> - The minimum value of the FFT calculations to map to the zero brightness of the LED's, useful to remove noise</li>
+                <li><b>Maximum Threshold</b> - The maximum ceiling value value of the FFT to map to max brightness of the LED's</li>
+                <li><b>Fade Up Delay</b> - A multiplier to control the speed of animation when setting the light to new brightness</li>
+                <li><b>Fade Down Delay</b> - A multiplier to control how fast the LED's fade out when no new brightness has been set</li>
+                <li><b>Hue Offset</b> - The offset hue value from 0 for the start of the rainbow</li>
+            </ul>
+
+            <script>
+                var visualiserDebunce = Date.now()
+                var lastVisualiserMessaeg = ""
+
+                $("#visualiserPeriod").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserPeriod").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMinThreshold").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMinThreshold").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMaxThreshold").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMaxThreshold").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeUp").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeUp").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeDown").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeDown").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserHueOffset").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserHueOffset").on("change", function () {
+                    onVisualiserEvent()
+                });
+
+                function onVisualiserEvent() {
+                    let currentPeriod           = parseInt($("#visualiserPeriod").val(), 10)
+                    let currentMinThreshold     = parseInt($("#visualiserMinThreshold").val(), 10)
+                    let currentMaxThreshold     = parseInt($("#visualiserMaxThreshold").val(), 10)
+                    let currentFadeUp           = parseInt($("#visualiserFadeUp").val(), 10)
+                    let currentFadeDown         = parseInt($("#visualiserFadeDown").val(), 10)
+                    let currentHueOffset        = parseInt($("#visualiserHueOffset").val(), 10)
+
+                    $("#visualiserPeriodLabel").html(Math.round(1000000/currentPeriod/2))
+                    $("#visualiserMinThresholdLabel").html(currentMinThreshold)
+                    $("#visualiserMaxThresholdLabel").html(currentMaxThreshold)
+                    $("#visualiserFadeUpLabel").html(currentFadeUp)
+                    $("#visualiserFadeDownLabel").html(currentFadeDown)
+                    $("#visualiserHueOffsetLabel").html(currentHueOffset)
+
+                    msg = {
+                        "State" : true,
+                        "Mode" : "Visualiser",
+                        "Visualiser" : {
+                            "Period" : currentPeriod,
+                            "MinThreshold" : currentMinThreshold,
+                            "MaxThreshold" : currentMaxThreshold,
+                            "FadeUp" : currentFadeUp,
+                            "FadeDown" : currentFadeDown,
+                            "HueOffset" : Math.round(currentHueOffset/360*255)
+                        }
+                    }
+
+                    if (msg != lastVisualiserMessaeg && Date.now() - visualiserDebunce > 50) {
+                        lastVisualiserMessaeg = msg
+                        visualiserDebunce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
         <div id="WfiConfig" class="container pb-5 tab-pane fade">
-            <!-- 
-                Wifi Table 
-                Rescan Button
-                form box
-                Disconnect Button - when connected
-            -->
             <h2>Wifi Configuration</h2>
             <p>This is the WiFi configuration page. Here you can choose the wifi access point to connect to or go back
                 to access point mode. This will be remebered through reboot for you so you wont have to set this up

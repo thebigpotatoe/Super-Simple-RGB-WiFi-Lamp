@@ -239,6 +239,14 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     "Night Rider" : {
       
     },
+    "Visualiser" : {
+      "Period" : 250,
+      "MinThreshold" : 100,
+      "MaxThreshold" : 750,
+      "FadeUp" : 32,
+      "FadeDown" : 32,
+      "HueOffset" : 170,
+    },
     "Wifi": {
       "SSID": "Test",
       "Password": "Test"
@@ -341,6 +349,16 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   JsonVariant nightRiderSettings = jsonSettingsObject["Night Rider"];
   if (nightRiderSettings) {
     // Currently no Night Rider Settings
+  }
+
+  JsonVariant visualiserSettings = jsonSettingsObject["Visualiser"];
+  if (visualiserSettings) {
+    visualiserSettings["Period"] = visualiserPeriod = visualiserSettings["Period"] | visualiserPeriod;
+    visualiserSettings["MinThreshold"] = visualiserMinThreshold = visualiserSettings["MinThreshold"] | visualiserMinThreshold;
+    visualiserSettings["MaxThreshold"] = visualiserMaxThreshold = visualiserSettings["MaxThreshold"] | visualiserMaxThreshold;
+    visualiserSettings["FadeUp"] = visualiserFadeUp = visualiserSettings["FadeUp"] | visualiserFadeUp;
+    visualiserSettings["FadeDown"] = visualiserFadeDown = visualiserSettings["FadeDown"] | visualiserFadeDown;
+    visualiserSettings["HueOffset"] = visualiserHueOffset = visualiserSettings["HueOffset"] | visualiserHueOffset;
   }
 
   // Debug

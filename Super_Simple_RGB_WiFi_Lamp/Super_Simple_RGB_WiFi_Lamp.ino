@@ -1,5 +1,6 @@
 // Included Libraries
 #define FASTLED_ESP8266_RAW_PIN_ORDER
+#include "user_interface.h"
 #include <FastLED.h>
 #include "FS.h"
 #include <ESP8266WiFi.h>
@@ -13,6 +14,7 @@
 #include <ArduinoJson.h>
 #include <TimeLib.h>
 #include <ESPAsyncUDP.h>
+#include "arduinoFFT.h"
 #include "lwip/inet.h"
 #include "lwip/dns.h"
 
@@ -70,6 +72,7 @@ ESP8266HTTPUpdateServer OTAServer;
 WebSocketsServer webSocket(81);
 bool processingMessage = false;
 bool clientNeedsUpdate = false;
+bool webSocketConnecting = false;
 
 // NTP Variables and Objects
 AsyncUDP udpClient;
@@ -129,6 +132,21 @@ int nightRiderTopLedNumber        = 0;
 int nightRiderBottomLedNumber     = 0;
 int nightRiderTopIncrement        = 1;
 int nightRiderBottomIncrement     = 1;
+
+// Visualiser Mode Variables
+#define num_samples 64
+ADC_MODE(ADC_TOUT);
+arduinoFFT FFT = arduinoFFT();
+double visualiserRealSamples[num_samples];
+double visualiserImaginarySamples[num_samples];
+unsigned long visualiserLastSampleTime      = 0;
+uint16_t visualiserPeriod                   = 250;
+uint16_t visualiserMinThreshold             = 100;
+uint16_t visualiserMaxThreshold             = 750;
+uint8_t visualiserNumBinsToSkip             = 2;
+uint8_t visualiserFadeUp                    = 32;
+uint8_t visualiserFadeDown                  = 32;
+uint8_t visualiserHueOffset                 = 170;
 
 // Setup Method - Runs only once before the main loop. Useful for setting things up
 void setup() {
