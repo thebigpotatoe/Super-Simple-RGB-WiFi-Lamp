@@ -23,7 +23,7 @@ void servePage() {
     // find $ and replace   n"));                                 (regex)
     // add  restServer.sendContent(String("            websock = new WebSocket('ws://' + " + WiFi.localIP().toString() + " + ':81/');\n"));
 
-  // Debyg 
+  // Debug 
   Serial.println("[servePage] - Serving webpage");
 
   restServer.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
