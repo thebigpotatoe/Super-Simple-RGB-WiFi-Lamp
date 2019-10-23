@@ -26,7 +26,7 @@ This project comes with its own inbuilt website built in Bootstrap 4 to help mak
 
 If you connect your ESP8266 through your home Wi-Fi network, this will be available at the IP address of the device, or at the mDNS name which defaults to http://Super-Simple-RGB-WiFi-Lamp.local/. 
 
-If you are connected to the ESP8266 via its access point, the webpage should be sent via a captive DNS. This is automatic on windows and apple products, but will require clicking "sign into network" on android phones. It should be noted that mDNS does not work in this mode, and the default IP address is http://192.168.4.1.
+If you are connected to the ESP8266 via its access point, the webpage should be sent via a captive DNS. This is automatic on windows and apple products, but will require clicking "sign into network" on android phones. It should be noted that mDNS does not work in this mode, and the default IP address is http://192.168.4.1. Please visit [this link](https://arduinojson.org/) first to cache the important files in your browser first.
 
 #### Home Page
 ![Alt text](Pictures/Website%20Home%20Page.PNG)

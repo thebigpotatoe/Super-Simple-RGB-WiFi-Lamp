@@ -96,8 +96,7 @@ void handleMode() {
       // Set the previous values
       previousState = true;
     }
-  }
-  else 
+  } 
 
   // Globally Scale the brightness of all LED's
   modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
