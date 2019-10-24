@@ -22,6 +22,12 @@ The code to run the lights was built to be as simple as possible for users to se
 
 These additional libraries need to be installed, of which some are available in the Arduino IDE and some not. Due to this I have included the current working versions of the libraries in .Zip format to be able to import into the Arduino IDE. If you need to install these libraries, clone this repo and install the .zip files in the External Library folder using [the method from Arduino](https://www.arduino.cc/en/guide/libraries).
 
+## Features
+The code comes with several features built in to make things easler to manage. This includes things like having all the global variables in the main sketch file to "over the air updates". 
+
+#### OTA 
+You may update the sketch on the ESP to a new firmware using the inbuilt webhook on `http://your-esp-ip-address/update` or `http://Super-Simple-RGB-Wifi-Lamp.local/update` if you kept the default name. You must upload a binary file, uploading a sketch in .ino form will nto work. For more info see [here](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#web-browser).
+
 ## Website Features
 This project comes with its own inbuilt website built in Bootstrap 4 to help make controlling the LED's much simpler. The website is accessible either via your home network if connected, or the ESP's wireless access point. Within the site you can change the mode and the individual settings for each. You can also change your connected Wi-Fi on the Wifi config page.
 
