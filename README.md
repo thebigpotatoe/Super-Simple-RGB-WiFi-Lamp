@@ -18,6 +18,7 @@ The code to run the lights was built to be as simple as possible for users to se
 - [FastLED](https://github.com/FastLED/FastLED) for controlling the LED's
 - [Timelib](https://github.com/PaulStoffregen/Time) for keeping track of the current time
 - [WebSockets](https://github.com/Links2004/arduinoWebSockets) for creating a server for sending messages to and from clients
+- [Arduino FFT](https://github.com/kosme/arduinoFFT) for running the FFT of teh ADC signal for the visualiser mode
 
 These additional libraries need to be installed, of which some are available in the Arduino IDE and some not. Due to this I have included the current working versions of the libraries in .Zip format to be able to import into the Arduino IDE. If you need to install these libraries, clone this repo and install the .zip files in the External Library folder using [the method from Arduino](https://www.arduino.cc/en/guide/libraries).
 
