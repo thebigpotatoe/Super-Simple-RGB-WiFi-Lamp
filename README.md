@@ -52,6 +52,12 @@ Bell Curve mode is the same as colour, where all the LED's are set to the same b
 ![Alt text](Pictures/Website%20Night%20Rider.PNG)
 This is a gimmick mode that I just had to put in. It fades the lights left and right across the length just like the front of Kit from night rider. This mode has no but instead just nostalgia.
 
+#### Visualiser Mode
+![Alt text](Pictures/Website%20Visualiser.PNG)
+This is a mode which runs FFT over the ADC input to produce a spectrum of intensity across the length of the light. There are many options to play with to make the visuliser show off your music, sounds, or any other input perfectly. These settings are detailed on the webpage so you will always know what they do.
+
+Note that while the fft runs using any input on the ADC, its is your job to ensure that you provide a clean and amplified signal to the pin within a range of 0 to 3.3V. Digitially amplifying the signal will not produce good results. Not reducing the effects of electrical noise on the input will also hinder the output seen for quiet sounds.
+
 ## Messaging Specification
 The webserver code is listening for incoming WebSocket messages with a JSON payload. This is processed after the message is received out of the callback. The complete example of the message is as follows. By connecting to the WebSocket server at port 81 from an external application such as node red, allows users to talk to the device. 
 
@@ -91,6 +97,14 @@ The webserver code is listening for incoming WebSocket messages with a JSON payl
     },
     "Night Rider" : {
       
+    },
+    "Visualiser" : {
+      "Period" : 250,           // Values will be constrained to between 0 and 2000
+      "MinThreshold" : 100,     // Values must be above 0, and less than MaxThreshold
+      "MaxThreshold" : 750,     // Values must be above 0, and greater than MinThreshold
+      "FadeUp" : 32,            // Values will be constrained to between 0 and 255
+      "FadeDown" : 32,          // Values will be constrained to between 0 and 255
+      "HueOffset" : 170,        // Values will be constrained to between 0 and 360
     },
     "Wifi": {
       "SSID": "Test",           // This needs to be a String, empty strings will be accepted causing the Wi-Fi to disconnect and go into softAP mode
