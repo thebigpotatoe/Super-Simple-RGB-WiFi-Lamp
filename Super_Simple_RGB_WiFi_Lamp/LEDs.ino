@@ -39,6 +39,7 @@ void handleMode() {
       // Set the dimming variables and apply
       EVERY_N_MILLISECONDS(20) {
         modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
       };
     }
     else {
@@ -58,6 +59,7 @@ void handleMode() {
     if (modeChangeFadeAmount < 255) {
       EVERY_N_MILLISECONDS(20) {
         modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
       };
     }
     else {
@@ -72,6 +74,7 @@ void handleMode() {
     if (modeChangeFadeAmount > 0) {
       EVERY_N_MILLISECONDS(20) {
         modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
       };
     }
     else {
@@ -87,6 +90,7 @@ void handleMode() {
     if (modeChangeFadeAmount < 255) {
       EVERY_N_MILLISECONDS(20) {
         modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
       };
     }
     else {
@@ -99,7 +103,6 @@ void handleMode() {
   } 
 
   // Globally Scale the brightness of all LED's
-  modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
 
   // Handle Fast LED

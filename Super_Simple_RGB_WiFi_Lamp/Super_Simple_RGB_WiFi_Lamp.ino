@@ -86,6 +86,7 @@ unsigned long lastNTPCollectionTime   = 0;
 
 // LED string object and Variables
 CRGB ledString[NUM_LEDS];
+bool autoOnWithModeChange = true;
 int topNumLeds      = sizeof(topLeds) / sizeof(*topLeds);
 int bottomNumLeds   = sizeof(bottomLeds) / sizeof(*bottomLeds);
 int leftNumLeds     = sizeof(leftLeds) / sizeof(*leftLeds);
