@@ -33,41 +33,43 @@ void handleMode() {
   }
 
   // Adjust the brightness depending on the mode
-  if (Mode != currentMode) {
-    // Dim lights off first 
-    if (modeChangeFadeAmount > 0) {
-      // Set the dimming variables and apply
-      EVERY_N_MILLISECONDS(20) {
-        modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
-      };
-    }
-    else {
-      // Debug
-      Serial.println("[handleMode] - Mode changed to: " + Mode);
+  if (autoOnWithModeChange || State) {
+    if (Mode != currentMode) {
+      // Dim lights off first 
+      if (modeChangeFadeAmount > 0) {
+        // Set the dimming variables and apply
+        EVERY_N_MILLISECONDS(20) {
+          modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+        };
+      }
+      else {
+        // Debug
+        Serial.println("[handleMode] - Mode changed to: " + Mode);
 
-      // Clear the LEDs
-      FastLED.clear();
+        // Clear the LEDs
+        FastLED.clear();
 
-      // Set the currentMode to Mode
-      currentMode = Mode;
-      modeChangeFadeAmount = 0;
+        // Set the currentMode to Mode
+        currentMode = Mode;
+        modeChangeFadeAmount = 0;
+      }
     }
+    else if (currentMode != previousMode) {
+      // On mode change dim lights up
+      if (modeChangeFadeAmount < 255) {
+        EVERY_N_MILLISECONDS(20) {
+          modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+        };
+      }
+      else {
+        // Set the currentMode to Mode
+        previousMode = currentMode;
+      }
+    } 
   }
-  else if (currentMode != previousMode) {
-    // On mode change dim lights up
-    if (modeChangeFadeAmount < 255) {
-      EVERY_N_MILLISECONDS(20) {
-        modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
-      };
-    }
-    else {
-      // Set the currentMode to Mode
-      previousMode = currentMode;
-    }
-  } 
-
+  
   // Adjust the brightness depending on the state
   if (!State && previousState) {
     // Turn Lights off slowly
@@ -86,21 +88,21 @@ void handleMode() {
     }
   }
   else if (State && !previousState) {
-    // Turn on light slowly
-    if (modeChangeFadeAmount < 255) {
-      EVERY_N_MILLISECONDS(20) {
-        modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
-      };
-    }
-    else {
-      // Debug 
-      Serial.println("[handleMode] - LED's turned on");
+      // Turn on light slowly
+      if (modeChangeFadeAmount < 255) {
+        EVERY_N_MILLISECONDS(20) {
+          modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+        };
+      }
+      else {
+        // Debug 
+        Serial.println("[handleMode] - LED's turned on");
 
-      // Set the previous values
-      previousState = true;
-    }
-  } 
+        // Set the previous values
+        previousState = true;
+      }
+    } 
 
   // Globally Scale the brightness of all LED's
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
