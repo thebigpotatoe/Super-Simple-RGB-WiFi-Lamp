@@ -23,17 +23,17 @@ The code to run the lights was built to be as simple as possible for users to se
 These additional libraries need to be installed, of which some are available in the Arduino IDE and some not. Due to this I have included the current working versions of the libraries in .Zip format to be able to import into the Arduino IDE. If you need to install these libraries, clone this repo and install the .zip files in the External Library folder using [the method from Arduino](https://www.arduino.cc/en/guide/libraries).
 
 ## Features
-The code comes with several features built in to make things easler to manage. This includes things like having all the global variables in the main sketch file to "over the air updates". 
+The code comes with several features built in to make things easier to manage. This includes things like having all the global variables in the main sketch file to "over the air updates". 
 
 #### OTA 
-You may update the sketch on the ESP to a new firmware using the inbuilt webhook on `http://your-esp-ip-address/update` or `http://Super-Simple-RGB-Wifi-Lamp.local/update` if you kept the default name. You must upload a binary file, uploading a sketch in .ino form will nto work. For more info see [here](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#web-browser).
+You may update the sketch on the ESP to a new firmware using the inbuilt webhook on `http://your-esp-ip-address/update` or `http://Super-Simple-RGB-Wifi-Lamp.local/update` if you kept the default name. You must upload a binary file, uploading a sketch in .ino form will not work. For more info see [here](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#web-browser).
 
 ## Website Features
 This project comes with its own inbuilt website built in Bootstrap 4 to help make controlling the LED's much simpler. The website is accessible either via your home network if connected, or the ESP's wireless access point. Within the site you can change the mode and the individual settings for each. You can also change your connected Wi-Fi on the Wifi config page.
 
 If you connect your ESP8266 through your home Wi-Fi network, this will be available at the IP address of the device, or at the mDNS name which defaults to http://Super-Simple-RGB-WiFi-Lamp.local/. 
 
-If you are connected to the ESP8266 via its access point, the webpage should be sent via a captive DNS. This is automatic on windows and apple products, but will require clicking "sign into network" on android phones. It should be noted that mDNS does not work in this mode, and the default IP address is http://192.168.4.1. Please visit [this link](https://arduinojson.org/) first to cache the important files in your browser first.
+If you are connected to the ESP8266 via its access point, the webpage should be sent via a captive DNS. This is automatic on Windows and Apple products, but will require clicking "sign into network" on Android phones. It should be noted that mDNS does not work in this mode, and the default IP address is http://192.168.4.1. Please visit [this link](https://arduinojson.org/) first to cache the important files in your browser first.
 
 #### Home Page
 ![Alt text](Pictures/Website%20Home%20Page.PNG)
@@ -49,7 +49,7 @@ Rainbow Mode has two methods of being used. The user can either set the starting
 
 #### Clock Mode
 ![Alt text](Pictures/Website%20Clock.PNG)
-In clock mode the time of day is shown using the top and bottom of the light. On the top, the lights progression along the length is the total number of hours passed since 12am/pm. This is 12 hour, so 6am/pm will be in the middle. The minutes are shown in the same manor, just with the total period of time being the number of minutes that have passed in the hour. In minutes 0 is at the start, and 30 will be the middle.
+In clock mode the time of day is shown using the top and bottom of the light. On the top, the lights progression along the length is the total number of hours passed since 12am/pm. This is 12 hour, so 6am/pm will be in the middle. The minutes are shown in the same manner, just with the total period of time being the number of minutes that have passed in the hour. In minutes 0 is at the start, and 30 will be the middle.
 
 #### Bell Curve Mode 
 ![Alt text](Pictures/Website%20Bellcurve.PNG)
@@ -57,16 +57,16 @@ Bell Curve mode is the same as colour, where all the LED's are set to the same b
 
 #### Night Rider Mode
 ![Alt text](Pictures/Website%20Night%20Rider.PNG)
-This is a gimmick mode that I just had to put in. It fades the lights left and right across the length just like the front of Kit from night rider. This mode has no but instead just nostalgia.
+This is a gimmick mode that I just had to put in. It fades the lights left and right across the length just like the front of KITT from Knight Rider. This mode has no but instead just nostalgia.
 
 #### Visualiser Mode
 ![Alt text](Pictures/Website%20Visualiser.PNG)
-This is a mode which runs FFT over the ADC input to produce a spectrum of intensity across the length of the light. There are many options to play with to make the visuliser show off your music, sounds, or any other input perfectly. These settings are detailed on the webpage so you will always know what they do.
+This is a mode which runs FFT over the ADC input to produce a spectrum of intensity across the length of the light. There are many options to play with to make the visualiser show off your music, sounds, or any other input perfectly. These settings are detailed on the webpage so you will always know what they do.
 
 Note that while the fft runs using any input on the ADC, its is your job to ensure that you provide a clean and amplified signal to the pin within a range of 0 to 3.3V. Digitially amplifying the signal will not produce good results. Not reducing the effects of electrical noise on the input will also hinder the output seen for quiet sounds.
 
 ## Messaging Specification
-The webserver code is listening for incoming WebSocket messages with a JSON payload. This is processed after the message is received out of the callback. The complete example of the message is as follows. By connecting to the WebSocket server at port 81 from an external application such as node red, allows users to talk to the device. 
+The webserver code is listening for incoming WebSocket messages with a JSON payload. This is processed after the message is received out of the callback. The complete example of the message is as follows. By connecting to the WebSocket server at port 81 from an external application such as Node-RED, allows users to talk to the device. 
 
 ```
 {
@@ -121,4 +121,4 @@ The webserver code is listening for incoming WebSocket messages with a JSON payl
 ```
 
 ## Contributing
-If you would like to edit or use this project elsewhere you are more than welcome, I just ask that you let me know if you can, I'd love to see how the project is used and adapted. Changes and additions to Modes, the website, or documentaion here on GitHub are also welcome. I just ask that you follow the basic contributing guide and make a pull request so I can both read and test your changes before implimenting. 
+If you would like to edit or use this project elsewhere you are more than welcome, I just ask that you let me know if you can, I'd love to see how the project is used and adapted. Changes and additions to Modes, the website, or documentation here on GitHub are also welcome. I just ask that you follow the basic contributing guide and make a pull request so I can both read and test your changes before implementing. 

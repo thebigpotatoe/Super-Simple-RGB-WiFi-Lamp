@@ -965,10 +965,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("                the helpless, the powerless, in a world of criminals who operate above the law.</p>\n"));
   restServer.sendContent_P(PSTR("        </div>\n"));
   restServer.sendContent_P(PSTR("        <div id=\"Visualiser\" class=\"container pb-5 tab-pane fade\">\n"));
-  restServer.sendContent_P(PSTR("            <h2>Rainbow Mode</h2>\n"));
-  restServer.sendContent_P(PSTR("            <p> Here you can set the mode to Visualiser. This mode is does and FFT on the ADC of the ESP8266 and maps the frequencies\n"));
+  restServer.sendContent_P(PSTR("            <h2>Visualiser Mode</h2>\n"));
+  restServer.sendContent_P(PSTR("            <p> Here you can set the mode to Visualiser. This mode does an FFT on the ADC of the ESP8266 and maps the frequencies\n"));
   restServer.sendContent_P(PSTR("                to the number of top and bottom LED's. To use this mode, an input source must be present on the ADC such as an amplified mic \n"));
-  restServer.sendContent_P(PSTR("                or an input from a music source such as a chromecast. \n"));
+  restServer.sendContent_P(PSTR("                or an input from a music source such as a Chromecast. \n"));
   restServer.sendContent_P(PSTR("            </p>\n"));
   restServer.sendContent_P(PSTR("            <div>\n"));
   restServer.sendContent_P(PSTR("                <label for=\"visualiserPeriod\"><b>Frequency Range</b>: <span id=\"visualiserPeriodLabel\">2000</span>Hz</label>\n"));
@@ -1209,3 +1209,4 @@ void updateWifiConfigTable(int _numNetworks) {
 void otaInit() {
   OTAServer.setup(&restServer, "/update");
 }
+
