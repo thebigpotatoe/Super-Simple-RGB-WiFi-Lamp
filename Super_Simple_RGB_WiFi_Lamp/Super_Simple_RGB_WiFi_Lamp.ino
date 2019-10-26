@@ -19,19 +19,19 @@
 #include "lwip/dns.h"
 
 // ############################################################# Sketch Variables #############################################################
-// All variables at the top of this sketch need to be defined correctly for your light. Read the comments around each one for moe details on 
+// All variables at the top of this sketch need to be defined correctly for your light. Read the comments around each one for more details on 
 // what each of them are.
 
 #define DEFAULT_NAME "Super Simple RGB Wifi Lamp"
 
-// Set Your Data pin -This is the pin on your ESP8266 that is connected to the LED's. Be careful as on the NodeMCU the D pin does not map to 
+// Set Your Data pin - This is the pin on your ESP8266 that is connected to the LED's. Be careful as on the NodeMCU the D pin does not map to 
 // pin number. For this example pin D1 on the NodeMCU is actually pin 5 in software.
 #define DATA_PIN 5
 
-// Set the number of LED's - Simply count how many there are on your string and enter the number here
+// Set the number of LED's - Simply count how many there are on your string and enter the number here.
 #define NUM_LEDS 66
 
-// Set your UTC offset - This is the time zone you are in. for example +10 for Sydney or -4 for NYC
+// Set your UTC offset - This is the time zone you are in. for example +10 for Sydney or -4 for NYC.
 #define UTC_OFFSET +10
 
 // Set up LED's for each side - These arrays hold which leds are on what sides. For the basic rectangular shape in the example this relates to 4
@@ -43,7 +43,7 @@ int leftLeds[]    = {48, 49, 50};
 int rightLeds[]   = {15, 16, 17};
 
 // Eneter your wifi credentials here - If you would like to enter your wifi credentials now you can with these variables. This is a nice easy 
-// method to get your ESP8266 connected to your network quickly. If you dont you can always set it up later in the wifi portal.
+// method to get your ESP8266 connected to your network quickly. If you don't you can always set it up later in the wifi portal.
 String SSID = "";
 String Password = "";
 // ########################################################## End of Sketch Variables ##########################################################
