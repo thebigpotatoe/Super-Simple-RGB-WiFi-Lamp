@@ -268,6 +268,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   jsonSettingsObject["Mode"] = Mode = jsonSettingsObject["Mode"] | Mode;
   jsonSettingsObject["State"] = State = jsonSettingsObject["State"] | State;
   jsonSettingsObject["Fade Time"] = FadeTime = jsonSettingsObject["Fade Time"] | FadeTime;
+  jsonSettingsObject["Brightness"] = brightness = jsonSettingsObject["Brightness"] | brightness;
   
   // Might need to reconnect wifi with Name change
 
@@ -349,6 +350,13 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   JsonVariant nightRiderSettings = jsonSettingsObject["Night Rider"];
   if (nightRiderSettings) {
     // Currently no Night Rider Settings
+  }
+
+  JsonVariant colorWipeSettings = jsonSettingsObject["ColorWipe"];
+  if (colorWipeSettings) {
+    colorWipeSettings["Red"] = colorWipeRed = colorWipeSettings["Red"] | colorWipeRed;
+    colorWipeSettings["Green"]= colorWipeGreen = colorWipeSettings["Green"] | colorWipeGreen;
+    colorWipeSettings["Blue"] = colorWipeBlue = colorWipeSettings["Blue"] | colorWipeBlue;
   }
 
   JsonVariant visualiserSettings = jsonSettingsObject["Visualiser"];

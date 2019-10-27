@@ -1,8 +1,9 @@
 void ledStringInit() {
   // add the leds to fast led and clear them
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(ledString, NUM_LEDS);
-  FastLED.clear ();
+  FastLED.clear();
   FastLED.show();
+ 
 
   // Set the maximum power draw
   // FastLED.setMaxPowerInVoltsAndMilliamps(5,1000); 
@@ -17,7 +18,7 @@ void handleMode() {
     setColour(colourRed, colourGreen, colourBlue);
   }
   else if (currentMode == "Rainbow") {
-    setRainbow(rainbowStartHue, rainbowSpeed, rainbowBri);
+    setRainbow(rainbowStartHue, rainbowSpeed);
   }
   else if (currentMode == "Clock") {
     setClock();
@@ -28,9 +29,13 @@ void handleMode() {
   else if (currentMode == "Night Rider") {
     setNightRider();
   }
+  else if (currentMode == "ColorWipe") {
+    colorWipe(colorWipeRed,colorWipeGreen, colorWipeBlue, wipeSpeed);
+  }
   else if ( currentMode == "Visualiser" ) {
     setVisualiser();
   }
+
 
   // Adjust the brightness depending on the mode
   if (autoOnWithModeChange || State) {
@@ -108,6 +113,8 @@ void handleMode() {
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
 
   // Handle Fast LED
+  brightness = constrain(brightness, 0, 255); 
+  FastLED.setBrightness(brightness); 
   FastLED.show();
   //  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
@@ -116,12 +123,11 @@ void setColour(int red, int green, int blue) {
   fill_solid(ledString, NUM_LEDS, CRGB(red, green, blue));
 }
 
-void setRainbow(int startHue, int speed, int brightness) {
+void setRainbow(int startHue, int speed) {
   // Constrain the variables before using
   startHue = constrain(startHue, 0, 255);
   speed = speed > 0 ? speed : 0;
-  brightness = constrain(brightness, 0, 255);  
-
+  
   // Update the hue by 1 every 360th of the allocated time
   if (speed > 0) {
     float rainbowDeltaHue = (255 / ((float)speed * 1000)) * 50;
@@ -142,7 +148,6 @@ void setRainbow(int startHue, int speed, int brightness) {
     ledString[i] = CHSV( currentHue, 255, 255);
   }
 
-  FastLED.setBrightness(brightness);
 }
 
 void setClock() {
@@ -214,12 +219,25 @@ void setBellCurve() {
     ledString[topLeds[i]] %= ledNrightness;
   }
 
+  // Set the left brightness
+//  for (int i = 0; i < leftNumLeds; i++) {
+//    int ledNrightness = cubicwave8( ( 255 / (float)leftNumLeds  ) * i );
+//    ledString[leftLeds[i]] = CRGB(bellCurveRed, bellCurveGreen, bellCurveBlue);
+//    ledString[leftLeds[i]] %= ledNrightness;
+//  }
   // Set the Bottom brightness
   for (int i = 0; i < bottomNumLeds; i++) {
     int ledNrightness = cubicwave8( ( 255 / (float)bottomNumLeds  ) * i );
     ledString[bottomLeds[i]] = CRGB(bellCurveRed, bellCurveGreen, bellCurveBlue);
     ledString[bottomLeds[i]] %= ledNrightness;
   }
+
+    // Set the right brightness
+//  for (int i = 0; i < rightNumLeds; i++) {
+//    int ledNrightness = cubicwave8( ( 255 / (float)rightNumLeds  ) * i );
+//    ledString[rightLeds[i]] = CRGB(bellCurveRed, bellCurveGreen, bellCurveBlue);
+//    ledString[rightLeds[i]] %= ledNrightness;
+//  }
 }
 
 void setNightRider() {
@@ -241,6 +259,7 @@ void setNightRider() {
     fadeToBlackBy( ledString, NUM_LEDS, 10);
   };
 }
+
 
 void setVisualiser() {
   // Only use visualiser when not trying to access the NTP server
