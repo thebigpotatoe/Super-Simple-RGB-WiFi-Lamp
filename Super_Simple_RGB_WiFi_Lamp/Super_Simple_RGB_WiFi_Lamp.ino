@@ -34,10 +34,8 @@
 // Set your UTC offset - This is the time zone you are in. for example +10 for Sydney or -4 for NYC.
 #define UTC_OFFSET +10
 
-// Set the chipset for the LEDs you are using.
+// Set the chipset and color order for the LEDs you are using. For more info on supported hardware see: https://github.com/FastLED/FastLED/wiki/Overview#supported-chipsets.
 #define CHIPSET WS2812B
-
-// Set the color order of your LEDs
 #define COLOR_ORDER GRB
 
 // Set up LED's for each side - These arrays hold which leds are on what sides. For the basic rectangular shape in the example this relates to 4
