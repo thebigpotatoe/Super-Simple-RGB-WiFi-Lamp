@@ -1,6 +1,6 @@
 void ledStringInit() {
   // add the leds to fast led and clear them
-  FastLED.addLeds<WS2812, DATA_PIN, GRB>(ledString, NUM_LEDS);
+  FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(ledString, NUM_LEDS);
   FastLED.clear ();
   FastLED.show();
 
