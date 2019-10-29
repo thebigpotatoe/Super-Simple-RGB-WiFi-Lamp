@@ -1,5 +1,15 @@
-// Included Libraries
+
+// There are two major types of pin layouts for ESP8266 boards.
+// There's a raw layout, where pin 0 is GPIO0, pin 1 is GPIO1, etc... up to pin 16 being GPIO16. 
+// Then there's the NodeMCU layout, where pin 1 is GPIO 5, etc... where pin 0 is GPIO 16. 
+//    #define FASTLED_ESP8266_RAW_PIN_ORDER
+//    #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
+//    #define FASTLED_ESP8266_D1_PIN_ORDER
+// This MUST be included before "#include <FastLED.h>".
+// More information here: https://github.com/FastLED/FastLED/wiki/ESP8266-notes
 #define FASTLED_ESP8266_RAW_PIN_ORDER
+
+// Included Libraries
 #include "user_interface.h"
 #include <FastLED.h>
 #include "FS.h"
@@ -21,7 +31,6 @@
 // ############################################################# Sketch Variables #############################################################
 // All variables at the top of this sketch need to be defined correctly for your light. Read the comments around each one for moe details on 
 // what each of them are.
-
 #define DEFAULT_NAME "Super Simple RGB Wifi Lamp"
 
 // Set Your Data pin -This is the pin on your ESP8266 that is connected to the LED's. Be careful as on the NodeMCU the D pin does not map to 
