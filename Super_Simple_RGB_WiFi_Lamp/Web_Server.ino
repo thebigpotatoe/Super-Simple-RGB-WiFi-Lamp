@@ -283,6 +283,12 @@ void servePage() {
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
+  restServer.sendContent_P(PSTR("        function handleSparkelMessage(jsonMessage) {\n"));
+  restServer.sendContent_P(PSTR("            if (typeof jsonMessage === \"object\") {\n"));
+  restServer.sendContent_P(PSTR("                \n"));
+  restServer.sendContent_P(PSTR("            }\n"));
+  restServer.sendContent_P(PSTR("        }\n"));
+  restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("        function handleVisualiserMessage(jsonMessage) {\n"));
   restServer.sendContent_P(PSTR("            if (typeof jsonMessage === \"object\") {\n"));
   restServer.sendContent_P(PSTR("                if ((\"Period\" in jsonMessage)) {\n"));
@@ -404,6 +410,9 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    <li id=\"nightRiderTabNavItem\" class=\"nav-item\">\n"));
   restServer.sendContent_P(PSTR("                        <a class=\"nav-link\" data-toggle=\"tab\" href=\"#NightRider\">Night Rider</a>\n"));
   restServer.sendContent_P(PSTR("                    </li>\n"));
+  restServer.sendContent_P(PSTR("                    <li id=\"sparkleTabNavItem\" class=\"nav-item\">\n"));
+  restServer.sendContent_P(PSTR("                        <a class=\"nav-link\" data-toggle=\"tab\" href=\"#Sparkle\">Sparkle</a>\n"));
+  restServer.sendContent_P(PSTR("                    </li>\n"));
   restServer.sendContent_P(PSTR("                    <li id=\"visualiserTabNavItem\" class=\"nav-item\">\n"));
   restServer.sendContent_P(PSTR("                        <a class=\"nav-link\" data-toggle=\"tab\" href=\"#Visualiser\">Visualiser</a>\n"));
   restServer.sendContent_P(PSTR("                    </li>\n"));
@@ -426,6 +435,9 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    });\n"));
   restServer.sendContent_P(PSTR("                    $(\"#nightRiderTabNavItem\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                        sendMessage({\"Mode\":\"Night Rider\"})\n"));
+  restServer.sendContent_P(PSTR("                    });\n"));
+  restServer.sendContent_P(PSTR("                    $(\"#sparkleTabNavItem\").click(function () {\n"));
+  restServer.sendContent_P(PSTR("                        sendMessage({\"Mode\":\"Sparkle\"})\n"));
   restServer.sendContent_P(PSTR("                    });\n"));
   restServer.sendContent_P(PSTR("                    $(\"#visualiserTabNavItem\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                        sendMessage({\"Mode\":\"Visualiser\"})\n"));
@@ -508,6 +520,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("            <button id=\"clockButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Clock</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"bellCurveButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Bell Curve</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"nightRiderButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Night Rider</button>\n"));
+  restServer.sendContent_P(PSTR("            <button id=\"SparkleButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Sparkle</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"visualiserButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Visualiser</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"wifiButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Wifi Config</button>\n"));
   restServer.sendContent_P(PSTR("            <script>\n"));
@@ -533,6 +546,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("                $(\"#nightRiderButton\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                    $('#navbarHeader a[href=\"#NightRider\"]').tab('show')\n"));
   restServer.sendContent_P(PSTR("                    sendMessage({\"Mode\":\"Night Rider\"})\n"));
+  restServer.sendContent_P(PSTR("                });\n"));
+  restServer.sendContent_P(PSTR("                $(\"#sparkleButton\").click(function () {\n"));
+  restServer.sendContent_P(PSTR("                    $('#navbarHeader a[href=\"#Sparkle\"]').tab('show')\n"));
+  restServer.sendContent_P(PSTR("                    sendMessage({\"Mode\":\"Sparkle\"})\n"));
   restServer.sendContent_P(PSTR("                });\n"));
   restServer.sendContent_P(PSTR("                $(\"#visualiserButton\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                    $('#navbarHeader a[href=\"#Visualiser\"]').tab('show')\n"));
@@ -963,6 +980,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("            <p>Knight Rider. A shadowy flight into the dangerous world of a man who does not exist. \n"));
   restServer.sendContent_P(PSTR("                Michael Knight: a young loner on a crusade to champion the cause of the innocent, \n"));
   restServer.sendContent_P(PSTR("                the helpless, the powerless, in a world of criminals who operate above the law.</p>\n"));
+  restServer.sendContent_P(PSTR("        </div>\n"));
+  restServer.sendContent_P(PSTR("        <div id=\"Sparkle\" class=\"container pb-5 tab-pane fade\">\n"));
+  restServer.sendContent_P(PSTR("            <h2>Sparkle Mode</h2>\n"));
+  restServer.sendContent_P(PSTR("            <p>This is the Sparkle mode............................... Blah blah blah blah blah..........................................</p>\n"));
   restServer.sendContent_P(PSTR("        </div>\n"));
   restServer.sendContent_P(PSTR("        <div id=\"Visualiser\" class=\"container pb-5 tab-pane fade\">\n"));
   restServer.sendContent_P(PSTR("            <h2>Rainbow Mode</h2>\n"));
