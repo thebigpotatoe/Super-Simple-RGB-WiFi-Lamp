@@ -28,6 +28,9 @@ void handleMode() {
   else if (currentMode == "Night Rider") {
     setNightRider();
   }
+  else if (currentMode == "Sparkle") {
+    setSparkleMode();
+  }
   else if ( currentMode == "Visualiser" ) {
     setVisualiser();
   }
@@ -236,6 +239,14 @@ void setNightRider() {
     // Start fading all lit leds
     fadeToBlackBy( ledString, NUM_LEDS, 10);
   };
+}
+
+void Sparkle(byte red, byte green, byte blue, int SpeedDelay) {
+  int Pixel = random(NUM_LEDS);
+  setPixel(Pixel,red,green,blue);
+  showStrip();
+  delay(SpeedDelay);
+  setPixel(Pixel,0,0,0);
 }
 
 void setVisualiser() {
