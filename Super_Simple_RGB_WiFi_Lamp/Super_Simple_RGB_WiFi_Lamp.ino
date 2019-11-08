@@ -52,6 +52,47 @@ String SSID = "";
 String Password = "";
 // ########################################################## End of Sketch Variables ##########################################################
 
+// In some cases the automatic creation of the prototypes does not work. Do it manually...
+// Config.ino
+bool checkFlashConfig();
+void getConfig();
+bool sendConfigViaWS();
+void saveConfigItem(JsonDocument& jsonSetting);
+void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
+// LEDs.ino
+void ledStringInit();
+void handleMode();
+void setColour(int red, int green, int blue);
+void setRainbow(int startHue, int speed, int brightness);
+void setClock();
+void setBellCurve();
+void setNightRider();
+void setVisualiser();
+// NTP.ino
+void handleNTP();
+bool getNTPServerIP(const char *_ntpServerName, IPAddress &_ntpServerIp);
+bool sendNTPRequest();
+void parseNTPResponse(uint8_t *_ntpData);
+String get12hrAsString();
+// Web_Server.ino
+void webServerInit();
+void serve404();
+void servePage();
+void scanForNetworks();
+void updateWifiConfigTable(int _numNetworks);
+void otaInit();
+// Websockets.ino
+void websocketsInit();
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
+bool websocketSend(JsonDocument& jsonMessage);
+bool updateClients();
+// Wifi.ino
+void wifiInit();
+void handleWifiConnection();
+void onWifiConnected(const WiFiEventStationModeGotIP &event);
+void onWifiDisconnected(const WiFiEventStationModeDisconnected &event);
+void mdnsInit();
+
 // File System Variables 
 bool spiffsCorrectSize      = false;
 
