@@ -502,7 +502,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("        </div>     \n"));
   restServer.sendContent_P(PSTR("        <div id=\"Home\" class=\"container tab-pane active\">\n"));
   restServer.sendContent_P(PSTR("            <h1>Home</h1>\n"));
-  restServer.sendContent_P(PSTR("            <p>Welocme to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>\n"));
+  restServer.sendContent_P(PSTR("            <p>Welcome to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"colourButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Colour</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"rainbowButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Rainbow</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"clockButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Clock</button>\n"));
