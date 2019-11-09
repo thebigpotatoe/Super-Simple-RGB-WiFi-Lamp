@@ -502,9 +502,9 @@ void servePage() {
   restServer.sendContent_P(PSTR("        </div>     \n"));
   restServer.sendContent_P(PSTR("        <div id=\"Home\" class=\"container tab-pane active\">\n"));
   restServer.sendContent_P(PSTR("            <h1>Home</h1>\n"));
-  restServer.sendContent_P(PSTR("            <p>Welocme to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>\n"));
+  restServer.sendContent_P(PSTR("            <p>Welcome to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"colourButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Colour</button>\n"));
-  restServer.sendContent_P(PSTR("            <button id=\"rainbowButton\" type=\"submit\"class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Rainbow</button>\n"));
+  restServer.sendContent_P(PSTR("            <button id=\"rainbowButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Rainbow</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"clockButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Clock</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"bellCurveButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Bell Curve</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"nightRiderButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Night Rider</button>\n"));
@@ -746,7 +746,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                of teh light represents 0 and the right represents either 12hr or 60mins. You can choose the colour of\n"));
   restServer.sendContent_P(PSTR("                the hour and minute light to what you would desire. If your clock is out of sync\n"));
   restServer.sendContent_P(PSTR("                you can click the resync button (note this should be automatically done on the device for you)</p>\n"));
-  restServer.sendContent_P(PSTR("            <h2>Current Time: <span id=\"clockPrintOut\"></span></h1>\n"));
+  restServer.sendContent_P(PSTR("            <h2>Current Time: <span id=\"clockPrintOut\"></span></h2>\n"));
   restServer.sendContent_P(PSTR("                <div class=\"row my-3\">\n"));
   restServer.sendContent_P(PSTR("                    <button id=\"clockHourColourButton\" class=\"color col mb-2 mx-2 btn btn-lg btn-outline-light\">Hour Colour</button>\n"));
   restServer.sendContent_P(PSTR("                    <button id=\"clockMinuteColourButton\" class=\"color col mb-2 mx-2 btn btn-lg btn-outline-light\">Minute Colour</button>\n"));
@@ -897,7 +897,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("            <h2>Bell Curve Mode</h2>\n"));
   restServer.sendContent_P(PSTR("            <p>In this mode the lamp will shape the light into a bell curve. This is meant to be more asthetically pleasing than the regular colour mode.</p>\n"));
   restServer.sendContent_P(PSTR("            <div class=\"row my-3\">\n"));
-  restServer.sendContent_P(PSTR("                <input id=\"bellCurveSelectButton\" class=\"color col mb-2 mx-2 btn btn-lg btn-outline-light\" value=\"rgb(0,0,0)\"></input>\n"));
+  restServer.sendContent_P(PSTR("                <input id=\"bellCurveSelectButton\" class=\"color col mb-2 mx-2 btn btn-lg btn-outline-light\" value=\"rgb(0,0,0)\">\n"));
   restServer.sendContent_P(PSTR("            </div>\n"));
   restServer.sendContent_P(PSTR("            <script>\n"));
   restServer.sendContent_P(PSTR("                bellCurveDebunce = Date.now()\n"));
@@ -1209,4 +1209,3 @@ void updateWifiConfigTable(int _numNetworks) {
 void otaInit() {
   OTAServer.setup(&restServer, "/update");
 }
-
