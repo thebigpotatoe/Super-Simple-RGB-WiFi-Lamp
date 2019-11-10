@@ -24,9 +24,8 @@
 
 #define DEFAULT_NAME "Super Simple RGB Wifi Lamp"
 
-// Set Your Data pin - This is the pin on your ESP8266 that is connected to the LED's. Be careful as on the NodeMCU the D pin does not map to 
-// pin number. For this example pin D1 on the NodeMCU is actually pin 5 in software.
-#define DATA_PIN 5
+// Set Your Data pin - This is the pin on your ESP8266 that is connected to the LED's.
+#define DATA_PIN D1
 
 // Set the number of LED's - Simply count how many there are on your string and enter the number here.
 #define NUM_LEDS 66
