@@ -65,6 +65,7 @@ void setColour(int red, int green, int blue);
 void setRainbow(int startHue, int speed, int brightness);
 void setClock();
 void setBellCurve();
+void setCircle();
 void setNightRider();
 void setVisualiser();
 // NTP.ino
@@ -177,6 +178,9 @@ int nightRiderTopLedNumber        = 0;
 int nightRiderBottomLedNumber     = 0;
 int nightRiderTopIncrement        = 1;
 int nightRiderBottomIncrement     = 1;
+
+// Circle variables
+int circleActiveLedNumber         = 0;
 
 // Visualiser Mode Variables
 #define num_samples 64
