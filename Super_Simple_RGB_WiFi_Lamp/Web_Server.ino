@@ -106,6 +106,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("                // console.log(\"Found Bell Curve Message\")\n"));
   restServer.sendContent_P(PSTR("                handleBellCurveMessage(jsonMessage[\"Bell Curve\"])\n"));
   restServer.sendContent_P(PSTR("            }\n"));
+  restServer.sendContent_P(PSTR("            if (\"Circle\" in jsonMessage) {\n"));
+  restServer.sendContent_P(PSTR("                // console.log(\"Found Circle Message\")\n"));
+  restServer.sendContent_P(PSTR("                handleCircleMessage(jsonMessage[\"Circle\"])\n"));
+  restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("            if (\"Night Rider\" in jsonMessage) {\n"));
   restServer.sendContent_P(PSTR("                // console.log(\"Found Night Rider Message\")\n"));
   restServer.sendContent_P(PSTR("                handleNightRiderMessage(jsonMessage[\"Night Rider\"])\n"));
@@ -279,6 +283,12 @@ void servePage() {
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
+  restServer.sendContent_P(PSTR("        function handleCircleMessage(jsonMessage) {\n"));
+  restServer.sendContent_P(PSTR("            if (typeof jsonMessage === \"object\") {\n"));
+  restServer.sendContent_P(PSTR("                \n"));
+  restServer.sendContent_P(PSTR("            }\n"));
+  restServer.sendContent_P(PSTR("        }\n"));
+  restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("        function handleNightRiderMessage(jsonMessage) {\n"));
   restServer.sendContent_P(PSTR("            if (typeof jsonMessage === \"object\") {\n"));
   restServer.sendContent_P(PSTR("                \n"));
@@ -403,6 +413,9 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    <li id=\"bellCurveTabNavItem\" class=\"nav-item\">\n"));
   restServer.sendContent_P(PSTR("                        <a class=\"nav-link\" data-toggle=\"tab\" href=\"#BellCurve\">Bell Curve</a>\n"));
   restServer.sendContent_P(PSTR("                    </li>\n"));
+  restServer.sendContent_P(PSTR("                    <li id=\"circleTabNavItem\" class=\"nav-item\">\n"));
+  restServer.sendContent_P(PSTR("                        <a class=\"nav-link\" data-toggle=\"tab\" href=\"#Circle\">Circle</a>\n"));
+  restServer.sendContent_P(PSTR("                    </li>\n"));
   restServer.sendContent_P(PSTR("                    <li id=\"nightRiderTabNavItem\" class=\"nav-item\">\n"));
   restServer.sendContent_P(PSTR("                        <a class=\"nav-link\" data-toggle=\"tab\" href=\"#NightRider\">Night Rider</a>\n"));
   restServer.sendContent_P(PSTR("                    </li>\n"));
@@ -425,6 +438,9 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    });\n"));
   restServer.sendContent_P(PSTR("                    $(\"#bellCurveTabNavItem\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                        sendMessage({\"Mode\":\"Bell Curve\"})\n"));
+  restServer.sendContent_P(PSTR("                    });\n"));
+  restServer.sendContent_P(PSTR("                    $(\"#circleTabNavItem\").click(function () {\n"));
+  restServer.sendContent_P(PSTR("                        sendMessage({\"Mode\":\"Circle\"})\n"));
   restServer.sendContent_P(PSTR("                    });\n"));
   restServer.sendContent_P(PSTR("                    $(\"#nightRiderTabNavItem\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                        sendMessage({\"Mode\":\"Night Rider\"})\n"));
@@ -509,6 +525,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("            <button id=\"rainbowButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Rainbow</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"clockButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Clock</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"bellCurveButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Bell Curve</button>\n"));
+  restServer.sendContent_P(PSTR("            <button id=\"circleButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Circle</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"nightRiderButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Night Rider</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"visualiserButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Visualiser</button>\n"));
   restServer.sendContent_P(PSTR("            <button id=\"wifiButton\" type=\"submit\" class=\"col mb-2 mx-2 btn btn-lg btn-outline-light\">Wifi Config</button>\n"));
@@ -531,6 +548,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("                $(\"#bellCurveButton\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                    $('#navbarHeader a[href=\"#BellCurve\"]').tab('show')\n"));
   restServer.sendContent_P(PSTR("                    sendMessage({\"Mode\":\"Bell Curve\"})\n"));
+  restServer.sendContent_P(PSTR("                });\n"));
+  restServer.sendContent_P(PSTR("                $(\"#circleButton\").click(function () {\n"));
+  restServer.sendContent_P(PSTR("                    $('#navbarHeader a[href=\"#Circle\"]').tab('show')\n"));
+  restServer.sendContent_P(PSTR("                    sendMessage({\"Mode\":\"Circle\"})\n"));
   restServer.sendContent_P(PSTR("                });\n"));
   restServer.sendContent_P(PSTR("                $(\"#nightRiderButton\").click(function () {\n"));
   restServer.sendContent_P(PSTR("                    $('#navbarHeader a[href=\"#NightRider\"]').tab('show')\n"));
@@ -959,6 +980,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("                }\n"));
   restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("            </script>\n"));
+  restServer.sendContent_P(PSTR("        </div>\n"));
+  restServer.sendContent_P(PSTR("        <div id=\"Circle\" class=\"container pb-5 tab-pane fade\">\n"));
+  restServer.sendContent_P(PSTR("            <h2>Circle Mode</h2>\n"));
+  restServer.sendContent_P(PSTR("            <p>A simple dot moving round the lamp.\n"));
   restServer.sendContent_P(PSTR("        </div>\n"));
   restServer.sendContent_P(PSTR("        <div id=\"NightRider\" class=\"container pb-5 tab-pane fade\">\n"));
   restServer.sendContent_P(PSTR("            <h2>Night Rider Mode</h2>\n"));

@@ -237,7 +237,8 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
       "Blue": 0
     },
     "Night Rider" : {
-      
+    },
+    "Circle" : {
     },
     "Visualiser" : {
       "Period" : 250,
@@ -348,6 +349,12 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   // Check for night rider settings
   JsonVariant nightRiderSettings = jsonSettingsObject["Night Rider"];
   if (nightRiderSettings) {
+    // Currently no Night Rider Settings
+  }
+
+  // Check for circle settings
+  JsonVariant circleSettings = jsonSettingsObject["Circle"];
+  if (circleSettings) {
     // Currently no Night Rider Settings
   }
 

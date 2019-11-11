@@ -28,6 +28,9 @@ void handleMode() {
   else if (currentMode == "Night Rider") {
     setNightRider();
   }
+  else if (currentMode == "Circle") {
+    setCircle();
+  }
   else if ( currentMode == "Visualiser" ) {
     setVisualiser();
   }
@@ -219,6 +222,45 @@ void setBellCurve() {
     int ledNrightness = cubicwave8( ( 255 / (float)bottomNumLeds  ) * i );
     ledString[bottomLeds[i]] = CRGB(bellCurveRed, bellCurveGreen, bellCurveBlue);
     ledString[bottomLeds[i]] %= ledNrightness;
+  }
+}
+
+void setCircle() {
+  // First bring our logical arrays into a list of led numbers to iterate over
+  int i;
+  int ledIter = 0;
+  int leds[NUM_LEDS];
+  for (i = 0; i < bottomNumLeds; i++) {
+    leds[ledIter++] = bottomLeds[i];
+  }
+  for (i = leftNumLeds-1; i >= 0 ; i--) {
+    leds[ledIter++] = leftLeds[i];
+  }
+  for (i = topNumLeds-1; i >= 0 ; i--) {
+    leds[ledIter++] = topLeds[i];
+  }
+  for (i = rightNumLeds-1; i >= 0 ; i--) {
+    leds[ledIter++] = rightLeds[i];
+  }
+
+  // Update the active LED index
+  EVERY_N_MILLISECONDS(40) {
+    circleActiveLedNumber += 1;
+    if (circleActiveLedNumber == NUM_LEDS)
+        circleActiveLedNumber = 0;
+
+    Serial.print("Active number: ");
+    Serial.println(circleActiveLedNumber);
+
+    // Darken all LEDs to slightly dim the previous active LEDs
+    fadeToBlackBy(ledString, NUM_LEDS, 80);
+  };
+
+  // And now highlight the active index
+  for (i = 0; i < NUM_LEDS; i++) {
+    if (i == circleActiveLedNumber) {
+      ledString[leds[i]] = CRGB::Red;
+    }
   }
 }
 

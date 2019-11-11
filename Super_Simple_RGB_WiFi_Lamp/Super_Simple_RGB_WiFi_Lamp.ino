@@ -24,9 +24,9 @@
 
 #define DEFAULT_NAME "Super Simple RGB Wifi Lamp"
 
-// Set Your Data pin - This is the pin on your ESP8266 that is connected to the LED's. Be careful as on the NodeMCU the D pin does not map to 
-// pin number. For this example pin D1 on the NodeMCU is actually pin 5 in software.
-#define DATA_PIN 5
+// Set Your Data pin - This is the pin on your ESP8266 that is connected to the LED's. Remember to add the letter "D" infront of the number 
+// to map the pin correctly for your platform.
+#define DATA_PIN D1
 
 // Set the number of LED's - Simply count how many there are on your string and enter the number here.
 #define NUM_LEDS 66
@@ -66,6 +66,7 @@ void setColour(int red, int green, int blue);
 void setRainbow(int startHue, int speed, int brightness);
 void setClock();
 void setBellCurve();
+void setCircle();
 void setNightRider();
 void setVisualiser();
 // NTP.ino
@@ -178,6 +179,9 @@ int nightRiderTopLedNumber        = 0;
 int nightRiderBottomLedNumber     = 0;
 int nightRiderTopIncrement        = 1;
 int nightRiderBottomIncrement     = 1;
+
+// Circle variables
+int circleActiveLedNumber         = 0;
 
 // Visualiser Mode Variables
 #define num_samples 64
