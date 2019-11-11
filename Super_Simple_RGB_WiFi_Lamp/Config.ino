@@ -216,7 +216,6 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     "Rainbow": {
       "Hue": 0,
       "Speed": 10,
-      "Brightness": 100
     },
     "Clock": {
       "Epoch" : 24356789,
@@ -236,8 +235,26 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
       "Green": 0,
       "Blue": 0
     },
-    "Night Rider" : {
-      
+    "Night Rider" : {      
+    
+    },
+    "Sparkle" : {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+      "Speed": 30,
+    },
+    "Color Wipe" : {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+      "Speed": 20,
+    },
+    "Cofetti" : {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+      "Speed": 100,
     },
     "Visualiser" : {
       "Period" : 250,
@@ -268,6 +285,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   jsonSettingsObject["Mode"] = Mode = jsonSettingsObject["Mode"] | Mode;
   jsonSettingsObject["State"] = State = jsonSettingsObject["State"] | State;
   jsonSettingsObject["Fade Time"] = FadeTime = jsonSettingsObject["Fade Time"] | FadeTime;
+  jsonSettingsObject["Brightness"] = brightness = jsonSettingsObject["Brightness"] | brightness;
   
   // Might need to reconnect wifi with Name change
 
@@ -311,7 +329,6 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   if (rainbowSettings) {
     rainbowSettings["Hue"] = rainbowStartHue = rainbowSettings["Hue"] | rainbowStartHue;
     rainbowSettings["Speed"] = rainbowSpeed = rainbowSettings["Speed"] | rainbowSpeed;
-    rainbowSettings["Brightness"] = rainbowBri = rainbowSettings["Brightness"] | rainbowBri;
   }
 
   // Check for clock settings
@@ -351,6 +368,34 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     // Currently no Night Rider Settings
   }
 
+  // Check for sparkle settings
+  JsonVariant sparkleSettings = jsonSettingsObject["Sparkle"];
+  if (sparkleSettings) {
+    sparkleSettings["Red"] = sparkleRed = sparkleSettings["Red"] | sparkleRed;
+    sparkleSettings["Green"]= sparkleGreen = sparkleSettings["Green"] | sparkleGreen;
+    sparkleSettings["Blue"] = sparkleBlue = sparkleSettings["Blue"] | sparkleBlue;
+    sparkleSettings["Speed"] = sparkleSpeed = sparkleSettings["Speed"] | sparkleSpeed;
+  }
+
+  // Check for color wipe settings
+  JsonVariant colorWipeSettings = jsonSettingsObject["Color Wipe"];
+  if (colorWipeSettings) {
+    colorWipeSettings["Red"] = colorWipeRed = colorWipeSettings["Red"] | colorWipeRed;
+    colorWipeSettings["Green"]= colorWipeGreen = colorWipeSettings["Green"] | colorWipeGreen;
+    colorWipeSettings["Blue"] = colorWipeBlue = colorWipeSettings["Blue"] | colorWipeBlue;
+    colorWipeSettings["Speed"] = colorWipeSpeed = colorWipeSettings["Speed"] | colorWipeSpeed;
+  }
+
+  // Check for confetti settings
+  JsonVariant confettiSettings = jsonSettingsObject["Confetti"];
+  if (confettiSettings) {
+    confettiSettings["Red"] = confettiRed = confettiSettings["Red"] | confettiRed;
+    confettiSettings["Green"]= confettiGreen = confettiSettings["Green"] | confettiGreen;
+    confettiSettings["Blue"] = confettiBlue = confettiSettings["Blue"] | confettiBlue;
+    confettiSettings["Speed"] = confettiSpeed = confettiSettings["Speed"] | confettiSpeed;
+  }
+
+  // Check for visualiser settings
   JsonVariant visualiserSettings = jsonSettingsObject["Visualiser"];
   if (visualiserSettings) {
     visualiserSettings["Period"] = visualiserPeriod = visualiserSettings["Period"] | visualiserPeriod;

@@ -1,7 +1,7 @@
 void ledStringInit() {
   // add the leds to fast led and clear them
-  FastLED.addLeds<WS2812, DATA_PIN, GRB>(ledString, NUM_LEDS);
-  FastLED.clear ();
+  FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(ledString, NUM_LEDS);
+  FastLED.clear();
   FastLED.show();
 
   // Set the maximum power draw
@@ -17,7 +17,7 @@ void handleMode() {
     setColour(colourRed, colourGreen, colourBlue);
   }
   else if (currentMode == "Rainbow") {
-    setRainbow(rainbowStartHue, rainbowSpeed, rainbowBri);
+    setRainbow(rainbowStartHue, rainbowSpeed);
   }
   else if (currentMode == "Clock") {
     setClock();
@@ -29,52 +29,63 @@ void handleMode() {
     setNightRider();
   }
   else if (currentMode == "Sparkle") {
-    setSparkleMode();
+    setSparkle(sparkleSpeed);
+  }
+  else if (currentMode == "Color Wipe") {
+    setColorWipe();
+  }
+  else if (currentMode == "Confetti") {
+    setConfetti(confettiSpeed);
   }
   else if ( currentMode == "Visualiser" ) {
     setVisualiser();
   }
 
   // Adjust the brightness depending on the mode
-  if (Mode != currentMode) {
-    // Dim lights off first 
-    if (modeChangeFadeAmount > 0) {
-      // Set the dimming variables and apply
-      EVERY_N_MILLISECONDS(20) {
-        modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-      };
-    }
-    else {
-      // Debug
-      Serial.println("[handleMode] - Mode changed to: " + Mode);
+  if (autoOnWithModeChange || State) {
+    if (Mode != currentMode) {
+      // Dim lights off first 
+      if (modeChangeFadeAmount > 0) {
+        // Set the dimming variables and apply
+        EVERY_N_MILLISECONDS(20) {
+          modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+        };
+      }
+      else {
+        // Debug
+        Serial.println("[handleMode] - Mode changed to: " + Mode);
 
-      // Clear the LEDs
-      FastLED.clear();
+        // Clear the LEDs
+        FastLED.clear();
 
-      // Set the currentMode to Mode
-      currentMode = Mode;
-      modeChangeFadeAmount = 0;
+        // Set the currentMode to Mode
+        currentMode = Mode;
+        modeChangeFadeAmount = 0;
+      }
     }
+    else if (currentMode != previousMode) {
+      // On mode change dim lights up
+      if (modeChangeFadeAmount < 255) {
+        EVERY_N_MILLISECONDS(20) {
+          modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+        };
+      }
+      else {
+        // Set the currentMode to Mode
+        previousMode = currentMode;
+      }
+    } 
   }
-  else if (currentMode != previousMode) {
-    // On mode change dim lights up
-    if (modeChangeFadeAmount < 255) {
-      EVERY_N_MILLISECONDS(20) {
-        modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-      };
-    }
-    else {
-      // Set the currentMode to Mode
-      previousMode = currentMode;
-    }
-  } 
-
+  
   // Adjust the brightness depending on the state
   if (!State && previousState) {
     // Turn Lights off slowly
     if (modeChangeFadeAmount > 0) {
       EVERY_N_MILLISECONDS(20) {
         modeChangeFadeAmount -= (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
       };
     }
     else {
@@ -86,27 +97,28 @@ void handleMode() {
     }
   }
   else if (State && !previousState) {
-    // Turn on light slowly
-    if (modeChangeFadeAmount < 255) {
-      EVERY_N_MILLISECONDS(20) {
-        modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-      };
-    }
-    else {
-      // Debug 
-      Serial.println("[handleMode] - LED's turned on");
+      // Turn on light slowly
+      if (modeChangeFadeAmount < 255) {
+        EVERY_N_MILLISECONDS(20) {
+          modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+        };
+      }
+      else {
+        // Debug 
+        Serial.println("[handleMode] - LED's turned on");
 
-      // Set the previous values
-      previousState = true;
-    }
-  }
-  else 
+        // Set the previous values
+        previousState = true;
+      }
+    } 
 
   // Globally Scale the brightness of all LED's
-  modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
 
   // Handle Fast LED
+  brightness = constrain(brightness, 0, 255);
+  FastLED.setBrightness(brightness);
   FastLED.show();
   //  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
@@ -115,18 +127,20 @@ void setColour(int red, int green, int blue) {
   fill_solid(ledString, NUM_LEDS, CRGB(red, green, blue));
 }
 
-void setRainbow(int startHue, int speed, int brightness) {
+void setRainbow(int startHue, int speed) {
   // Constrain the variables before using
   startHue = constrain(startHue, 0, 255);
   speed = speed > 0 ? speed : 0;
-  brightness = constrain(brightness, 0, 255);  
+  brightness = constrain(brightness, 0, 255);
 
+  
   // Update the hue by 1 every 360th of the allocated time
   if (speed > 0) {
     float rainbowDeltaHue = (255 / ((float)speed * 1000)) * 50;
     EVERY_N_MILLISECONDS(50) {
       rainbowAddedHue += rainbowDeltaHue;
       rainbowAddedHue = (rainbowAddedHue > 255) ? rainbowAddedHue - 255 : rainbowAddedHue;
+      ledString[ random16(NUM_LEDS) ] += CRGB::White;
     };
 
     startHue += (int)rainbowAddedHue;
@@ -140,9 +154,8 @@ void setRainbow(int startHue, int speed, int brightness) {
     currentHue = (currentHue < 255) ? currentHue : currentHue - 255;
     ledString[i] = CHSV( currentHue, 255, 255);
   }
-
-  FastLED.setBrightness(brightness);
 }
+
 
 void setClock() {
   if (ntpTimeSet) {
@@ -174,7 +187,7 @@ void setClock() {
     int minuteCurrentLEDBrightness = 255 * (1 - minutePercentOfGap);
     int minuteNextLEDBrightness = 255 * (minutePercentOfGap);
 
-    // Clear all the LED's
+    // Clear all the LEDs
     FastLED.clear();
 
     // Set the colour of the LED
@@ -230,7 +243,7 @@ void setNightRider() {
     // Serial.println(nightRiderTopLedNumber);
     // Serial.println(ledString[topLeds[0]]);
 
-    //  Increment the LED number
+    // Increment the LED number
     nightRiderTopLedNumber = nightRiderTopLedNumber + nightRiderTopIncrement;
     nightRiderBottomLedNumber = nightRiderBottomLedNumber + nightRiderBottomIncrement;
     if (nightRiderTopLedNumber >= topNumLeds - 1 || nightRiderTopLedNumber <= 0) nightRiderTopIncrement = -nightRiderTopIncrement;
@@ -241,12 +254,48 @@ void setNightRider() {
   };
 }
 
-void Sparkle(byte red, byte green, byte blue, int SpeedDelay) {
-  int Pixel = random(NUM_LEDS);
-  setPixel(Pixel,red,green,blue);
-  showStrip();
-  delay(SpeedDelay);
-  setPixel(Pixel,0,0,0);
+void setSparkle(int speed) {
+  EVERY_N_MILLISECONDS(sparkleSpeed) {
+    if (sparkleActive) {
+      sparklePixel = random(NUM_LEDS);
+      ledString[sparklePixel] = CRGB(sparkleRed, sparkleGreen, sparkleBlue);
+    } 
+    else {
+      ledString[sparklePixel] = CRGB(0, 0, 0);
+      sparkleActive = !sparkleActive;
+    }
+  }
+}
+
+void setColorWipe() {
+  EVERY_N_MILLISECONDS(colorWipeSpeed) {
+    colorWipePosition++;
+    if (TurningOn) {
+      fill_solid(ledString, colorWipePosition, CRGB(colorWipeRed, colorWipeGreen, colorWipeBlue));
+      if (colorWipePosition == NUM_LEDS) {
+        TurningOn = false;
+        colorWipePosition = -1;
+      }
+    }
+    else {
+      fill_solid(ledString, colorWipePosition, CRGB( 0, 0, 0));
+      if (colorWipePosition == NUM_LEDS) {
+        TurningOn = true;
+        colorWipePosition = -1;
+      }
+    }
+  }
+}
+
+void setConfetti(int speed) {
+  EVERY_N_MILLISECONDS(confettiSpeed) {
+    if (confettiActive) {
+      confettiPixel = random(NUM_LEDS);
+      fadeToBlackBy(ledString, NUM_LEDS, 10);
+      uint8_t pos = random8(NUM_LEDS);
+      ledString[pos] += CHSV(random8(), random8(), random8());
+    }
+  }
 }
 
 void setVisualiser() {
@@ -299,7 +348,7 @@ void setVisualiser() {
     FFT.Compute(visualiserRealSamples, visualiserImaginarySamples, num_samples, FFT_FORWARD); 
     FFT.ComplexToMagnitude(visualiserRealSamples, visualiserImaginarySamples, num_samples); 
   
-    // ************* Set the LED's *************
+    // ************* Set the LEDs *************
     // Set the colour of each light based on the values calculated
     for (int ledNum = 0; ledNum < topNumLeds; ledNum++) {
       // Map to the bin number, skip all bins required. Start at the second bin to avoid DC
