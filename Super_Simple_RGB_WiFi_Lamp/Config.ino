@@ -287,6 +287,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   jsonSettingsObject["Mode"] = Mode = jsonSettingsObject["Mode"] | Mode;
   jsonSettingsObject["State"] = State = jsonSettingsObject["State"] | State;
   jsonSettingsObject["Fade Time"] = FadeTime = jsonSettingsObject["Fade Time"] | FadeTime;
+  jsonSettingsObject["Brightness"] = brightness = jsonSettingsObject["Brightness"] | brightness;
   
   // Might need to reconnect wifi with Name change
 

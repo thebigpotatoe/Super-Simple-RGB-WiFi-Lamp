@@ -146,6 +146,7 @@ String  Name                  = DEFAULT_NAME;                         // The def
 String  Mode                  = "";                                   // The default Mode of the Device
 bool    State                 = true;                                 // The Default Mode of the Light
 int     FadeTime              = 200;                                  // Fading time between states in ms
+int     brightness            = 150;                                  // Rgw default lever of brightness
 String  currentMode           = Mode;                                 // Placeholder variable for changing mode
 String  previousMode          = "";                                   // Placeholder variable for changing mode
 bool    previousState         = false;                                // Placeholder variable for changing state
