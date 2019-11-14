@@ -1,7 +1,7 @@
 void ledStringInit() {
   // add the leds to fast led and clear them
   FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(ledString, NUM_LEDS);
-  FastLED.clear();
+  FastLED.clear ();
   FastLED.show();
 
   // Set the maximum power draw
@@ -17,7 +17,7 @@ void handleMode() {
     setColour(colourRed, colourGreen, colourBlue);
   }
   else if (currentMode == "Rainbow") {
-    setRainbow(rainbowStartHue, rainbowSpeed);
+    setRainbow(rainbowStartHue, rainbowSpeed, rainbowBri);
   }
   else if (currentMode == "Clock") {
     setClock();
@@ -27,6 +27,9 @@ void handleMode() {
   }
   else if (currentMode == "Night Rider") {
     setNightRider();
+  }
+  else if (currentMode == "Circle") {
+    setCircle();
   }
   else if (currentMode == "Sparkle") {
     setSparkle(sparkleSpeed);
@@ -117,8 +120,6 @@ void handleMode() {
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
 
   // Handle Fast LED
-  brightness = constrain(brightness, 0, 255);
-  FastLED.setBrightness(brightness);
   FastLED.show();
   //  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
@@ -127,20 +128,18 @@ void setColour(int red, int green, int blue) {
   fill_solid(ledString, NUM_LEDS, CRGB(red, green, blue));
 }
 
-void setRainbow(int startHue, int speed) {
+void setRainbow(int startHue, int speed, int brightness) {
   // Constrain the variables before using
   startHue = constrain(startHue, 0, 255);
   speed = speed > 0 ? speed : 0;
-  brightness = constrain(brightness, 0, 255);
+  brightness = constrain(brightness, 0, 255);  
 
-  
   // Update the hue by 1 every 360th of the allocated time
   if (speed > 0) {
     float rainbowDeltaHue = (255 / ((float)speed * 1000)) * 50;
     EVERY_N_MILLISECONDS(50) {
       rainbowAddedHue += rainbowDeltaHue;
       rainbowAddedHue = (rainbowAddedHue > 255) ? rainbowAddedHue - 255 : rainbowAddedHue;
-      ledString[ random16(NUM_LEDS) ] += CRGB::White;
     };
 
     startHue += (int)rainbowAddedHue;
@@ -154,8 +153,9 @@ void setRainbow(int startHue, int speed) {
     currentHue = (currentHue < 255) ? currentHue : currentHue - 255;
     ledString[i] = CHSV( currentHue, 255, 255);
   }
-}
 
+  FastLED.setBrightness(brightness);
+}
 
 void setClock() {
   if (ntpTimeSet) {
@@ -187,7 +187,7 @@ void setClock() {
     int minuteCurrentLEDBrightness = 255 * (1 - minutePercentOfGap);
     int minuteNextLEDBrightness = 255 * (minutePercentOfGap);
 
-    // Clear all the LEDs
+    // Clear all the LED's
     FastLED.clear();
 
     // Set the colour of the LED
@@ -234,24 +234,43 @@ void setBellCurve() {
   }
 }
 
-void setNightRider() {
-  int delayTime = 500 / topNumLeds;
-  EVERY_N_MILLISECONDS(delayTime) {
-    // Set the current LED to Red
-    ledString[topLeds[nightRiderTopLedNumber]] = CRGB(255, 0, 0);
-    ledString[bottomLeds[nightRiderBottomLedNumber]] = CRGB::Red;
-    // Serial.println(nightRiderTopLedNumber);
-    // Serial.println(ledString[topLeds[0]]);
+void setCircle() {
+  // First bring our logical arrays into a list of led numbers to iterate over
+  int i;
+  int ledIter = 0;
+  int leds[NUM_LEDS];
+  for (i = 0; i < bottomNumLeds; i++) {
+    leds[ledIter++] = bottomLeds[i];
+  }
+  for (i = leftNumLeds-1; i >= 0 ; i--) {
+    leds[ledIter++] = leftLeds[i];
+  }
+  for (i = topNumLeds-1; i >= 0 ; i--) {
+    leds[ledIter++] = topLeds[i];
+  }
+  for (i = rightNumLeds-1; i >= 0 ; i--) {
+    leds[ledIter++] = rightLeds[i];
+  }
 
-    // Increment the LED number
-    nightRiderTopLedNumber = nightRiderTopLedNumber + nightRiderTopIncrement;
-    nightRiderBottomLedNumber = nightRiderBottomLedNumber + nightRiderBottomIncrement;
-    if (nightRiderTopLedNumber >= topNumLeds - 1 || nightRiderTopLedNumber <= 0) nightRiderTopIncrement = -nightRiderTopIncrement;
-    if (nightRiderBottomLedNumber >= bottomNumLeds - 1 || nightRiderBottomLedNumber <= 0) nightRiderBottomIncrement = -nightRiderBottomIncrement;
+  // Update the active LED index
+  EVERY_N_MILLISECONDS(40) {
+    circleActiveLedNumber += 1;
+    if (circleActiveLedNumber == NUM_LEDS)
+        circleActiveLedNumber = 0;
 
-    // Start fading all lit leds
-    fadeToBlackBy( ledString, NUM_LEDS, 10);
+    Serial.print("Active number: ");
+    Serial.println(circleActiveLedNumber);
+
+    // Darken all LEDs to slightly dim the previous active LEDs
+    fadeToBlackBy(ledString, NUM_LEDS, 80);
   };
+
+  // And now highlight the active index
+  for (i = 0; i < NUM_LEDS; i++) {
+    if (i == circleActiveLedNumber) {
+      ledString[leds[i]] = CRGB::Red;
+    }
+  }
 }
 
 void setSparkle(int speed) {
@@ -260,10 +279,9 @@ void setSparkle(int speed) {
       sparklePixel = random(NUM_LEDS);
       ledString[sparklePixel] = CRGB(sparkleRed, sparkleGreen, sparkleBlue);
     } 
-    else {
+    else
       ledString[sparklePixel] = CRGB(0, 0, 0);
       sparkleActive = !sparkleActive;
-    }
   }
 }
 
@@ -296,6 +314,26 @@ void setConfetti(int speed) {
       ledString[pos] += CHSV(random8(), random8(), random8());
     }
   }
+}
+
+void setNightRider() {
+  int delayTime = 500 / topNumLeds;
+  EVERY_N_MILLISECONDS(delayTime) {
+    // Set the current LED to Red
+    ledString[topLeds[nightRiderTopLedNumber]] = CRGB(255, 0, 0);
+    ledString[bottomLeds[nightRiderBottomLedNumber]] = CRGB::Red;
+    // Serial.println(nightRiderTopLedNumber);
+    // Serial.println(ledString[topLeds[0]]);
+
+    //  Increment the LED number
+    nightRiderTopLedNumber = nightRiderTopLedNumber + nightRiderTopIncrement;
+    nightRiderBottomLedNumber = nightRiderBottomLedNumber + nightRiderBottomIncrement;
+    if (nightRiderTopLedNumber >= topNumLeds - 1 || nightRiderTopLedNumber <= 0) nightRiderTopIncrement = -nightRiderTopIncrement;
+    if (nightRiderBottomLedNumber >= bottomNumLeds - 1 || nightRiderBottomLedNumber <= 0) nightRiderBottomIncrement = -nightRiderBottomIncrement;
+
+    // Start fading all lit leds
+    fadeToBlackBy( ledString, NUM_LEDS, 10);
+  };
 }
 
 void setVisualiser() {
@@ -348,7 +386,7 @@ void setVisualiser() {
     FFT.Compute(visualiserRealSamples, visualiserImaginarySamples, num_samples, FFT_FORWARD); 
     FFT.ComplexToMagnitude(visualiserRealSamples, visualiserImaginarySamples, num_samples); 
   
-    // ************* Set the LEDs *************
+    // ************* Set the LED's *************
     // Set the colour of each light based on the values calculated
     for (int ledNum = 0; ledNum < topNumLeds; ledNum++) {
       // Map to the bin number, skip all bins required. Start at the second bin to avoid DC

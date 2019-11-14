@@ -216,6 +216,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     "Rainbow": {
       "Hue": 0,
       "Speed": 10,
+      "Brightness": 100
     },
     "Clock": {
       "Epoch" : 24356789,
@@ -235,10 +236,11 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
       "Green": 0,
       "Blue": 0
     },
-    "Night Rider" : {      
-    
+    "Night Rider" : {
     },
-    "Sparkle" : {
+    "Circle" : {
+    },
+	"Sparkle" : {
       "Red": 0,
       "Green": 0,
       "Blue": 0
@@ -250,7 +252,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
       "Blue": 0
       "Speed": 20,
     },
-    "Cofetti" : {
+    "Confetti" : {
       "Red": 0,
       "Green": 0,
       "Blue": 0
@@ -285,7 +287,6 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   jsonSettingsObject["Mode"] = Mode = jsonSettingsObject["Mode"] | Mode;
   jsonSettingsObject["State"] = State = jsonSettingsObject["State"] | State;
   jsonSettingsObject["Fade Time"] = FadeTime = jsonSettingsObject["Fade Time"] | FadeTime;
-  jsonSettingsObject["Brightness"] = brightness = jsonSettingsObject["Brightness"] | brightness;
   
   // Might need to reconnect wifi with Name change
 
@@ -329,6 +330,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   if (rainbowSettings) {
     rainbowSettings["Hue"] = rainbowStartHue = rainbowSettings["Hue"] | rainbowStartHue;
     rainbowSettings["Speed"] = rainbowSpeed = rainbowSettings["Speed"] | rainbowSpeed;
+    rainbowSettings["Brightness"] = rainbowBri = rainbowSettings["Brightness"] | rainbowBri;
   }
 
   // Check for clock settings
@@ -368,6 +370,12 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     // Currently no Night Rider Settings
   }
 
+  // Check for circle settings
+  JsonVariant circleSettings = jsonSettingsObject["Circle"];
+  if (circleSettings) {
+    // Currently no Night Rider Settings
+  }
+  
   // Check for sparkle settings
   JsonVariant sparkleSettings = jsonSettingsObject["Sparkle"];
   if (sparkleSettings) {
@@ -395,7 +403,6 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     confettiSettings["Speed"] = confettiSpeed = confettiSettings["Speed"] | confettiSpeed;
   }
 
-  // Check for visualiser settings
   JsonVariant visualiserSettings = jsonSettingsObject["Visualiser"];
   if (visualiserSettings) {
     visualiserSettings["Period"] = visualiserPeriod = visualiserSettings["Period"] | visualiserPeriod;
