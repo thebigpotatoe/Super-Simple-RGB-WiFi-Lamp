@@ -67,6 +67,9 @@ void setRainbow(int startHue, int speed, int brightness);
 void setClock();
 void setBellCurve();
 void setCircle();
+void setSparkle(int speed);
+void setColorWipe();
+void setConfetti(int speed);
 void setNightRider();
 void setVisualiser();
 // NTP.ino
@@ -182,6 +185,31 @@ int nightRiderBottomIncrement     = 1;
 
 // Circle variables
 int circleActiveLedNumber         = 0;
+
+// Sparkle Mode Variables
+int sparkleSpeed                  = 30;
+bool sparkleActive                = true;
+int sparkleRed                    = 128;
+int sparkleGreen                  = 128;
+int sparkleBlue                   = 128;
+int sparklePixel                  = random(NUM_LEDS);
+
+// Color wipe Variables
+int colorWipePosition             = -1;
+bool TurningOn                    = true;
+int colorWipeRed                  = 255;
+int colorWipeGreen                = 0;
+int colorWipeBlue                 = 255;
+int colorWipeSpeed                = 20;
+
+// Confetti Variables
+bool confettiActive               = true;
+int confettiRed                   = 128;
+int confettiGreen                 = 128;
+int confettiBlue                  = 128;
+int confettiSpeed                 = 100;
+int confettiPixel                 = random(NUM_LEDS);
+int hue                           = 0;
 
 // Visualiser Mode Variables
 #define num_samples 64

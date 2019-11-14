@@ -240,6 +240,24 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
     },
     "Circle" : {
     },
+	"Sparkle" : {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+      "Speed": 30,
+    },
+    "Color Wipe" : {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+      "Speed": 20,
+    },
+    "Confetti" : {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+      "Speed": 100,
+    },
     "Visualiser" : {
       "Period" : 250,
       "MinThreshold" : 100,
@@ -356,6 +374,33 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
   JsonVariant circleSettings = jsonSettingsObject["Circle"];
   if (circleSettings) {
     // Currently no Night Rider Settings
+  }
+  
+  // Check for sparkle settings
+  JsonVariant sparkleSettings = jsonSettingsObject["Sparkle"];
+  if (sparkleSettings) {
+    sparkleSettings["Red"] = sparkleRed = sparkleSettings["Red"] | sparkleRed;
+    sparkleSettings["Green"]= sparkleGreen = sparkleSettings["Green"] | sparkleGreen;
+    sparkleSettings["Blue"] = sparkleBlue = sparkleSettings["Blue"] | sparkleBlue;
+    sparkleSettings["Speed"] = sparkleSpeed = sparkleSettings["Speed"] | sparkleSpeed;
+  }
+
+  // Check for color wipe settings
+  JsonVariant colorWipeSettings = jsonSettingsObject["Color Wipe"];
+  if (colorWipeSettings) {
+    colorWipeSettings["Red"] = colorWipeRed = colorWipeSettings["Red"] | colorWipeRed;
+    colorWipeSettings["Green"]= colorWipeGreen = colorWipeSettings["Green"] | colorWipeGreen;
+    colorWipeSettings["Blue"] = colorWipeBlue = colorWipeSettings["Blue"] | colorWipeBlue;
+    colorWipeSettings["Speed"] = colorWipeSpeed = colorWipeSettings["Speed"] | colorWipeSpeed;
+  }
+
+  // Check for confetti settings
+  JsonVariant confettiSettings = jsonSettingsObject["Confetti"];
+  if (confettiSettings) {
+    confettiSettings["Red"] = confettiRed = confettiSettings["Red"] | confettiRed;
+    confettiSettings["Green"]= confettiGreen = confettiSettings["Green"] | confettiGreen;
+    confettiSettings["Blue"] = confettiBlue = confettiSettings["Blue"] | confettiBlue;
+    confettiSettings["Speed"] = confettiSpeed = confettiSettings["Speed"] | confettiSpeed;
   }
 
   JsonVariant visualiserSettings = jsonSettingsObject["Visualiser"];
