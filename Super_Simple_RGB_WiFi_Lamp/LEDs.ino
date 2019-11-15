@@ -1,7 +1,7 @@
 void ledStringInit() {
   // add the leds to fast led and clear them
   FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(ledString, NUM_LEDS);
-  FastLED.clear();
+  FastLED.clear ();
   FastLED.show();
 
   // Set the maximum power draw
@@ -17,7 +17,7 @@ void handleMode() {
     setColour(colourRed, colourGreen, colourBlue);
   }
   else if (currentMode == "Rainbow") {
-    setRainbow(rainbowStartHue, rainbowSpeed);
+    setRainbow(rainbowStartHue, rainbowSpeed, rainbowBri);
   }
   else if (currentMode == "Clock") {
     setClock();
@@ -122,18 +122,17 @@ void handleMode() {
   // Handle Fast LED
   FastLED.show();
   //  FastLED.delay(1000 / FRAMES_PER_SECOND);
-  brightness = constrain(brightness, 0, 255); 
-  FastLED.setBrightness(brightness); 
 }
 
 void setColour(int red, int green, int blue) {
   fill_solid(ledString, NUM_LEDS, CRGB(red, green, blue));
 }
 
-void setRainbow(int startHue, int speed) {
+void setRainbow(int startHue, int speed, int brightness) {
   // Constrain the variables before using
   startHue = constrain(startHue, 0, 255);
   speed = speed > 0 ? speed : 0;
+  brightness = constrain(brightness, 0, 255);  
 
   // Update the hue by 1 every 360th of the allocated time
   if (speed > 0) {
@@ -154,6 +153,8 @@ void setRainbow(int startHue, int speed) {
     currentHue = (currentHue < 255) ? currentHue : currentHue - 255;
     ledString[i] = CHSV( currentHue, 255, 255);
   }
+
+  FastLED.setBrightness(brightness);
 }
 
 void setClock() {
