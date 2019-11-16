@@ -31,6 +31,15 @@ void handleMode() {
   else if (currentMode == "Circle") {
     setCircle();
   }
+  else if (currentMode == "Sparkle") {
+    setSparkle(sparkleSpeed);
+  }
+  else if (currentMode == "Color Wipe") {
+    setColorWipe();
+  }
+  else if (currentMode == "Confetti") {
+    setConfetti(confettiSpeed);
+  }
   else if ( currentMode == "Visualiser" ) {
     setVisualiser();
   }
@@ -260,6 +269,49 @@ void setCircle() {
   for (i = 0; i < NUM_LEDS; i++) {
     if (i == circleActiveLedNumber) {
       ledString[leds[i]] = CRGB::Red;
+    }
+  }
+}
+
+void setSparkle(int speed) {
+  EVERY_N_MILLISECONDS(sparkleSpeed) {
+    if (sparkleActive) {
+      sparklePixel = random(NUM_LEDS);
+      ledString[sparklePixel] = CRGB(sparkleRed, sparkleGreen, sparkleBlue);
+    } 
+    else
+      ledString[sparklePixel] = CRGB(0, 0, 0);
+      sparkleActive = !sparkleActive;
+  }
+}
+
+void setColorWipe() {
+  EVERY_N_MILLISECONDS(colorWipeSpeed) {
+    colorWipePosition++;
+    if (TurningOn) {
+      fill_solid(ledString, colorWipePosition, CRGB(colorWipeRed, colorWipeGreen, colorWipeBlue));
+      if (colorWipePosition == NUM_LEDS) {
+        TurningOn = false;
+        colorWipePosition = -1;
+      }
+    }
+    else {
+      fill_solid(ledString, colorWipePosition, CRGB( 0, 0, 0));
+      if (colorWipePosition == NUM_LEDS) {
+        TurningOn = true;
+        colorWipePosition = -1;
+      }
+    }
+  }
+}
+
+void setConfetti(int speed) {
+  EVERY_N_MILLISECONDS(confettiSpeed) {
+    if (confettiActive) {
+      confettiPixel = random(NUM_LEDS);
+      fadeToBlackBy(ledString, NUM_LEDS, 10);
+      uint8_t pos = random8(NUM_LEDS);
+      ledString[pos] += CHSV(random8(), random8(), random8());
     }
   }
 }
