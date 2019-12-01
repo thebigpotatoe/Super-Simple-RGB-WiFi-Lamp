@@ -63,14 +63,14 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
 void ledStringInit();
 void handleMode();
 void adjustBrightness();
-void setColour(int red, int green, int blue);
-void setRainbow(int startHue, int speed, int brightness);
+void setColour();
+void setRainbow();
 void setClock();
 void setBellCurve();
 void setCircle();
-void setSparkle(int speed);
+void setSparkle();
 void setColorWipe();
-void setConfetti(int speed);
+void setConfetti();
 void setNightRider();
 void setVisualiser();
 // NTP.ino

@@ -14,10 +14,10 @@ void ledStringInit() {
 void handleMode() {
   // Adapt the leds to the current mode
   if (currentMode == "Colour") {
-    setColour(colourRed, colourGreen, colourBlue);
+    setColour();
   }
   else if (currentMode == "Rainbow") {
-    setRainbow(rainbowStartHue, rainbowSpeed, rainbowBri);
+    setRainbow();
   }
   else if (currentMode == "Clock") {
     setClock();
@@ -32,13 +32,13 @@ void handleMode() {
     setCircle();
   }
   else if (currentMode == "Sparkle") {
-    setSparkle(sparkleSpeed);
+    setSparkle();
   }
   else if (currentMode == "Color Wipe") {
     setColorWipe();
   }
   else if (currentMode == "Confetti") {
-    setConfetti(confettiSpeed);
+    setConfetti();
   }
   else if ( currentMode == "Visualiser" ) {
     setVisualiser();
@@ -128,11 +128,15 @@ void adjustBrightness() {
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
 }
 
-void setColour(int red, int green, int blue) {
-  fill_solid(ledString, NUM_LEDS, CRGB(red, green, blue));
+void setColour() {
+  fill_solid(ledString, NUM_LEDS, CRGB(colourRed, colourGreen, colourBlue));
 }
 
-void setRainbow(int startHue, int speed, int brightness) {
+void setRainbow() {
+  int startHue = rainbowStartHue;
+  int speed = rainbowSpeed;
+  int brightness = rainbowBri;
+
   // Constrain the variables before using
   startHue = constrain(startHue, 0, 255);
   speed = speed > 0 ? speed : 0;
@@ -277,12 +281,12 @@ void setCircle() {
   }
 }
 
-void setSparkle(int speed) {
+void setSparkle() {
   EVERY_N_MILLISECONDS(sparkleSpeed) {
     if (sparkleActive) {
       sparklePixel = random(NUM_LEDS);
       ledString[sparklePixel] = CRGB(sparkleRed, sparkleGreen, sparkleBlue);
-    } 
+    }
     else
       ledString[sparklePixel] = CRGB(0, 0, 0);
       sparkleActive = !sparkleActive;
@@ -309,7 +313,7 @@ void setColorWipe() {
   }
 }
 
-void setConfetti(int speed) {
+void setConfetti() {
   EVERY_N_MILLISECONDS(confettiSpeed) {
     if (confettiActive) {
       confettiPixel = random(NUM_LEDS);
