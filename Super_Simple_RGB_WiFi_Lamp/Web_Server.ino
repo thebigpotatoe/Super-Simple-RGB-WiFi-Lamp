@@ -352,6 +352,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        newBlue = jsonMessage.Blue\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
+  restServer.sendContent_P(PSTR("                setPickerColor(colorWipeSelectButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -469,6 +470,16 @@ void servePage() {
   restServer.sendContent_P(PSTR("                console.warn(\"Websockets are closed\")\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }       \n"));
+  restServer.sendContent_P(PSTR("\n"));
+  restServer.sendContent_P(PSTR("        function setPickerColor(picker, r, g, b) {\n"));
+  restServer.sendContent_P(PSTR("            var rgb_color = 'rgb('+r+', '+g+', '+b+')';\n"));
+  restServer.sendContent_P(PSTR("            picker.val(rgb_color);\n"));
+  restServer.sendContent_P(PSTR("            picker.colorPicker.color.setColor(rgb_color);\n"));
+  restServer.sendContent_P(PSTR("            picker.css({\n"));
+  restServer.sendContent_P(PSTR("               backgroundColor: rgb_color,\n"));
+  restServer.sendContent_P(PSTR("               color: picker.colorPicker.color.colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
+  restServer.sendContent_P(PSTR("            }).text(rgb_color);\n"));
+  restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("    </script>\n"));
   restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("</head>\n"));
@@ -1219,7 +1230,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                var colorWipeBlue = 0\n"));
   restServer.sendContent_P(PSTR("                var colorWipeDebunce = Date.now()\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                $('#colorWipeSelectButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                var colorWipeSelectButton = $('#colorWipeSelectButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                    customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                    margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                    doRender: 'div div',\n"));
@@ -1244,10 +1255,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                        onColorWipeButtonEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                        this.$colorPatch.css({\n"));
-  restServer.sendContent_P(PSTR("                            backgroundColor: '#' + colors.HEX,\n"));
-  restServer.sendContent_P(PSTR("                            color: colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
-  restServer.sendContent_P(PSTR("                        }).text(this.color.toString($elm._colorMode)); // $elm.val();\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(colorWipeSelectButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                })\n"));
   restServer.sendContent_P(PSTR("\n"));
