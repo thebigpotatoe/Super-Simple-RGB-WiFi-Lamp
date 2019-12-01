@@ -1,5 +1,13 @@
 class ModeColorWipe : public ModeBase
 {
+private:
+    int colorWipePosition             = -1;
+    bool TurningOn                    = true;
+    int colorWipeRed                  = 255;
+    int colorWipeGreen                = 0;
+    int colorWipeBlue                 = 255;
+    int colorWipeSpeed                = 20;
+
 public:
     ModeColorWipe() {}
     virtual void render() {

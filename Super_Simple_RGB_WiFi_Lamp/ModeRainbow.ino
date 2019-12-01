@@ -1,5 +1,10 @@
 class ModeRainbow : public ModeBase
 {
+private:
+    int rainbowStartHue   = 0;
+    int rainbowSpeed      = 10;
+    int rainbowBri        = 100;
+    float rainbowAddedHue = 0;
 public:
     ModeRainbow() {}
     virtual void render() {

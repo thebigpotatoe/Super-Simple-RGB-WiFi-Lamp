@@ -1,5 +1,9 @@
 class ModeColour : public ModeBase
 {
+private:
+    int colourRed   = 128;
+    int colourGreen = 128;
+    int colourBlue  = 128;
 public:
     ModeColour() {}
     virtual void render() {

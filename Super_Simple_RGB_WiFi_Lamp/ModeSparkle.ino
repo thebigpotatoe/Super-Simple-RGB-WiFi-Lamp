@@ -1,5 +1,13 @@
 class ModeSparkle : public ModeBase
 {
+
+private:
+    int sparkleSpeed   = 30;
+    bool sparkleActive = true;
+    int sparkleRed     = 128;
+    int sparkleGreen   = 128;
+    int sparkleBlue    = 128;
+    int sparklePixel   = random(NUM_LEDS);
 public:
     ModeSparkle() {}
     virtual void render() {

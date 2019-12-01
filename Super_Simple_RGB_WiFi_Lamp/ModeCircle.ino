@@ -1,5 +1,7 @@
 class ModeCircle : public ModeBase
 {
+private:
+    int circleActiveLedNumber = 0;
 public:
     ModeCircle() {}
     virtual void render() {

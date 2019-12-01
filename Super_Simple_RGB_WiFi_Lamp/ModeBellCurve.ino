@@ -1,5 +1,9 @@
 class ModeBellCurve : public ModeBase
 {
+private:
+    int bellCurveRed   = 128;
+    int bellCurveGreen = 128;
+    int bellCurveBlue  = 128;
 public:
     ModeBellCurve() {}
     virtual void render() {

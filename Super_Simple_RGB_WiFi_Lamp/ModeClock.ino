@@ -1,5 +1,14 @@
 class ModeClock : public ModeBase
 {
+private:
+    int clockHourRed                 = 128;
+    int clockHourGreen               = 128;
+    int clockHourBlue                = 128;
+    int clockMinRed                  = 128;
+    int clockMinGreen                = 128;
+    int clockMinBlue                 = 128;
+    int clockOnPauseBrightness       = 255;
+    unsigned long lastClockExecution = 0;
 public:
     ModeClock() {}
     virtual void render() {

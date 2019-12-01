@@ -1,5 +1,10 @@
 class ModeNightRider : public ModeBase
 {
+private:
+    int nightRiderTopLedNumber    = 0;
+    int nightRiderBottomLedNumber = 0;
+    int nightRiderTopIncrement    = 1;
+    int nightRiderBottomIncrement = 1;
 public:
     ModeNightRider() {}
     virtual void render() {
