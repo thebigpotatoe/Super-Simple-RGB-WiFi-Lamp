@@ -44,6 +44,14 @@ void handleMode() {
     setVisualiser();
   }
 
+  adjustBrightness();
+
+  // Handle Fast LED
+  FastLED.show();
+  //  FastLED.delay(1000 / FRAMES_PER_SECOND);
+}
+
+void adjustBrightness() {
   // Adjust the brightness depending on the mode
   if (autoOnWithModeChange || State) {
     if (Mode != currentMode) {
@@ -79,9 +87,9 @@ void handleMode() {
         // Set the currentMode to Mode
         previousMode = currentMode;
       }
-    } 
+    }
   }
-  
+
   // Adjust the brightness depending on the state
   if (!State && previousState) {
     // Turn Lights off slowly
@@ -92,7 +100,7 @@ void handleMode() {
       };
     }
     else {
-      // Debug 
+      // Debug
       Serial.println("[handleMode] - LED's turned off");
 
       // Set the previous state
@@ -100,28 +108,24 @@ void handleMode() {
     }
   }
   else if (State && !previousState) {
-      // Turn on light slowly
-      if (modeChangeFadeAmount < 255) {
-        EVERY_N_MILLISECONDS(20) {
-          modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
-          modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
-        };
-      }
-      else {
-        // Debug 
-        Serial.println("[handleMode] - LED's turned on");
+    // Turn on light slowly
+    if (modeChangeFadeAmount < 255) {
+      EVERY_N_MILLISECONDS(20) {
+        modeChangeFadeAmount += (FadeTime > 0) ? (255 / ((float)FadeTime/20)) : 255;
+        modeChangeFadeAmount = constrain(modeChangeFadeAmount, 0, 255);
+      };
+    }
+    else {
+      // Debug 
+      Serial.println("[handleMode] - LED's turned on");
 
-        // Set the previous values
-        previousState = true;
-      }
-    } 
+      // Set the previous values
+      previousState = true;
+    }
+  }
 
   // Globally Scale the brightness of all LED's
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
-
-  // Handle Fast LED
-  FastLED.show();
-  //  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
 
 void setColour(int red, int green, int blue) {

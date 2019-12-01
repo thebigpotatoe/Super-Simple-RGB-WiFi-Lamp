@@ -62,6 +62,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
 // LEDs.ino
 void ledStringInit();
 void handleMode();
+void adjustBrightness();
 void setColour(int red, int green, int blue);
 void setRainbow(int startHue, int speed, int brightness);
 void setClock();
