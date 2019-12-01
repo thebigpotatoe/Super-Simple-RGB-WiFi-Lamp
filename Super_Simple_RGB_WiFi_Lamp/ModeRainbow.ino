@@ -1,33 +1,37 @@
-void renderModeRainbow() {
-  int startHue = rainbowStartHue;
-  int speed = rainbowSpeed;
-  int brightness = rainbowBri;
+class ModeRainbow : public ModeBase
+{
+public:
+    ModeRainbow() {}
+    virtual void render() {
+        int startHue = rainbowStartHue;
+        int speed = rainbowSpeed;
+        int brightness = rainbowBri;
 
-  // Constrain the variables before using
-  startHue = constrain(startHue, 0, 255);
-  speed = speed > 0 ? speed : 0;
-  brightness = constrain(brightness, 0, 255);  
+        // Constrain the variables before using
+        startHue = constrain(startHue, 0, 255);
+        speed = speed > 0 ? speed : 0;
+        brightness = constrain(brightness, 0, 255);  
 
-  // Update the hue by 1 every 360th of the allocated time
-  if (speed > 0) {
-    float rainbowDeltaHue = (255 / ((float)speed * 1000)) * 50;
-    EVERY_N_MILLISECONDS(50) {
-      rainbowAddedHue += rainbowDeltaHue;
-      rainbowAddedHue = (rainbowAddedHue > 255) ? rainbowAddedHue - 255 : rainbowAddedHue;
-    };
+        // Update the hue by 1 every 360th of the allocated time
+        if (speed > 0) {
+          float rainbowDeltaHue = (255 / ((float)speed * 1000)) * 50;
+          EVERY_N_MILLISECONDS(50) {
+            rainbowAddedHue += rainbowDeltaHue;
+            rainbowAddedHue = (rainbowAddedHue > 255) ? rainbowAddedHue - 255 : rainbowAddedHue;
+          };
 
-    startHue += (int)rainbowAddedHue;
-  }
+          startHue += (int)rainbowAddedHue;
+        }
 
-  // Calculate the rainbow so it lines up
-  float deltaHue = (float)255/(float)NUM_LEDS;
-  float currentHue = startHue;
-  for (int i = 0; i < NUM_LEDS; i++) {
-    currentHue = startHue + (float)(deltaHue*i);
-    currentHue = (currentHue < 255) ? currentHue : currentHue - 255;
-    ledString[i] = CHSV( currentHue, 255, 255);
-  }
+        // Calculate the rainbow so it lines up
+        float deltaHue = (float)255/(float)NUM_LEDS;
+        float currentHue = startHue;
+        for (int i = 0; i < NUM_LEDS; i++) {
+          currentHue = startHue + (float)(deltaHue*i);
+          currentHue = (currentHue < 255) ? currentHue : currentHue - 255;
+          ledString[i] = CHSV( currentHue, 255, 255);
+        }
 
-  FastLED.setBrightness(brightness);
-}
-
+        FastLED.setBrightness(brightness);
+    }
+};

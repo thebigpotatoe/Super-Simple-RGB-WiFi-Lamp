@@ -54,8 +54,13 @@ String SSID = "";
 String Password = "";
 // ########################################################## End of Sketch Variables ##########################################################
 
-typedef void (*ModeFunction)(void);
-std::map<String, ModeFunction> modes;
+class ModeBase
+{
+public:
+    virtual void render();
+};
+
+std::map<String, ModeBase*> modes;
 
 // In some cases the automatic creation of the prototypes does not work. Do it manually...
 // Config.ino
@@ -69,16 +74,6 @@ void ledStringInit();
 void ledModeInit();
 void handleMode();
 void adjustBrightness();
-void renderModeColour();
-void renderModeRainbow();
-void renderModeClock();
-void renderModeBellCurve();
-void renderModeCircle();
-void renderModeSparkle();
-void renderModeColorWipe();
-void renderModeConfetti();
-void renderModeNightRider();
-void renderModeVisualiser();
 // NTP.ino
 void handleNTP();
 bool getNTPServerIP(const char *_ntpServerName, IPAddress &_ntpServerIp);

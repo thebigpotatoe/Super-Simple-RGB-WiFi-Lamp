@@ -1,19 +1,3 @@
-void ledModeInit() {
-  // All modes need to register their mode rendering function here
-  // TODO: Would be nice to have a structure where the modes can register
-  // on their own, without the need to update the modes structure here.
-  modes.emplace("Colour", &renderModeColour);
-  modes.emplace("Rainbow", &renderModeRainbow);
-  modes.emplace("Clock", &renderModeClock);
-  modes.emplace("Bell Curve", &renderModeBellCurve);
-  modes.emplace("Night Rider", &renderModeNightRider);
-  modes.emplace("Circle", &renderModeCircle);
-  modes.emplace("Sparkle", &renderModeSparkle);
-  modes.emplace("Color Wipe", &renderModeColorWipe);
-  modes.emplace("Confetti", &renderModeConfetti);
-  modes.emplace("Visualiser", &renderModeVisualiser);
-}
-
 void ledStringInit() {
   // add the leds to fast led and clear them
   FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(ledString, NUM_LEDS);
@@ -32,9 +16,11 @@ void handleMode() {
   auto iter = modes.find(Mode);
   if (iter == modes.end()) {
     // not found
-    Serial.println("[handleMode] - Mode \"" + Mode + "\" not found");
+    Serial.println("[handleMode] - Mode \"" + Mode + "\" not found, resetting to default");
+    Mode = "";
+    return;
   }
-  (*iter->second)();
+  iter->second->render();
 
   adjustBrightness();
 
