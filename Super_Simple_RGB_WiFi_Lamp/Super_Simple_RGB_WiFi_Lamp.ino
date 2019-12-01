@@ -17,6 +17,8 @@
 #include "arduinoFFT.h"
 #include "lwip/inet.h"
 #include "lwip/dns.h"
+#include <map>
+
 
 // ############################################################# Sketch Variables #############################################################
 // All variables at the top of this sketch need to be defined correctly for your light. Read the comments around each one for more details on 
@@ -52,6 +54,9 @@ String SSID = "";
 String Password = "";
 // ########################################################## End of Sketch Variables ##########################################################
 
+typedef void (*ModeFunction)(void);
+std::map<String, ModeFunction> modes;
+
 // In some cases the automatic creation of the prototypes does not work. Do it manually...
 // Config.ino
 bool checkFlashConfig();
@@ -61,6 +66,7 @@ void saveConfigItem(JsonDocument& jsonSetting);
 void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
 // LEDs.ino
 void ledStringInit();
+void ledModeInit();
 void handleMode();
 void adjustBrightness();
 void setColour();
@@ -241,6 +247,7 @@ void setup() {
   if (spiffsCorrectSize) {
     // Init the LED's
     ledStringInit();
+    ledModeInit();
 
     // Get saved settings
     getConfig();

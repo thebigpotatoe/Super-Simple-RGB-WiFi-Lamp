@@ -1,3 +1,19 @@
+void ledModeInit() {
+  // All modes need to register their mode rendering function here
+  // TODO: Would be nice to have a structure where the modes can register
+  // on their own, without the need to update the modes structure here.
+  modes.emplace("Colour", &setColour);
+  modes.emplace("Rainbow", &setRainbow);
+  modes.emplace("Clock", &setClock);
+  modes.emplace("Bell Curve", &setBellCurve);
+  modes.emplace("Night Rider", &setNightRider);
+  modes.emplace("Circle", &setCircle);
+  modes.emplace("Sparkle", &setSparkle);
+  modes.emplace("Color Wipe", &setColorWipe);
+  modes.emplace("Confetti", &setConfetti);
+  modes.emplace("Visualiser", &setVisualiser);
+}
+
 void ledStringInit() {
   // add the leds to fast led and clear them
   FastLED.addLeds<CHIPSET, DATA_PIN, COLOR_ORDER>(ledString, NUM_LEDS);
@@ -5,7 +21,7 @@ void ledStringInit() {
   FastLED.show();
 
   // Set the maximum power draw
-  // FastLED.setMaxPowerInVoltsAndMilliamps(5,1000); 
+  // FastLED.setMaxPowerInVoltsAndMilliamps(5,1000);
 
   // Debug
   Serial.println("[handleMode] - LED string was set up correctly");
@@ -13,36 +29,12 @@ void ledStringInit() {
 
 void handleMode() {
   // Adapt the leds to the current mode
-  if (currentMode == "Colour") {
-    setColour();
+  auto iter = modes.find(Mode);
+  if (iter == modes.end()) {
+    // not found
+    Serial.println("[handleMode] - Mode \"" + Mode + "\" not found");
   }
-  else if (currentMode == "Rainbow") {
-    setRainbow();
-  }
-  else if (currentMode == "Clock") {
-    setClock();
-  }
-  else if (currentMode == "Bell Curve") {
-    setBellCurve();
-  }
-  else if (currentMode == "Night Rider") {
-    setNightRider();
-  }
-  else if (currentMode == "Circle") {
-    setCircle();
-  }
-  else if (currentMode == "Sparkle") {
-    setSparkle();
-  }
-  else if (currentMode == "Color Wipe") {
-    setColorWipe();
-  }
-  else if (currentMode == "Confetti") {
-    setConfetti();
-  }
-  else if ( currentMode == "Visualiser" ) {
-    setVisualiser();
-  }
+  (*iter->second)();
 
   adjustBrightness();
 
