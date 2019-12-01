@@ -2,16 +2,16 @@ void ledModeInit() {
   // All modes need to register their mode rendering function here
   // TODO: Would be nice to have a structure where the modes can register
   // on their own, without the need to update the modes structure here.
-  modes.emplace("Colour", &setColour);
-  modes.emplace("Rainbow", &setRainbow);
-  modes.emplace("Clock", &setClock);
-  modes.emplace("Bell Curve", &setBellCurve);
-  modes.emplace("Night Rider", &setNightRider);
-  modes.emplace("Circle", &setCircle);
-  modes.emplace("Sparkle", &setSparkle);
-  modes.emplace("Color Wipe", &setColorWipe);
-  modes.emplace("Confetti", &setConfetti);
-  modes.emplace("Visualiser", &setVisualiser);
+  modes.emplace("Colour", &renderModeColour);
+  modes.emplace("Rainbow", &renderModeRainbow);
+  modes.emplace("Clock", &renderModeClock);
+  modes.emplace("Bell Curve", &renderModeBellCurve);
+  modes.emplace("Night Rider", &renderModeNightRider);
+  modes.emplace("Circle", &renderModeCircle);
+  modes.emplace("Sparkle", &renderModeSparkle);
+  modes.emplace("Color Wipe", &renderModeColorWipe);
+  modes.emplace("Confetti", &renderModeConfetti);
+  modes.emplace("Visualiser", &renderModeVisualiser);
 }
 
 void ledStringInit() {
@@ -120,11 +120,11 @@ void adjustBrightness() {
   nscale8(ledString, NUM_LEDS, (int)modeChangeFadeAmount);
 }
 
-void setColour() {
+void renderModeColour() {
   fill_solid(ledString, NUM_LEDS, CRGB(colourRed, colourGreen, colourBlue));
 }
 
-void setRainbow() {
+void renderModeRainbow() {
   int startHue = rainbowStartHue;
   int speed = rainbowSpeed;
   int brightness = rainbowBri;
@@ -157,7 +157,7 @@ void setRainbow() {
   FastLED.setBrightness(brightness);
 }
 
-void setClock() {
+void renderModeClock() {
   if (ntpTimeSet) {
     // Get the number of seconds between each LED
     int hourLedDeltaT = 43200 / (topNumLeds);
@@ -218,7 +218,7 @@ void setClock() {
   }
 }
 
-void setBellCurve() {
+void renderModeBellCurve() {
   // Set the top brightness
   for (int i = 0; i < topNumLeds; i++) {
     int ledNrightness = cubicwave8( ( 255 / (float)topNumLeds  ) * i );
@@ -234,7 +234,7 @@ void setBellCurve() {
   }
 }
 
-void setCircle() {
+void renderModeCircle() {
   // First bring our logical arrays into a list of led numbers to iterate over
   int i;
   int ledIter = 0;
@@ -273,7 +273,7 @@ void setCircle() {
   }
 }
 
-void setSparkle() {
+void renderModeSparkle() {
   EVERY_N_MILLISECONDS(sparkleSpeed) {
     if (sparkleActive) {
       sparklePixel = random(NUM_LEDS);
@@ -285,7 +285,7 @@ void setSparkle() {
   }
 }
 
-void setColorWipe() {
+void renderModeColorWipe() {
   EVERY_N_MILLISECONDS(colorWipeSpeed) {
     colorWipePosition++;
     if (TurningOn) {
@@ -305,7 +305,7 @@ void setColorWipe() {
   }
 }
 
-void setConfetti() {
+void renderModeConfetti() {
   EVERY_N_MILLISECONDS(confettiSpeed) {
     if (confettiActive) {
       confettiPixel = random(NUM_LEDS);
@@ -316,7 +316,7 @@ void setConfetti() {
   }
 }
 
-void setNightRider() {
+void renderModeNightRider() {
   int delayTime = 500 / topNumLeds;
   EVERY_N_MILLISECONDS(delayTime) {
     // Set the current LED to Red
@@ -336,7 +336,7 @@ void setNightRider() {
   };
 }
 
-void setVisualiser() {
+void renderModeVisualiser() {
   // Only use visualiser when not trying to access the NTP server
   if (((WiFi.isConnected() && ntpTimeSet) || softApStarted) && !webSocketConnecting) {
     // ************* ADC Reading *************
