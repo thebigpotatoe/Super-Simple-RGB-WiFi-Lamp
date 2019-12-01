@@ -34,4 +34,10 @@ public:
 
         FastLED.setBrightness(brightness);
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        settings["Hue"] = rainbowStartHue = settings["Hue"] | rainbowStartHue;
+        settings["Speed"] = rainbowSpeed = settings["Speed"] | rainbowSpeed;
+        settings["Brightness"] = rainbowBri = settings["Brightness"] | rainbowBri;
+    }
 };

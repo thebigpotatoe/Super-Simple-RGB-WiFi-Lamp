@@ -62,4 +62,25 @@ public:
             clockOnPauseBrightness += 1;
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        if (settings.containsKey("Epoch")){
+            settings["Epoch"]  = currentEpochTime = settings["Epoch"] | currentEpochTime;
+            setTime(currentEpochTime);
+        }
+
+        JsonVariant hourColourSettings = settings["hourColour"];
+        if (hourColourSettings) {
+            hourColourSettings["Red"] = clockHourRed = hourColourSettings["Red"] | clockHourRed;
+            hourColourSettings["Green"] = clockHourGreen = hourColourSettings["Green"] | clockHourGreen;
+            hourColourSettings["Blue"] = clockHourBlue = hourColourSettings["Blue"] | clockHourBlue;
+        }
+
+        JsonVariant minColourSettings = settings["minColour"];
+        if (minColourSettings) {
+            minColourSettings["Red"] = clockMinRed = minColourSettings["Red"] | clockMinRed;
+            minColourSettings["Green"] = clockMinGreen = minColourSettings["Green"] | clockMinGreen;
+            minColourSettings["Blue"]  = clockMinBlue = minColourSettings["Blue"] | clockMinBlue;
+        }
+    }
 };

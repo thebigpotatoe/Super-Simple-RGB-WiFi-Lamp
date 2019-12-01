@@ -21,4 +21,8 @@ public:
           fadeToBlackBy( ledString, NUM_LEDS, 10);
         };
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+
+    }
 };

@@ -21,4 +21,11 @@ public:
             }
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        settings["Red"] = colorWipeRed = settings["Red"] | colorWipeRed;
+        settings["Green"]= colorWipeGreen = settings["Green"] | colorWipeGreen;
+        settings["Blue"] = colorWipeBlue = settings["Blue"] | colorWipeBlue;
+        settings["Speed"] = colorWipeSpeed = settings["Speed"] | colorWipeSpeed;
+    }
 };

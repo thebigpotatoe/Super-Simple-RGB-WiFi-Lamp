@@ -58,6 +58,7 @@ class ModeBase
 {
 public:
     virtual void render();
+    virtual void applyConfig(JsonVariant& settings);
 };
 
 std::map<String, ModeBase*> modes;
@@ -206,12 +207,11 @@ int colorWipeSpeed                = 20;
 
 // Confetti Variables
 bool confettiActive               = true;
-int confettiRed                   = 128;
-int confettiGreen                 = 128;
-int confettiBlue                  = 128;
+//int confettiRed                   = 128;
+//int confettiGreen                 = 128;
+//int confettiBlue                  = 128;
 int confettiSpeed                 = 100;
 int confettiPixel                 = random(NUM_LEDS);
-int hue                           = 0;
 
 // Visualiser Mode Variables
 #define num_samples 64

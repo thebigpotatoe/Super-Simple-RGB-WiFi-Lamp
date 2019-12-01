@@ -17,4 +17,10 @@ public:
           ledString[bottomLeds[i]] %= ledNrightness;
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        settings["Red"] = bellCurveRed = settings["Red"] | bellCurveRed;
+        settings["Green"]= bellCurveGreen = settings["Green"] | bellCurveGreen;
+        settings["Blue"] = bellCurveBlue = settings["Blue"] | bellCurveBlue;
+    }
 };

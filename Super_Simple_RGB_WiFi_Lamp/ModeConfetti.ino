@@ -12,4 +12,12 @@ public:
           }
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        // Are not used
+        //settings["Red"] = confettiRed = settings["Red"] | confettiRed;
+        //settings["Green"]= confettiGreen = settings["Green"] | confettiGreen;
+        //settings["Blue"] = confettiBlue = settings["Blue"] | confettiBlue;
+        settings["Speed"] = confettiSpeed = settings["Speed"] | confettiSpeed;
+    }
 };

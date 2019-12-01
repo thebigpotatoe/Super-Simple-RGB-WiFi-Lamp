@@ -101,4 +101,13 @@ public:
           delay(1000);
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        settings["Period"] = visualiserPeriod = settings["Period"] | visualiserPeriod;
+        settings["MinThreshold"] = visualiserMinThreshold = settings["MinThreshold"] | visualiserMinThreshold;
+        settings["MaxThreshold"] = visualiserMaxThreshold = settings["MaxThreshold"] | visualiserMaxThreshold;
+        settings["FadeUp"] = visualiserFadeUp = settings["FadeUp"] | visualiserFadeUp;
+        settings["FadeDown"] = visualiserFadeDown = settings["FadeDown"] | visualiserFadeDown;
+        settings["HueOffset"] = visualiserHueOffset = settings["HueOffset"] | visualiserHueOffset;
+    }
 };

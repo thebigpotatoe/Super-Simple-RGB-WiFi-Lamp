@@ -14,4 +14,11 @@ public:
             sparkleActive = !sparkleActive;
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+        settings["Red"] = sparkleRed = settings["Red"] | sparkleRed;
+        settings["Green"]= sparkleGreen = settings["Green"] | sparkleGreen;
+        settings["Blue"] = sparkleBlue = settings["Blue"] | sparkleBlue;
+        settings["Speed"] = sparkleSpeed = settings["Speed"] | sparkleSpeed;
+    }
 };

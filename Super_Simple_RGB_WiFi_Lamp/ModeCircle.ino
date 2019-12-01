@@ -40,4 +40,8 @@ public:
           }
         }
     }
+
+    virtual void applyConfig(JsonVariant& settings) {
+
+    }
 };
