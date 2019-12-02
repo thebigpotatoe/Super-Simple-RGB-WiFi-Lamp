@@ -544,7 +544,7 @@
             <h1>Mode: <span id="currentModeLabel"></span></h1>
             <div class="col mb-4">
                 <label for="fadeTime">Fade Time: <span id="fadeTimeLabel">200</span> milliseconds</label>
-                <input id="fadeTime" type="range" min="0" max="2000" step="100" value="200" class="form-control-range">
+                <input id="fadeTime" type="range" min="0" max="2000" step="100" value="200" class="form-control-range custom-range">
             </div>
             <button id="stateButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light" value="OFF">Turn
                 ON</button>
@@ -783,16 +783,16 @@
                 brightness of the light</p>
             <div>
                 <label for="rainbowHue">Start Hue: <span id="rainbowHueLabel">0</span> Degrees</label>
-                <input id="rainbowHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range">
+                <input id="rainbowHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range custom-range">
             </div>
             <div>
                 <label for="rainbowBrightness">Rainbow Brightness: <span id="rainbowBrightnessLabel">100</span>%</label>
                 <input id="rainbowBrightness" type="range" min="0" max="100" step="1" value="100"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <div>
                 <label for="rainbowSpeed">Rainbow Speed: <span id="rainbowSpeedLabel">10</span> seconds</label>
-                <input id="rainbowSpeed" type="range" min="0" max="10" step="1" value="10" class="form-control-range">
+                <input id="rainbowSpeed" type="range" min="0" max="10" step="1" value="10" class="form-control-range custom-range">
             </div>
             <script>
                 var rainbowDebunce = Date.now()
@@ -1355,36 +1355,36 @@
                 <label for="visualiserPeriod"><b>Frequency Range</b>: <span
                         id="visualiserPeriodLabel">2000</span>Hz</label>
                 <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span
                         id="visualiserMinThresholdLabel">100</span></label>
                 <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span
                         id="visualiserMaxThresholdLabel">750</span></label>
                 <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserFadeUp"><b>Fade Up Delay</b>: <span id="visualiserFadeUpLabel">32</span></label>
                 <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span
                         id="visualiserFadeDownLabel">32</span></label>
                 <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserHueOffset"><b>Hue Offset</b>: <span
                         id="visualiserHueOffsetLabel">170</span></label>
                 <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170"
-                    class="form-control-range">
+                    class="form-control-range custom-range">
             </div>
             <h6 class="pt-4">Variable Description</h6>
             <ul>
