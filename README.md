@@ -1,6 +1,14 @@
 # Super Simple RGB WiFi Lamp
 [![Super Simple RGB WiFi Lamp](http://img.youtube.com/vi/WLXLV6ASLJM/0.jpg)](https://www.youtube.com/watch?v=WLXLV6ASLJM)
- 
+
+## A Big Thank You to Our Contributors
+A special thank you to those who have contributed to this project! Without you it would not what it is now.
+- [StefaanVanDooren](https://github.com/StefaanVanDooren)
+- [LarsMichelsen](https://github.com/LarsMichelsen)
+- [Phantisy](https://github.com/Phantisy) 
+- [mrtrizzle](https://github.com/mrtrizzle) 
+- [mdonath](https://github.com/mdonath) 
+
 ## Getting started
 This is the GitHub repo to support my Instructables publish. Be sure to head over there to [see how to build and wire it](https://www.instructables.com/id/Super-Simple-RGB-WiFi-Lamp/)!
 
