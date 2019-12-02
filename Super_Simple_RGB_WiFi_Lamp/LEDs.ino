@@ -13,20 +13,28 @@ void ledStringInit() {
 
 void handleMode() {
   // Adapt the leds to the current mode
-  auto iter = modes.find(Mode);
-  if (iter == modes.end()) {
+
+  auto modeIter = modes.find(currentMode);
+  if (modeIter == modes.end()) {
     // not found
     Serial.println("[handleMode] - Mode \"" + Mode + "\" not found, resetting to default");
-    Mode = "";
+    Mode = "Colour";    // Automatically jump back to colour
+    currentMode = "Colour";    // Automatically jump back to colour
     return;
   }
-  iter->second->render();
+  else {
+    // Apply currentMode always?
 
-  adjustBrightness();
+    // If mode is found run its render function
+    modeIter->second->render();
 
-  // Handle Fast LED
-  FastLED.show();
-  //  FastLED.delay(1000 / FRAMES_PER_SECOND);
+    // Globally adjust the brightness
+    adjustBrightness();
+
+    // Handle Fast LED
+    FastLED.show();
+    //  FastLED.delay(1000 / FRAMES_PER_SECOND);
+  }  
 }
 
 void adjustBrightness() {
