@@ -17,6 +17,8 @@
 #include "arduinoFFT.h"
 #include "lwip/inet.h"
 #include "lwip/dns.h"
+#include <map>
+
 
 // ############################################################# Sketch Variables #############################################################
 // All variables at the top of this sketch need to be defined correctly for your light. Read the comments around each one for more details on 
@@ -52,6 +54,15 @@ String SSID = "";
 String Password = "";
 // ########################################################## End of Sketch Variables ##########################################################
 
+class ModeBase
+{
+public:
+    virtual void render();
+    virtual void applyConfig(JsonVariant& settings);
+};
+
+std::map<String, ModeBase*> modes;
+
 // In some cases the automatic creation of the prototypes does not work. Do it manually...
 // Config.ino
 bool checkFlashConfig();
@@ -61,17 +72,9 @@ void saveConfigItem(JsonDocument& jsonSetting);
 void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
 // LEDs.ino
 void ledStringInit();
+void ledModeInit();
 void handleMode();
-void setColour(int red, int green, int blue);
-void setRainbow(int startHue, int speed, int brightness);
-void setClock();
-void setBellCurve();
-void setCircle();
-void setSparkle(int speed);
-void setColorWipe();
-void setConfetti(int speed);
-void setNightRider();
-void setVisualiser();
+void adjustBrightness();
 // NTP.ino
 void handleNTP();
 bool getNTPServerIP(const char *_ntpServerName, IPAddress &_ntpServerIp);
@@ -151,81 +154,6 @@ String  previousMode          = "";                                   // Placeho
 bool    previousState         = false;                                // Placeholder variable for changing state
 float   modeChangeFadeAmount  = 0;                                    // Place holder for global brightness during mode change
 
-// Colour Mode Variables 
-int colourRed                     = 128;
-int colourGreen                   = 128;
-int colourBlue                    = 128;
-
-// Rainbow Mode Variables
-int rainbowStartHue               = 0;
-int rainbowSpeed                  = 10;
-int rainbowBri                    = 100;
-float rainbowAddedHue             = 0;
-
-// Clock Mode Variables 
-int clockHourRed                  = 128;
-int clockHourGreen                = 128;
-int clockHourBlue                 = 128;
-int clockMinRed                   = 128;
-int clockMinGreen                 = 128;
-int clockMinBlue                  = 128;
-int clockOnPauseBrightness        = 255;
-unsigned long lastClockExecution  = 0;
-
-// Bell Curve Mode Variables
-int bellCurveRed                  = 128;
-int bellCurveGreen                = 128;
-int bellCurveBlue                 = 128;
-
-// Night Rider Mode Variables
-int nightRiderTopLedNumber        = 0;
-int nightRiderBottomLedNumber     = 0;
-int nightRiderTopIncrement        = 1;
-int nightRiderBottomIncrement     = 1;
-
-// Circle variables
-int circleActiveLedNumber         = 0;
-
-// Sparkle Mode Variables
-int sparkleSpeed                  = 30;
-bool sparkleActive                = true;
-int sparkleRed                    = 128;
-int sparkleGreen                  = 128;
-int sparkleBlue                   = 128;
-int sparklePixel                  = random(NUM_LEDS);
-
-// Color wipe Variables
-int colorWipePosition             = -1;
-bool TurningOn                    = true;
-int colorWipeRed                  = 255;
-int colorWipeGreen                = 0;
-int colorWipeBlue                 = 255;
-int colorWipeSpeed                = 20;
-
-// Confetti Variables
-bool confettiActive               = true;
-int confettiRed                   = 128;
-int confettiGreen                 = 128;
-int confettiBlue                  = 128;
-int confettiSpeed                 = 100;
-int confettiPixel                 = random(NUM_LEDS);
-int hue                           = 0;
-
-// Visualiser Mode Variables
-#define num_samples 64
-ADC_MODE(ADC_TOUT);
-arduinoFFT FFT = arduinoFFT();
-double visualiserRealSamples[num_samples];
-double visualiserImaginarySamples[num_samples];
-unsigned long visualiserLastSampleTime      = 0;
-uint16_t visualiserPeriod                   = 250;
-uint16_t visualiserMinThreshold             = 100;
-uint16_t visualiserMaxThreshold             = 750;
-uint8_t visualiserNumBinsToSkip             = 3;
-uint8_t visualiserFadeUp                    = 32;
-uint8_t visualiserFadeDown                  = 32;
-uint8_t visualiserHueOffset                 = 170;
-
 // Setup Method - Runs only once before the main loop. Useful for setting things up
 void setup() {
   // Add a short delay on start
@@ -240,6 +168,7 @@ void setup() {
   if (spiffsCorrectSize) {
     // Init the LED's
     ledStringInit();
+    ledModeInit();
 
     // Get saved settings
     getConfig();

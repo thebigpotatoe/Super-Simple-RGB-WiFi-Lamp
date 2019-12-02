@@ -317,100 +317,12 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
       }
   }
 
-  // Check for colour settings
-  JsonVariant colourSettings = jsonSettingsObject["Colour"];
-  if (colourSettings) {
-    colourSettings["Red"] = colourRed = colourSettings["Red"] | colourRed;
-    colourSettings["Green"]= colourGreen = colourSettings["Green"] | colourGreen;
-    colourSettings["Blue"] = colourBlue = colourSettings["Blue"] | colourBlue;
-  }
-
-  // Check for Rainbow Settings
-  JsonVariant rainbowSettings = jsonSettingsObject["Rainbow"];
-  if (rainbowSettings) {
-    rainbowSettings["Hue"] = rainbowStartHue = rainbowSettings["Hue"] | rainbowStartHue;
-    rainbowSettings["Speed"] = rainbowSpeed = rainbowSettings["Speed"] | rainbowSpeed;
-    rainbowSettings["Brightness"] = rainbowBri = rainbowSettings["Brightness"] | rainbowBri;
-  }
-
-  // Check for clock settings
-  JsonVariant clockSettings = jsonSettingsObject["Clock"];
-  if (clockSettings) {
-    if (clockSettings.containsKey("Epoch")){
-      clockSettings["Epoch"]  = currentEpochTime = clockSettings["Epoch"] | currentEpochTime;
-      setTime(currentEpochTime);
+  // Apply settings to the modes
+  for(auto it = modes.begin(); it != modes.end(); it++) {
+    JsonVariant settings = jsonSettingsObject[it->first];
+    if (settings) {
+        it->second->applyConfig(settings);
     }
-
-    JsonVariant hourColourSettings = clockSettings["hourColour"];
-    if (hourColourSettings) {
-      hourColourSettings["Red"] = clockHourRed = hourColourSettings["Red"] | clockHourRed;
-      hourColourSettings["Green"] = clockHourGreen = hourColourSettings["Green"] | clockHourGreen;
-      hourColourSettings["Blue"] = clockHourBlue = hourColourSettings["Blue"] | clockHourBlue;
-    }
-
-    JsonVariant minColourSettings = clockSettings["minColour"];
-    if (minColourSettings) {
-      minColourSettings["Red"] = clockMinRed = minColourSettings["Red"] | clockMinRed;
-      minColourSettings["Green"] = clockMinGreen = minColourSettings["Green"] | clockMinGreen;
-      minColourSettings["Blue"]  = clockMinBlue = minColourSettings["Blue"] | clockMinBlue;
-    }
-  }
-
-  // Check for bell curve settings
-  JsonVariant bellCurveSettings = jsonSettingsObject["Bell Curve"];
-  if (bellCurveSettings) {
-    bellCurveSettings["Red"] = bellCurveRed = bellCurveSettings["Red"] | bellCurveRed;
-    bellCurveSettings["Green"]= bellCurveGreen = bellCurveSettings["Green"] | bellCurveGreen;
-    bellCurveSettings["Blue"] = bellCurveBlue = bellCurveSettings["Blue"] | bellCurveBlue;
-  }
-
-  // Check for night rider settings
-  JsonVariant nightRiderSettings = jsonSettingsObject["Night Rider"];
-  if (nightRiderSettings) {
-    // Currently no Night Rider Settings
-  }
-
-  // Check for circle settings
-  JsonVariant circleSettings = jsonSettingsObject["Circle"];
-  if (circleSettings) {
-    // Currently no Night Rider Settings
-  }
-  
-  // Check for sparkle settings
-  JsonVariant sparkleSettings = jsonSettingsObject["Sparkle"];
-  if (sparkleSettings) {
-    sparkleSettings["Red"] = sparkleRed = sparkleSettings["Red"] | sparkleRed;
-    sparkleSettings["Green"]= sparkleGreen = sparkleSettings["Green"] | sparkleGreen;
-    sparkleSettings["Blue"] = sparkleBlue = sparkleSettings["Blue"] | sparkleBlue;
-    sparkleSettings["Speed"] = sparkleSpeed = sparkleSettings["Speed"] | sparkleSpeed;
-  }
-
-  // Check for color wipe settings
-  JsonVariant colorWipeSettings = jsonSettingsObject["Color Wipe"];
-  if (colorWipeSettings) {
-    colorWipeSettings["Red"] = colorWipeRed = colorWipeSettings["Red"] | colorWipeRed;
-    colorWipeSettings["Green"]= colorWipeGreen = colorWipeSettings["Green"] | colorWipeGreen;
-    colorWipeSettings["Blue"] = colorWipeBlue = colorWipeSettings["Blue"] | colorWipeBlue;
-    colorWipeSettings["Speed"] = colorWipeSpeed = colorWipeSettings["Speed"] | colorWipeSpeed;
-  }
-
-  // Check for confetti settings
-  JsonVariant confettiSettings = jsonSettingsObject["Confetti"];
-  if (confettiSettings) {
-    confettiSettings["Red"] = confettiRed = confettiSettings["Red"] | confettiRed;
-    confettiSettings["Green"]= confettiGreen = confettiSettings["Green"] | confettiGreen;
-    confettiSettings["Blue"] = confettiBlue = confettiSettings["Blue"] | confettiBlue;
-    confettiSettings["Speed"] = confettiSpeed = confettiSettings["Speed"] | confettiSpeed;
-  }
-
-  JsonVariant visualiserSettings = jsonSettingsObject["Visualiser"];
-  if (visualiserSettings) {
-    visualiserSettings["Period"] = visualiserPeriod = visualiserSettings["Period"] | visualiserPeriod;
-    visualiserSettings["MinThreshold"] = visualiserMinThreshold = visualiserSettings["MinThreshold"] | visualiserMinThreshold;
-    visualiserSettings["MaxThreshold"] = visualiserMaxThreshold = visualiserSettings["MaxThreshold"] | visualiserMaxThreshold;
-    visualiserSettings["FadeUp"] = visualiserFadeUp = visualiserSettings["FadeUp"] | visualiserFadeUp;
-    visualiserSettings["FadeDown"] = visualiserFadeDown = visualiserSettings["FadeDown"] | visualiserFadeDown;
-    visualiserSettings["HueOffset"] = visualiserHueOffset = visualiserSettings["HueOffset"] | visualiserHueOffset;
   }
 
   // Debug
