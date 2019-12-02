@@ -186,7 +186,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                // onColourButtonEvent(newRed, newGreen, newBlue)\n"));
+  restServer.sendContent_P(PSTR("                setPickerColor(colourSelectButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -237,7 +237,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                            }\n"));
   restServer.sendContent_P(PSTR("                        }\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                        // onHourPickerEvent(newRed, newGreen, newBlue)\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(clockHourColourButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -263,7 +263,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                            }\n"));
   restServer.sendContent_P(PSTR("                        }\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                        // onMinPickerEvent(newRed, newGreen, newBlue)\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(clockMinuteColourButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
   restServer.sendContent_P(PSTR("            }\n"));
@@ -291,7 +291,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                // onOnBellCurvePickerEvent(newRed, newGreen, newBlue)\n"));
+  restServer.sendContent_P(PSTR("                setPickerColor(bellCurveSelectButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -328,6 +328,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        newBlue = jsonMessage.Blue\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
+  restServer.sendContent_P(PSTR("                setPickerColor(sparkleSelectButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -352,6 +353,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        newBlue = jsonMessage.Blue\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
+  restServer.sendContent_P(PSTR("                setPickerColor(colorWipeSelectButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -376,6 +378,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        newBlue = jsonMessage.Blue\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                }\n"));
+  restServer.sendContent_P(PSTR("                setPickerColor(confettiSelectButton, newRed, newGreen, newBlue);\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -469,6 +472,16 @@ void servePage() {
   restServer.sendContent_P(PSTR("                console.warn(\"Websockets are closed\")\n"));
   restServer.sendContent_P(PSTR("            }\n"));
   restServer.sendContent_P(PSTR("        }       \n"));
+  restServer.sendContent_P(PSTR("\n"));
+  restServer.sendContent_P(PSTR("        function setPickerColor(picker, r, g, b) {\n"));
+  restServer.sendContent_P(PSTR("            var rgb_color = 'rgb('+r+', '+g+', '+b+')';\n"));
+  restServer.sendContent_P(PSTR("            picker.val(rgb_color);\n"));
+  restServer.sendContent_P(PSTR("            picker.colorPicker.color.setColor(rgb_color);\n"));
+  restServer.sendContent_P(PSTR("            picker.css({\n"));
+  restServer.sendContent_P(PSTR("               backgroundColor: rgb_color,\n"));
+  restServer.sendContent_P(PSTR("               color: picker.colorPicker.color.colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
+  restServer.sendContent_P(PSTR("            }).text(rgb_color);\n"));
+  restServer.sendContent_P(PSTR("        }\n"));
   restServer.sendContent_P(PSTR("    </script>\n"));
   restServer.sendContent_P(PSTR("\n"));
   restServer.sendContent_P(PSTR("</head>\n"));
@@ -712,7 +725,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                var currentBlue = 0;\n"));
   restServer.sendContent_P(PSTR("                var colourDebunce = Date.now()\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                $('#colourSelectButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                var colourSelectButton = $('#colourSelectButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                    customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                    margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                    doRender: 'div div',\n"));
@@ -735,6 +748,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    renderCallback: function($elm, toggled) {\n"));
   restServer.sendContent_P(PSTR("                        var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                        onColourButtonEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(colourSelectButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                })\n"));
   restServer.sendContent_P(PSTR("                $(\"#redButton\").click(function () {\n"));
@@ -902,7 +916,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    var currentMinGreen = 0\n"));
   restServer.sendContent_P(PSTR("                    var currentMinBlue = 0\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                    $('#clockHourColourButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                    var clockHourColourButton = $('#clockHourColourButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                        customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                        margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                        doRender: 'div div',\n"));
@@ -926,14 +940,10 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        renderCallback: function($elm, toggled) {\n"));
   restServer.sendContent_P(PSTR("                            var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                            onHourPickerEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
-  restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                            this.$colorPatch.css({\n"));
-  restServer.sendContent_P(PSTR("                                backgroundColor: '#' + colors.HEX,\n"));
-  restServer.sendContent_P(PSTR("                                color: colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
-  restServer.sendContent_P(PSTR("                            }).text(this.color.toString($elm._colorMode)); // $elm.val();\n"));
+  restServer.sendContent_P(PSTR("                            setPickerColor(clockHourColourButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                        }\n"));
   restServer.sendContent_P(PSTR("                    })\n"));
-  restServer.sendContent_P(PSTR("                    $('#clockMinuteColourButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                    var clockMinuteColourButton = $('#clockMinuteColourButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                        customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                        margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                        doRender: 'div div',\n"));
@@ -957,11 +967,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        renderCallback: function($elm, toggled) {\n"));
   restServer.sendContent_P(PSTR("                            var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                            onMinPickerEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
-  restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                            this.$colorPatch.css({\n"));
-  restServer.sendContent_P(PSTR("                                backgroundColor: '#' + colors.HEX,\n"));
-  restServer.sendContent_P(PSTR("                                color: colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
-  restServer.sendContent_P(PSTR("                            }).text(this.color.toString($elm._colorMode)); // $elm.val();\n"));
+  restServer.sendContent_P(PSTR("                            setPickerColor(clockMinuteColourButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                        }\n"));
   restServer.sendContent_P(PSTR("                    })\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -1045,7 +1051,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                var bellGreen = 0\n"));
   restServer.sendContent_P(PSTR("                var bellBlue = 0\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                $('#bellCurveSelectButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                var bellCurveSelectButton = $('#bellCurveSelectButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                    customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                    margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                    doRender: 'div div',\n"));
@@ -1069,11 +1075,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    renderCallback: function($elm, toggled) {\n"));
   restServer.sendContent_P(PSTR("                        var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                        onOnBellCurvePickerEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
-  restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                        this.$colorPatch.css({\n"));
-  restServer.sendContent_P(PSTR("                            backgroundColor: '#' + colors.HEX,\n"));
-  restServer.sendContent_P(PSTR("                            color: colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
-  restServer.sendContent_P(PSTR("                        }).text(this.color.toString($elm._colorMode)); // $elm.val();\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(bellCurveSelectButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                })\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -1131,7 +1133,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                var sparkleBlue = 0;\n"));
   restServer.sendContent_P(PSTR("                var sparkleDebunce = Date.now()\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                $('#sparkleSelectButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                var sparkleSelectButton = $('#sparkleSelectButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                    customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                    margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                    doRender: 'div div',\n"));
@@ -1154,6 +1156,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    renderCallback: function($elm, toggled) {\n"));
   restServer.sendContent_P(PSTR("                        var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                        onSparkleButtonEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(sparkleSelectButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                })\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -1219,7 +1222,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                var colorWipeBlue = 0\n"));
   restServer.sendContent_P(PSTR("                var colorWipeDebunce = Date.now()\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                $('#colorWipeSelectButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                var colorWipeSelectButton = $('#colorWipeSelectButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                    customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                    margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                    doRender: 'div div',\n"));
@@ -1244,10 +1247,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                        var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                        onColorWipeButtonEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                        this.$colorPatch.css({\n"));
-  restServer.sendContent_P(PSTR("                            backgroundColor: '#' + colors.HEX,\n"));
-  restServer.sendContent_P(PSTR("                            color: colors.RGBLuminance > 0.22 ? '#222' : '#ddd'\n"));
-  restServer.sendContent_P(PSTR("                        }).text(this.color.toString($elm._colorMode)); // $elm.val();\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(colorWipeSelectButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                })\n"));
   restServer.sendContent_P(PSTR("\n"));
@@ -1298,7 +1298,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                var confettiBlue = 0;\n"));
   restServer.sendContent_P(PSTR("                var confettiDebunce = Date.now()\n"));
   restServer.sendContent_P(PSTR("\n"));
-  restServer.sendContent_P(PSTR("                $('#confettiSelectButton').colorPicker({\n"));
+  restServer.sendContent_P(PSTR("                var confettiSelectButton = $('#confettiSelectButton').colorPicker({\n"));
   restServer.sendContent_P(PSTR("                    customBG: '#222',\n"));
   restServer.sendContent_P(PSTR("                    margin: '4px -2px 0',\n"));
   restServer.sendContent_P(PSTR("                    doRender: 'div div',\n"));
@@ -1321,6 +1321,7 @@ void servePage() {
   restServer.sendContent_P(PSTR("                    renderCallback: function($elm, toggled) {\n"));
   restServer.sendContent_P(PSTR("                        var colors = this.color.colors;\n"));
   restServer.sendContent_P(PSTR("                        onConfettiButtonEvent(Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
+  restServer.sendContent_P(PSTR("                        setPickerColor(confettiSelectButton, Math.round(colors.rgb.r*255), Math.round(colors.rgb.g*255), Math.round(colors.rgb.b*255))\n"));
   restServer.sendContent_P(PSTR("                    }\n"));
   restServer.sendContent_P(PSTR("                })\n"));
   restServer.sendContent_P(PSTR("\n"));
