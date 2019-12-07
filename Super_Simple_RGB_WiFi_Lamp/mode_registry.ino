@@ -11,4 +11,3 @@ void ledModeInit() {
   modes["Bell Curve"] = new ModeBellCurve();
   modes["Night Rider"] = new ModeNightRider();
 }
-

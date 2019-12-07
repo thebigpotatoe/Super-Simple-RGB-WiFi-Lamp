@@ -80,6 +80,11 @@ bool updateClients() {
     // Debug 
     Serial.println("[updateClients] - Sending updated values to clients");
 
+    // Send each of the modes data
+    for ( auto it = modes.begin(); it != modes.end(); it++ ) {
+      it->second->sendWebsiteData(webSocket);
+    }
+
     // Get and Send
     sendConfigViaWS();
 
