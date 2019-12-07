@@ -24,9 +24,7 @@
 
         function connectToWebsockets() {
 
-            // websock = new WebSocket('ws://' + window.location.hostname + ':81/');
-            websock = new WebSocket('ws://192.168.0.102:81/');
-            // websock = new WebSocket('ws://localhost:1880/light');
+            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
 
             $("#currentModeLabel").html("Connecting to lamp...")
             websock.onopen = function (evt) {
