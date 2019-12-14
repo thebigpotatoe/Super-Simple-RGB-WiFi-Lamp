@@ -12,32 +12,37 @@ void ledStringInit() {
 }
 
 void handleMode() {
-  // Adapt the leds to the current mode
+  // Adapt the leds to the current mode. Please note the differences between Mode and currentMode.
+  //
+  // Mode:        Is set by the config or the web interface to tell the lamp that a specific mode should
+  //              be shown. The lamp will then change to that mode slowly (see adjustBrightnessAndSwitchMode())
+  // currentMode: In case this is set to a mode name, the lamp came to the point where a mode should be
+  //              asked to render it's pattern.
+  //              During startup this is set to "". In this situation the mode should not be rendered, but
+  //              adjustBrightnessAndSwitchMode() should be called to introduce Mode.
 
-  auto modeIter = modes.find(currentMode);
-  if (modeIter == modes.end()) {
-    // not found
-    Serial.println("[handleMode] - Mode \"" + Mode + "\" not found, resetting to default");
-    Mode = "Colour";    // Automatically jump back to colour
-    currentMode = "Colour";    // Automatically jump back to colour
-    return;
-  }
-  else {
-    // Apply currentMode always?
+  if (currentMode != "") {
+    auto modeIter = modes.find(currentMode);
+    if (modeIter == modes.end()) {
+      // Should only be reached when a user has configured a mode that does not exist (anymore)
+      Serial.println("[handleMode] - Mode \"" + currentMode + "\" not found, resetting to default");
+      Mode = "Colour"; // Automatically jump back to colour
+      return;
+    }
 
     // If mode is found run its render function
     modeIter->second->render();
+  }
 
-    // Globally adjust the brightness
-    adjustBrightness();
+  // Globally adjust the brightness
+  adjustBrightnessAndSwitchMode();
 
-    // Handle Fast LED
-    FastLED.show();
-    //  FastLED.delay(1000 / FRAMES_PER_SECOND);
-  }  
+  // Handle Fast LED
+  FastLED.show();
+  //  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
 
-void adjustBrightness() {
+void adjustBrightnessAndSwitchMode() {
   // Adjust the brightness depending on the mode
   if (autoOnWithModeChange || State) {
     if (Mode != currentMode) {

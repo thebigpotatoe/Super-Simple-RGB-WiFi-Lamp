@@ -74,7 +74,7 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
 void ledStringInit();
 void ledModeInit();
 void handleMode();
-void adjustBrightness();
+void adjustBrightnessAndSwitchMode();
 // NTP.ino
 void handleNTP();
 bool getNTPServerIP(const char *_ntpServerName, IPAddress &_ntpServerIp);
@@ -195,7 +195,7 @@ void loop() {
     // Handle mDNS 
     MDNS.update();
 
-    // // Handle the webserver
+    // Handle the webserver
     restServer.handleClient();
     
     // Handle Websockets
