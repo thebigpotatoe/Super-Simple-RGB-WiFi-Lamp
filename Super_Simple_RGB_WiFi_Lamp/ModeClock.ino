@@ -1,16 +1,25 @@
 class ModeClock : public ModeBase
 {
 private:
+    // Config
     int clockHourRed                 = 128;
     int clockHourGreen               = 128;
     int clockHourBlue                = 128;
     int clockMinRed                  = 128;
     int clockMinGreen                = 128;
     int clockMinBlue                 = 128;
-    int clockOnPauseBrightness       = 255;
-    unsigned long lastClockExecution = 0;
+
+    // State
+    int clockOnPauseBrightness;
+    unsigned long lastClockExecution;
 public:
     ModeClock() {}
+
+    virtual void initialize() {
+        clockOnPauseBrightness = 255;
+        lastClockExecution = 0;
+    }
+
     virtual void render() {
         if (ntpTimeSet) {
             // Get the number of seconds between each LED

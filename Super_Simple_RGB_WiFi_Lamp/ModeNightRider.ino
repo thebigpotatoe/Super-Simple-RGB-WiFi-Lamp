@@ -1,12 +1,20 @@
 class ModeNightRider : public ModeBase
 {
 private:
-    int nightRiderTopLedNumber    = 0;
-    int nightRiderBottomLedNumber = 0;
-    int nightRiderTopIncrement    = 1;
-    int nightRiderBottomIncrement = 1;
+    int nightRiderTopLedNumber;
+    int nightRiderBottomLedNumber;
+    int nightRiderTopIncrement;
+    int nightRiderBottomIncrement;
 public:
     ModeNightRider() {}
+
+    virtual void initialize() {
+        nightRiderTopLedNumber    = 0;
+        nightRiderBottomLedNumber = 0;
+        nightRiderTopIncrement    = 1;
+        nightRiderBottomIncrement = 1;
+    }
+
     virtual void render() {
         int delayTime = 500 / topNumLeds;
         EVERY_N_MILLISECONDS(delayTime) {

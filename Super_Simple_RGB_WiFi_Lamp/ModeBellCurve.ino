@@ -1,11 +1,14 @@
 class ModeBellCurve : public ModeBase
 {
 private:
+    // Config
     int bellCurveRed   = 128;
     int bellCurveGreen = 128;
     int bellCurveBlue  = 128;
 public:
     ModeBellCurve() {}
+    virtual void initialize() {}
+
     virtual void render() {
         // Set the top brightness
         for (int i = 0; i < topNumLeds; i++) {
