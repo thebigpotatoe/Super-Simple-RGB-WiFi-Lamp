@@ -91,6 +91,10 @@
                 // console.log("Found Confetti Message")
                 handleConfettiMessage(jsonMessage["Confetti"])
             }
+            if ("Fireflies" in jsonMessage) {
+                // console.log("Found Fireflies Message")
+                handleFirefliesMessage(jsonMessage["Fireflies"])
+            }
             if ("Night Rider" in jsonMessage) {
                 // console.log("Found Night Rider Message")
                 handleNightRiderMessage(jsonMessage["Night Rider"])
@@ -305,6 +309,13 @@
                     }
                 }
                 setPickerColor(sparkleSelectButton, newRed, newGreen, newBlue);
+
+                if (("Speed" in jsonMessage)) {
+                    if (typeof jsonMessage.Speed === "number") {
+                        $("#sparkleSpeed").val(jsonMessage.Speed)
+                        $("#sparkleSpeedLabel").html(jsonMessage.Speed)
+                    }
+                }
             }
         }
 
@@ -355,6 +366,48 @@
                     }
                 }
                 setPickerColor(confettiSelectButton, newRed, newGreen, newBlue);
+
+                if (("Speed" in jsonMessage)) {
+                    if (typeof jsonMessage.Speed === "number") {
+                        $("#confettiSpeed").val(jsonMessage.Speed)
+                        $("#confettiSpeedLabel").html(jsonMessage.Speed)
+                    }
+                }
+            }
+        }
+
+        function handleFirefliesMessage(jsonMessage) {
+            if (typeof jsonMessage === "object") {
+                if ("Hue" in jsonMessage) {
+                    if (typeof jsonMessage.Hue === "number") {
+                        $("#firefliesHue").val(Math.round(jsonMessage.Hue / 255 * 359))
+                        $("#firefliesHueLabel").html(Math.round(jsonMessage.Hue / 255 * 359))
+                    }
+                }
+                if ("Brightness" in jsonMessage) {
+                    if (typeof jsonMessage.Brightness === "number") {
+                        $("#firefliesBrightness").val(Math.round(jsonMessage.Brightness / 255 * 100))
+                        $("#firefliesBrightnessLabel").html(Math.round(jsonMessage.Brightness / 255 * 100))
+                    }
+                }
+                if ("MinimumFlashDelay" in jsonMessage) {
+                    if (typeof jsonMessage.MinimumFlashDelay === "number") {
+                        $("#firefliesMinimumFlashDelay").val(jsonMessage.MinimumFlashDelay)
+                        $("#firefliesMinimumFlashDelayLabel").html(jsonMessage.MinimumFlashDelay)
+                    }
+                }
+                if ("MaximumFlashDelay" in jsonMessage) {
+                    if (typeof jsonMessage.MaximumFlashDelay === "number") {
+                        $("#firefliesMaximumFlashDelay").val(jsonMessage.MaximumFlashDelay)
+                        $("#firefliesMaximumFlashDelayLabel").html(jsonMessage.MaximumFlashDelay)
+                    }
+                }
+                if ("FlashLength" in jsonMessage) {
+                    if (typeof jsonMessage.FlashLength === "number") {
+                        $("#firefliesFlashLength").val(jsonMessage.FlashLength)
+                        $("#firefliesFlashLengthLabel").html(jsonMessage.FlashLength)
+                    }
+                }
             }
         }
 
@@ -501,6 +554,9 @@
                     <li id="confettiTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#Confetti">Confetti</a>
                     </li>
+                    <li id="firefliesTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Fireflies">Fireflies</a>
+                    </li>
                     <li id="visualiserTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#Visualiser">Visualiser</a>
                     </li>
@@ -535,6 +591,9 @@
                     });
                     $("#confettiTabNavItem").click(function () {
                         sendMessage({ "Mode": "Confetti" })
+                    });
+                    $("#firefliesTabNavItem").click(function () {
+                        sendMessage({"Mode":"Fireflies"})
                     });
                     $("#visualiserTabNavItem").click(function () {
                         sendMessage({ "Mode": "Visualiser" })
@@ -627,6 +686,8 @@
                 Wipe</button>
             <button id="confettiButton" type="submit"
                 class="col mb-2 mx-2 btn btn-lg btn-outline-light">Confetti</button>
+            <button id="firefliesButton" type="submit"
+                class="col mb-2 mx-2 btn btn-lg btn-outline-light">Fireflies</button>
             <button id="visualiserButton" type="submit"
                 class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
             <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi
@@ -670,6 +731,10 @@
                 $("#confettiButton").click(function () {
                     $('#navbarHeader a[href="#Confetti"]').tab('show')
                     sendMessage({ "Mode": "Confetti" })
+                });
+                $("#firefliesButton").click(function () {
+                    $('#navbarHeader a[href="#Fireflies"]').tab('show')
+                    sendMessage({"Mode":"Fireflies"})
                 });
                 $("#visualiserButton").click(function () {
                     $('#navbarHeader a[href="#Visualiser"]').tab('show')
@@ -1103,6 +1168,13 @@
         <div id="Sparkle" class="container pb-5 tab-pane fade">
             <h2>Sparkle Mode</h2>
             <p>This is the Sparkle mode..</p>
+            <!--
+            <div>
+                <label for="sparkleSpeed"><b>Sparkle Speed</b>: <span id="sparkleSpeedLabel">30</span> milliseconds</label>
+                <input id="sparkleSpeed" type="range" min="10" max="255" step="5" value="30"
+                    class="form-control-range custom-range">
+            </div>
+            -->
             <div class="row my-3">
                 <input id="sparkleSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
                     value="rgb(0,0,0)"></input>
@@ -1272,11 +1344,19 @@
         <div id="Confetti" class="container pb-5 tab-pane fade">
             <h2>Confetti Mode</h2>
             <p>Confetti will flash random colors to emulate confetti.</p>
+            <!--
+            <div>
+                <label for="confettiSpeed"><b>Confetti Speed</b>: <span id="confettiSpeedLabel">30</span> milliseconds</label>
+                <input id="confettiSpeed" type="range" min="10" max="255" step="5" value="30"
+                    class="form-control-range custom-range">
+            </div>
+            -->
             <script>
                 var confettiLastMessage = ""
                 var confettiRed = 0;
                 var confettiGreen = 0;
                 var confettiBlue = 0;
+                var confettiSpeed = 30;
                 var confettiDebunce = Date.now()
 
                 var confettiSelectButton = $('#confettiSelectButton').colorPicker({
@@ -1305,6 +1385,13 @@
                         setPickerColor(confettiSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
                     }
                 })
+
+                $("#confettiSpeed").on("input", function () {
+                    onConfettiEvent()
+                });
+                $("#confettiSpeed").on("change", function () {
+                    onConfettiEvent()
+                });
 
                 function onConfettiEvent() {
                     let currentSpeedValue = parseFloat($("#confettiSpeed").val())
@@ -1353,6 +1440,102 @@
                     }
                 }
             </Script>
+        </div>
+        <div id="Fireflies" class="container pb-5 tab-pane fade">
+            <h2>Fireflies Mode</h2>
+            <p>
+              Here come real stars to fill the upper skies,<br/>
+              And here on earth come emulating flies,<br/>
+              That though they never equal stars in size,<br/>
+              (And they were never really stars at heart)<br/>
+              Achieve at times a very star-like start.<br/>
+              Only, of course, they can't sustain the part.<br/>
+              -- Robert Frost, "Fireflies in the Garden"
+            </p>
+            <div>
+                <label for="firefliesHue">Hue: <span id="firefliesHueLabel">0</span> Degrees</label>
+                <input id="firefliesHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range">
+            </div>
+            <div>
+                <label for="firefliesBrightness">Brightness: <span id="firefliesBrightnessLabel">100</span>%</label>
+                <input id="firefliesBrightness" type="range" min="0" max="100" step="1" value="100" class="form-control-range">
+            </div>
+            <div>
+                <label for="firefliesMinimumFlashDelay">Minimum Flash Delay: <span id="firefliesMinimumFlashDelayLabel">1000</span> milliseconds</label>
+                <input id="firefliesMinimumFlashDelay" type="range" min="100" max="30000" step="100" value="1000" class="form-control-range">
+            </div>
+            <div>
+                <label for="firefliesMaximumFlashDelay">Maximum Flash Delay: <span id="firefliesMaximumFlashDelayLabel">5000</span> milliseconds</label>
+                <input id="firefliesMaximumFlashDelay" type="range" min="100" max="30000" step="100" value="5000" class="form-control-range">
+            </div>
+            <div>
+                <label for="firefliesFlashLength">Flash Length: <span id="firefliesFlashLengthLabel">500</span> milliseconds</label>
+                <input id="firefliesFlashLength" type="range" min="50" max="15000" step="50" value="500" class="form-control-range">
+            </div>
+            <script>
+                var firefliesDebunce = Date.now()
+
+                $("#firefliesHue").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesHue").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesBrightness").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesBrightness").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMinimumFlashDelay").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMinimumFlashDelay").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMaximumFlashDelay").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMaximumFlashDelay").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesFlashLength").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesFlashLength").on("change", function () {
+                    onfirefliesEvent()
+                });
+                function onfirefliesEvent() {
+                    let currentHueValue = parseInt($("#firefliesHue").val(), 10)
+                    let currentBrightnessValue = parseInt($("#firefliesBrightness").val(), 10)
+                    let currentMinimumFlashDelay = parseInt($("#firefliesMinimumFlashDelay").val(), 10)
+                    let currentMaximumFlashDelay = parseInt($("#firefliesMaximumFlashDelay").val(), 10)
+                    let currentFlashLength = parseInt($("#firefliesFlashLength").val(), 10)
+
+                    $("#firefliesHueLabel").html(currentHueValue)
+                    $("#firefliesBrightnessLabel").html(currentBrightnessValue)
+                    $("#firefliesMinimumFlashDelayLabel").html(currentMinimumFlashDelay)
+                    $("#firefliesMaximumFlashDelayLabel").html(currentMaximumFlashDelay)
+                    $("#firefliesFlashLengthLabel").html(currentFlashLength)
+
+                    msg = {
+                        "State" : true,
+                        "Mode" : "Fireflies",
+                        "Fireflies": {
+                            "Hue" : Math.round(currentHueValue/359*255),
+                            "Brightness": Math.round(currentBrightnessValue/100*255),
+                            "MinimumFlashDelay": currentMinimumFlashDelay,
+                            "MaximumFlashDelay": currentMaximumFlashDelay,
+                            "FlashLength": currentFlashLength
+                        }
+                    }
+
+                    if (Date.now() - firefliesDebunce > 50) {
+                        firefliesDebunce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
         </div>
         <div id="Visualiser" class="container pb-5 tab-pane fade">
             <h2>Visualiser Mode</h2>
