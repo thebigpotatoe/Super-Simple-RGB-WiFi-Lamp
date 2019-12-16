@@ -17,4 +17,5 @@ void ledModeInit()
   modes["Confetti"] = new ModeConfetti();
   modes["Visualiser"] = new ModeVisualiser();
   modes["Fireflies"] = new ModeFireflies();
+  modes["Saturation Fade"] = new ModeSaturationFade();
 }

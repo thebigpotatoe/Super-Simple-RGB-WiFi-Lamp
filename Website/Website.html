@@ -87,6 +87,10 @@
                 // console.log("Found Color Wipe Message")
                 handleColorWipeMessage(jsonMessage["Color Wipe"])
             }
+            if ("Saturation Fade" in jsonMessage) {
+                // console.log("Found Saturation Fade Message")
+                handleSaturationFadeMessage(jsonMessage["Saturation Fade"])
+            }
             if ("Confetti" in jsonMessage) {
                 // console.log("Found Confetti Message")
                 handleConfettiMessage(jsonMessage["Confetti"])
@@ -344,6 +348,23 @@
             }
         }
 
+        function handleSaturationFadeMessage(jsonMessage) {
+            if (typeof jsonMessage === "object") {
+                if (("Hue" in jsonMessage)) {
+                    if (typeof jsonMessage.Hue === "number") {
+                        $("#saturationFadeHue").val(Math.round(jsonMessage.Hue / 255 * 359))
+                        $("#saturationFadeHueLabel").html(Math.round(jsonMessage.Hue / 255 * 359))
+                    }
+                }
+                if (("Speed" in jsonMessage)) {
+                    if (typeof jsonMessage.Speed === "number") {
+                        $("#saturationFadeSpeed").val(jsonMessage.Speed)
+                        $("#saturationFadeSpeedLabel").html(jsonMessage.Speed)
+                    }
+                }
+            }
+        }
+
         function handleConfettiMessage(jsonMessage) {
             if (typeof jsonMessage === "object") {
                 var newRed = currentRed
@@ -551,6 +572,9 @@
                     <li id="colorWipeTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#ColorWipe">Color Wipe</a>
                     </li>
+                    <li id="saturationFadeTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#SaturationFade">Saturation Fade</a>
+                    </li>
                     <li id="confettiTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#Confetti">Confetti</a>
                     </li>
@@ -588,6 +612,9 @@
                     });
                     $("#colorWipeTabNavItem").click(function () {
                         sendMessage({ "Mode": "Color Wipe" })
+                    });
+                    $("#saturationFadeTabNavItem").click(function () {
+                        sendMessage({ "Mode": "Saturation Fade" })
                     });
                     $("#confettiTabNavItem").click(function () {
                         sendMessage({ "Mode": "Confetti" })
@@ -676,22 +703,16 @@
             <button id="colourButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Colour</button>
             <button id="rainbowButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rainbow</button>
             <button id="clockButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Clock</button>
-            <button id="bellCurveButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Bell
-                Curve</button>
+            <button id="bellCurveButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Bell Curve</button>
             <button id="circleButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Circle</button>
-            <button id="nightRiderButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Night
-                Rider</button>
+            <button id="nightRiderButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Night Rider</button>
             <button id="sparkleButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Sparkle</button>
-            <button id="colorWipeButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Color
-                Wipe</button>
-            <button id="confettiButton" type="submit"
-                class="col mb-2 mx-2 btn btn-lg btn-outline-light">Confetti</button>
-            <button id="firefliesButton" type="submit"
-                class="col mb-2 mx-2 btn btn-lg btn-outline-light">Fireflies</button>
-            <button id="visualiserButton" type="submit"
-                class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
-            <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi
-                Config</button>
+            <button id="colorWipeButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Color Wipe</button>
+            <button id="saturationFadeButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Saturation Fade</button>
+            <button id="confettiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Confetti</button>
+            <button id="firefliesButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Fireflies</button>
+            <button id="visualiserButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
+            <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi Config</button>
             <script>
                 $("#HomeButton").click(function () {
                     $('#navbarHeader a[href="#Home"]').tab('show')
@@ -727,6 +748,10 @@
                 $("#colorWipeButton").click(function () {
                     $('#navbarHeader a[href="#ColorWipe"]').tab('show')
                     sendMessage({ "Mode": "Color Wipe" })
+                });
+                $("#saturationFadeButton").click(function () {
+                    $('#navbarHeader a[href="#SaturationFade"]').tab('show')
+                    sendMessage({ "Mode": "Saturation Fade" })
                 });
                 $("#confettiButton").click(function () {
                     $('#navbarHeader a[href="#Confetti"]').tab('show')
@@ -1532,6 +1557,55 @@
 
                     if (Date.now() - firefliesDebunce > 50) {
                         firefliesDebunce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+        <div id="SaturationFade" class="container pb-5 tab-pane fade">
+            <h2>Saturation Fade Mode</h2>
+            <p>Fade between a color and white</p>
+            <div>
+                <label for="saturationFadeHue">Hue: <span id="saturationFadeHueLabel">0</span> Degrees</label>
+                <input id="saturationFadeHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range">
+            </div>
+            <div>
+                <label for="saturationFadeSpeed">Fade Speed: <span id="saturationFadeSpeedLabel">10</span> seconds</label>
+                <input id="saturationFadeSpeed" type="range" min="0" max="10" step="1" value="10" class="form-control-range custom-range">
+            </div>
+            <script>
+                var saturationFadeDebunce = Date.now()
+
+                $("#saturationFadeHue").on("input", function () {
+                    onSaturationFadeEvent()
+                });
+                $("#saturationFadeHue").on("change", function () {
+                    onSaturationFadeEvent()
+                });
+                $("#saturationFadeSpeed").on("input", function () {
+                    onSaturationFadeEvent()
+                });
+                $("#saturationFadeSpeed").on("change", function () {
+                    onSaturationFadeEvent()
+                });
+                function onSaturationFadeEvent() {
+                    let currentHueValue = parseInt($("#saturationFadeHue").val(), 10)
+                    let currentSpeedValue = parseInt($("#saturationFadeSpeed").val(), 10)
+
+                    $("#saturationFadeHueLabel").html(currentHueValue)
+                    $("#saturationFadeSpeedLabel").html(currentSpeedValue)
+
+                    msg = {
+                        "State" : true,
+                        "Mode" : "Saturation Fade",
+                        "Saturation Fade": {
+                            "Hue" : Math.round(currentHueValue/359*255),
+                            "Speed" : currentSpeedValue
+                        }
+                    }
+
+                    if (Date.now() - saturationFadeDebunce > 50) {
+                        saturationFadeDebunce = Date.now()
                         sendMessage(msg)
                     }
                 }
