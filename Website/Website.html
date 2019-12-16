@@ -47,6 +47,10 @@
                 // console.log("Found Mode Message")
                 handleModeMessage(jsonMessage.Mode)
             }
+            if ("Name" in jsonMessage) {
+               // console.log("Found Name Message")
+               handleNameMessage(jsonMessage.Name)
+            }
             if ("State" in jsonMessage) {
                 // console.log("Found State Message")
                 handleStateMessage(jsonMessage.State)
@@ -105,6 +109,13 @@
             // console.log(jsonMessage)
             if (typeof jsonMessage === "string") {
                 $("#currentModeLabel").html(jsonMessage)
+            }
+        }
+
+        function handleNameMessage(jsonMessage) {
+            // console.log(jsonMessage)
+            if (typeof jsonMessage === "string") {
+                $("#NameInput").val(jsonMessage)
             }
         }
 
@@ -1500,6 +1511,10 @@
 
             <div id="wifiConfigForm">
                 <div class="form-group">
+                    <label for="NameInput">Name</label>
+                    <input id="NameInput" class="form-control" placeholder="Name" type="text">
+                </div>
+                <div class="form-group">
                     <label for="SSIDInput">SSID</label>
                     <input id="SSIDInput" class="form-control" placeholder="SSID" type="text">
                 </div>
@@ -1535,6 +1550,7 @@
 
                 function onSubmitWifiEvent() {
                     msg = {
+                        "Name": $("#NameInput").val(),
                         "Wifi": {
                             "SSID": $("#SSIDInput").val(),
                             "Password": $("#PassInput").val()
@@ -1553,5 +1569,4 @@
         </div>
     </div>
 </body>
-
 </html>
