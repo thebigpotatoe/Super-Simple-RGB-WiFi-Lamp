@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <FastLED.h>
 
 class ModeFireflies : public ModeBase
