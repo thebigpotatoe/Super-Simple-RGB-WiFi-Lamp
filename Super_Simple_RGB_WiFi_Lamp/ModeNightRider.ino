@@ -36,14 +36,22 @@ public:
     {
     }
 
-    virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+    virtual const char *getName()
     {
-        const char *modeName = "Night Rider";
-        const char *tabHtml = PSTR("<h2>Night Rider Mode<\\/h2>\\r\\n"
+        return "Night Rider";
+    }
+
+    virtual const char *getTabHtml()
+    {
+        return PSTR("<h2>Night Rider Mode<\\/h2>\\r\\n"
                                    "<p>Knight Rider. A shadowy flight into the dangerous world of a man who does not exist.\\r\\n"
                                    "    Michael Knight: a young loner on a crusade to champion the cause of the innocent,\\r\\n"
                                    "    the helpless, the powerless, in a world of criminals who operate above the law.<\\/p>\\r\\n");
-        const char *tabScript = PSTR("messageEventList.push(handleNightRiderMessage)\\r\\n"
+    }
+
+    virtual const char *getTabScript()
+    {
+        return PSTR("messageEventList.push(handleNightRiderMessage)\\r\\n"
                                      "\\r\\n"
                                      "function handleNightRiderMessage(jsonMessage) {\\r\\n"
                                      "    if (\\\"Night Rider\\\" in jsonMessage) {\\r\\n"
@@ -53,8 +61,5 @@ public:
                                      "        }\\r\\n"
                                      "    }\\r\\n"
                                      "}\\r\\n");
-        String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-        _webSocketServer.broadcastTXT(htmlJSON.c_str());
     }
 };

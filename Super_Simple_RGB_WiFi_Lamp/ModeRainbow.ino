@@ -52,10 +52,14 @@ public:
     settings["Brightness"] = rainbowBri = settings["Brightness"] | rainbowBri;
   }
 
-  virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+  virtual const char *getName()
   {
-    const char *modeName = "Rainbow";
-    const char *tabHtml = PSTR("<h2>Rainbow Mode<\\/h2>\\r\\n"
+    return "Rainbow";
+  }
+
+  virtual const char *getTabHtml()
+  {
+    return PSTR("<h2>Rainbow Mode<\\/h2>\\r\\n"
                                "<p>Here you can set the mode to rainbow. This mode produces a rainbow all the way around the light and\\r\\n"
                                "    slowly shifts the colours clockwise. On this page you can set the speed of this as well as the\\r\\n"
                                "    brightness of the light<\\/p>\\r\\n"
@@ -71,8 +75,11 @@ public:
                                "    <label for=\\\"rainbowSpeed\\\">Rainbow Speed: <span id=\\\"rainbowSpeedLabel\\\">10<\\/span> seconds<\\/label>\\r\\n"
                                "    <input id=\\\"rainbowSpeed\\\" type=\\\"range\\\" min=\\\"0\\\" max=\\\"10\\\" step=\\\"1\\\" value=\\\"10\\\" class=\\\"form-control-range custom-range\\\">\\r\\n"
                                "<\\/div>\\r\\n");
+  }
 
-    const char *tabScript = PSTR("var rainbowDebunce = Date.now()\\r\\n"
+  virtual const char *getTabScript()
+  {
+    return PSTR("var rainbowDebunce = Date.now()\\r\\n"
                                  "var rainbowLastMessage = \\\"\\\"\\r\\n"
                                  "\\r\\n"
                                  "messageEventList.push(handleRainbowMessage)\\r\\n"
@@ -171,8 +178,5 @@ public:
                                  "        sendMessage(msg)\\r\\n"
                                  "    }\\r\\n"
                                  "}\\r\\n");
-    String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-    _webSocketServer.broadcastTXT(htmlJSON.c_str());
   }
 };

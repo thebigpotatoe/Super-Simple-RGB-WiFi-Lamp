@@ -59,7 +59,9 @@ class ModeBase
 public:
     virtual void render();
     virtual void applyConfig(JsonVariant& settings);
-    virtual void sendWebsiteData(WebSocketsServer& _webSocketServer);
+    virtual const char *getName();
+    virtual const char *getTabHtml();
+    virtual const char *getTabScript();
 };
 
 std::map<String, ModeBase*> modes;

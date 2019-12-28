@@ -139,10 +139,14 @@ public:
     settings["HueOffset"] = visualiserHueOffset = settings["HueOffset"] | visualiserHueOffset;
   }
 
-  virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+  virtual const char *getName()
   {
-    const char *modeName = "Visualiser";
-    const char *tabHtml = PSTR("<h2>Visualiser Mode<\\/h2>\\r\\n"
+    return "Visualiser";
+  }
+
+  virtual const char *getTabHtml()
+  {
+    return PSTR("<h2>Visualiser Mode<\\/h2>\\r\\n"
                                "<p> Here you can set the mode to Visualiser. This mode does an FFT on the ADC of the ESP8266 and maps the\\r\\n"
                                "    frequencies\\r\\n"
                                "    to the number of top and bottom LED's. To use this mode, an input source must be present on the ADC such\\r\\n"
@@ -186,7 +190,11 @@ public:
                                "        has been set<\\/li>\\r\\n"
                                "    <li><b>Hue Offset<\\/b> - The offset hue value from 0 for the start of the rainbow<\\/li>\\r\\n"
                                "<\\/ul>\\r\\n");
-    const char *tabScript = PSTR("var visualiserDebunce = Date.now()\\r\\n"
+  }
+
+  virtual const char *getTabScript()
+  {
+    return PSTR("var visualiserDebunce = Date.now()\\r\\n"
                                  "var lastVisualiserMessaeg = \\\"\\\"\\r\\n"
                                  "\\r\\n"
                                  "messageEventList.push(handleVisualiserMessage)\\r\\n"
@@ -306,9 +314,5 @@ public:
                                  "        sendMessage(msg)\\r\\n"
                                  "    }\\r\\n"
                                  "}\\r\\n");
-
-    String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-    _webSocketServer.broadcastTXT(htmlJSON.c_str());
   }
 };

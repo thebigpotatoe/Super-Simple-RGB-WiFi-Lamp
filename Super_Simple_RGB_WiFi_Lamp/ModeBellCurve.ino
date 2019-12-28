@@ -33,16 +33,24 @@ public:
     settings["Blue"] = bellCurveBlue = settings["Blue"] | bellCurveBlue;
   }
 
-  virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+  virtual const char *getName()
   {
-    const char *modeName = "Bell Curve";
-    const char *tabHtml = PSTR("<h2>Bell Curve Mode<\\/h2>\\r\\n"
+    return "Bell Curve";
+  }
+
+  virtual const char *getTabHtml()
+  {
+    return PSTR("<h2>Bell Curve Mode<\\/h2>\\r\\n"
                                "<p>In this mode the lamp will shape the light into a bell curve. This is meant to be more asthetically\\r\\n"
                                "    pleasing than the regular colour mode.<\\/p>\\r\\n"
                                "<div class=\\\"row my-3\\\">\\r\\n"
                                "    <input id=\\\"bellCurveSelectButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\" value=\\\"rgb(0,0,0)\\\">\\r\\n"
                                "<\\/div>\\r\\n");
-    const char *tabScript = PSTR("bellCurveDebunce = Date.now()\\r\\n"
+  }
+
+  virtual const char *getTabScript()
+  {
+    return PSTR("bellCurveDebunce = Date.now()\\r\\n"
                                  "var bellRed = 0\\r\\n"
                                  "var bellGreen = 0\\r\\n"
                                  "var bellBlue = 0\\r\\n"
@@ -123,9 +131,5 @@ public:
                                  "        }\\r\\n"
                                  "    }\\r\\n"
                                  "}\\r\\n");
-
-    String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-    _webSocketServer.broadcastTXT(htmlJSON.c_str());
   }
 };
