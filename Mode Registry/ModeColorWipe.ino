@@ -1,63 +1,74 @@
-class ModeBellCurve : public ModeBase
+class ModeColorWipe : public ModeBase
 {
 private:
-  int bellCurveRed = 128;
-  int bellCurveGreen = 128;
-  int bellCurveBlue = 128;
+  int colorWipePosition = -1;
+  bool TurningOn = true;
+  int colorWipeRed = 255;
+  int colorWipeGreen = 0;
+  int colorWipeBlue = 255;
+  int colorWipeSpeed = 20;
 
 public:
-  ModeBellCurve() {}
+  ModeColorWipe() {}
   virtual void render()
   {
-    // Set the top brightness
-    for (int i = 0; i < topNumLeds; i++)
+    EVERY_N_MILLISECONDS(colorWipeSpeed)
     {
-      int ledNrightness = cubicwave8((255 / (float)topNumLeds) * i);
-      ledString[topLeds[i]] = CRGB(bellCurveRed, bellCurveGreen, bellCurveBlue);
-      ledString[topLeds[i]] %= ledNrightness;
-    }
-
-    // Set the Bottom brightness
-    for (int i = 0; i < bottomNumLeds; i++)
-    {
-      int ledNrightness = cubicwave8((255 / (float)bottomNumLeds) * i);
-      ledString[bottomLeds[i]] = CRGB(bellCurveRed, bellCurveGreen, bellCurveBlue);
-      ledString[bottomLeds[i]] %= ledNrightness;
+      colorWipePosition++;
+      if (TurningOn)
+      {
+        fill_solid(ledString, colorWipePosition, CRGB(colorWipeRed, colorWipeGreen, colorWipeBlue));
+        if (colorWipePosition == NUM_LEDS)
+        {
+          TurningOn = false;
+          colorWipePosition = -1;
+        }
+      }
+      else
+      {
+        fill_solid(ledString, colorWipePosition, CRGB(0, 0, 0));
+        if (colorWipePosition == NUM_LEDS)
+        {
+          TurningOn = true;
+          colorWipePosition = -1;
+        }
+      }
     }
   }
 
   virtual void applyConfig(JsonVariant &settings)
   {
-    settings["Red"] = bellCurveRed = settings["Red"] | bellCurveRed;
-    settings["Green"] = bellCurveGreen = settings["Green"] | bellCurveGreen;
-    settings["Blue"] = bellCurveBlue = settings["Blue"] | bellCurveBlue;
+    settings["Red"] = colorWipeRed = settings["Red"] | colorWipeRed;
+    settings["Green"] = colorWipeGreen = settings["Green"] | colorWipeGreen;
+    settings["Blue"] = colorWipeBlue = settings["Blue"] | colorWipeBlue;
+    settings["Speed"] = colorWipeSpeed = settings["Speed"] | colorWipeSpeed;
   }
 
   virtual const char *getName()
   {
-    return "Bell Curve";
+    return "Colour Wipe";
   }
 
   virtual const char *getTabHtml()
   {
-    return PSTR("<h2>Bell Curve Mode<\\/h2>\\r\\n"
-                               "<p>In this mode the lamp will shape the light into a bell curve. This is meant to be more asthetically\\r\\n"
-                               "    pleasing than the regular colour mode.<\\/p>\\r\\n"
+    return PSTR("<h2>Color Wipe Mode<\\/h2>\\r\\n"
+                               "<p>Color Wipe will fill the light with a color in a wiping fashion then wipe the light away.<\\/p>\\r\\n"
                                "<div class=\\\"row my-3\\\">\\r\\n"
-                               "    <input id=\\\"bellCurveSelectButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\" value=\\\"rgb(0,0,0)\\\">\\r\\n"
+                               "    <input id=\\\"colorWipeSelectButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\" value=\\\"rgb(0,0,0)\\\"><\\/input>\\r\\n"
                                "<\\/div>\\r\\n");
   }
 
   virtual const char *getTabScript()
   {
-    return PSTR("bellCurveDebunce = Date.now()\\r\\n"
-                                 "var bellRed = 0\\r\\n"
-                                 "var bellGreen = 0\\r\\n"
-                                 "var bellBlue = 0\\r\\n"
+    return PSTR("var colorWipeLastMessage = \\\"\\\"\\r\\n"
+                                 "var colorWipeRed = 0\\r\\n"
+                                 "var colorWipeGreen = 0\\r\\n"
+                                 "var colorWipeBlue = 0\\r\\n"
+                                 "var colorWipeDebunce = Date.now()\\r\\n"
                                  "\\r\\n"
-                                 "messageEventList.push(handleBellCurveMessage)\\r\\n"
+                                 "messageEventList.push(handleColorWipeMessage)\\r\\n"
                                  "\\r\\n"
-                                 "var bellCurveSelectButton = $('#bellCurveSelectButton').colorPicker({\\r\\n"
+                                 "var colorWipeSelectButton = $('#colorWipeSelectButton').colorPicker({\\r\\n"
                                  "    customBG: '#222',\\r\\n"
                                  "    margin: '4px -2px 0',\\r\\n"
                                  "    doRender: 'div div',\\r\\n"
@@ -79,18 +90,19 @@ public:
                                  "\\r\\n"
                                  "    renderCallback: function ($elm, toggled) {\\r\\n"
                                  "        var colors = this.color.colors;\\r\\n"
-                                 "        onOnBellCurvePickerEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))\\r\\n"
-                                 "        setPickerColor(bellCurveSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))\\r\\n"
+                                 "        onColorWipeButtonEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))\\r\\n"
+                                 "\\r\\n"
+                                 "        setPickerColor(colorWipeSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))\\r\\n"
                                  "    }\\r\\n"
                                  "})\\r\\n"
                                  "\\r\\n"
-                                 "function handleBellCurveMessage(jsonMessage) {\\r\\n"
-                                 "    if (\\\"Bell Curve\\\" in jsonMessage) {\\r\\n"
-                                 "        jsonMessage = jsonMessage[\\\"Bell Curve\\\"]\\r\\n"
+                                 "function handleColorWipeMessage(jsonMessage) {\\r\\n"
+                                 "    if (\\\"Color Wipe\\\" in jsonMessage) {\\r\\n"
+                                 "        jsonMessage = jsonMessage[\\\"Color Wipe\\\"]\\r\\n"
                                  "        if (typeof jsonMessage === \\\"object\\\") {\\r\\n"
-                                 "            var newRed = bellRed\\r\\n"
-                                 "            var newGreen = bellGreen\\r\\n"
-                                 "            var newBlue = bellBlue\\r\\n"
+                                 "            var newRed = currentRed\\r\\n"
+                                 "            var newGreen = currentGreen\\r\\n"
+                                 "            var newBlue = currentBlue\\r\\n"
                                  "\\r\\n"
                                  "            if ((\\\"Red\\\" in jsonMessage)) {\\r\\n"
                                  "                if (typeof jsonMessage.Red === \\\"number\\\") {\\r\\n"
@@ -107,26 +119,34 @@ public:
                                  "                    newBlue = jsonMessage.Blue\\r\\n"
                                  "                }\\r\\n"
                                  "            }\\r\\n"
-                                 "\\r\\n"
-                                 "            setPickerColor(bellCurveSelectButton, newRed, newGreen, newBlue);\\r\\n"
+                                 "            setPickerColor(colorWipeSelectButton, newRed, newGreen, newBlue);\\r\\n"
                                  "        }\\r\\n"
                                  "    }\\r\\n"
                                  "}\\r\\n"
                                  "\\r\\n"
-                                 "function onOnBellCurvePickerEvent(red, green, blue) {\\r\\n"
-                                 "    if (bellRed != red || bellGreen != green || bellBlue != blue) {\\r\\n"
+                                 "function onColorWipeButtonEvent(red, green, blue) {\\r\\n"
+                                 "    if (currentRed != red || currentGreen != green || currentBlue != blue) {\\r\\n"
+                                 "        currentRed = red\\r\\n"
+                                 "        currentGreen = green\\r\\n"
+                                 "        currentBlue = blue\\r\\n"
+                                 "\\r\\n"
                                  "        msg = {\\r\\n"
                                  "            \\\"State\\\": true,\\r\\n"
-                                 "            \\\"Mode\\\": \\\"Bell Curve\\\",\\r\\n"
-                                 "            \\\"Bell Curve\\\": {\\r\\n"
+                                 "            \\\"Mode\\\": \\\"Color Wipe\\\",\\r\\n"
+                                 "            \\\"Color Wipe\\\": {\\r\\n"
                                  "                \\\"Red\\\": red,\\r\\n"
                                  "                \\\"Green\\\": green,\\r\\n"
                                  "                \\\"Blue\\\": blue\\r\\n"
                                  "            }\\r\\n"
                                  "        }\\r\\n"
                                  "\\r\\n"
-                                 "        if (Date.now() - bellCurveDebunce > 50) {\\r\\n"
-                                 "            bellCurveDebunce = Date.now()\\r\\n"
+                                 "        if (Date.now() - colorWipeDebunce > 50) {\\r\\n"
+                                 "            colorWipeDebunce = Date.now()\\r\\n"
+                                 "            sendMessage(msg)\\r\\n"
+                                 "        }\\r\\n"
+                                 "        if (msg != colorWipeLastMessage && Date.now() - colorWipeDebunce > 50) {\\r\\n"
+                                 "            colorWipeDebunce = Date.now()\\r\\n"
+                                 "            colorWipeLastMessage = msg\\r\\n"
                                  "            sendMessage(msg)\\r\\n"
                                  "        }\\r\\n"
                                  "    }\\r\\n"

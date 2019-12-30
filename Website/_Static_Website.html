@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
+
+    <title>RGB WiFi Lamp</title>
+    <script>
+        var websock;
+        var messageEventList = []
+        var reconnectTimer;
+
+        $(function () {
+            connectToWebsockets()
+            messageEventList.push(createNewTab)
+        })
+
+        function connectToWebsockets() {
+
+            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+
+            $("#currentModeLabel").html("Connecting to lamp...")
+            websock.onopen = function (evt) {
+                console.log('websock opened');
+            }
+            websock.onclose = function (evt) {
+                console.log('websock closed. Reconnecting in 5 seconds');
+                $("#currentModeLabel").html("Lost connection to lamp! Trying to reconnect.");
+                if (reconnectTimer) clearTimeout(reconnectTimer); 
+                reconnectTimer = setTimeout(function () { 
+                    connectToWebsockets()
+                }, 5000);
+            }
+            websock.onerror = function (evt) {
+                console.error(evt);
+            }
+            websock.onmessage = function (evt) {
+                 // console.log("Incoming Data is: " + evt.data)
+                try {
+                    // Parse the jsonString
+                    let jsonMessage = JSON.parse(evt.data);
+
+                    // Pass the JSON object to each callback
+                    messageEventList.forEach((eventMethod) => {
+                        eventMethod(jsonMessage)
+                    })
+                }
+                catch (err) {
+                    console.warn(err)
+                }
+            }
+        }
+
+        function sendMessage(jsonMessage) {
+            console.log("Sending: " + JSON.stringify(jsonMessage))
+            if (websock != null && websock.readyState == 1) {
+                websock.send(JSON.stringify(jsonMessage));
+            } else {
+                alert("Websockets are closed")
+                console.warn("Websockets are closed")
+            }
+        }
+
+        function setPickerColor(picker, r, g, b) {
+            var rgb_color = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+            picker.val(rgb_color);
+            picker.colorPicker.color.setColor(rgb_color);
+            picker.css({
+                backgroundColor: rgb_color,
+                color: picker.colorPicker.color.colors.RGBLuminance > 0.22 ? '#222' : '#ddd'
+            }).text(rgb_color);
+        }
+
+        function createNewTab(jsonMessage) {
+            if ("Tab" in jsonMessage) {
+                // Get  the Tab message
+                jsonMessage = jsonMessage.Tab
+
+                // Check if valid keys in message
+                if ("Name" in jsonMessage && "tabHtml" in jsonMessage && "tabScript" in jsonMessage) {
+                    // Get a safe name to use for the id of HTML elements
+                    let safeName = jsonMessage.Name.replace(" ", "")
+
+                    // Check if the tab already exists
+                    if ($("#" + safeName).length != 0) return
+
+                    // Create the nav bar link
+                    let navBarScript = document.createElement("script");
+                    let inlineNavBarScript = document.createTextNode(`$("#` + safeName + `TabNavItem").click(function () {\r\n
+                        sendMessage({ "Mode": "` + jsonMessage.Name + `" })\r\n
+                    });`);
+                    navBarScript.appendChild(inlineNavBarScript);
+                    $("#navBar").append(`<li id="` + safeName + `TabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#` + safeName + `">` + jsonMessage.Name + `</a></li>`)
+                    $("#navBar").append(navBarScript);
+
+                    // Create the home button
+                    let buttonScript = document.createElement("script");
+                    let inlineButtonScript = document.createTextNode(`$("#` + safeName + `NavButton").click(function () {\r\n
+                        $('#navbarHeader a[href="#` + safeName + `"]').tab('show')\r\n
+                        sendMessage({ "Mode": "` + jsonMessage.Name + `" })\r\n
+                    });`);
+                    buttonScript.appendChild(inlineButtonScript);
+                    $("#Home").append(`<button id="` + safeName + `NavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">` + jsonMessage.Name + `</button>`)
+                    $("#navBar").append(buttonScript);
+
+                    // Create the tab body
+                    var tabScript = document.createElement("script");
+                    var tabInlineScript = document.createTextNode(jsonMessage.tabScript);
+                    tabScript.appendChild(tabInlineScript);
+                    $("#tabs").append("<div id=\"" + safeName + "\" class=\"container pb-5 tab-pane fade\">\n" + jsonMessage.tabHtml + "\n</div>");
+                    $("#" + safeName).append(tabScript);
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body class="bg-dark text-light text-justify">
+    <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top" id="navbarHeader">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" id="HomeButton">RGB WiFi Lamp</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul id="navBar" class="nav navbar-nav">
+                    <li class="nav-item">
+                        <a id="homeTabNavItem" class="nav-link active" data-toggle="tab" href="#Home">Home</a>
+                    </li>
+                    <li id="wifiTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#WfiConfig">Wifi</a>
+                    </li>
+                </ul>
+
+                <script>
+                    $(function () {
+                        $(".nav-item").click(function () {
+                            $(".collapse").collapse('hide');
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+
+    </nav>
+    <div id="tabs" class="tab-content container" style="margin-top:80px">
+        <div id="modeDisplay" class="container">
+            <h1>Mode: <span id="currentModeLabel"></span></h1>
+            <div class="col mb-4">
+                <label for="fadeTime">Fade Time: <span id="fadeTimeLabel">200</span> milliseconds</label>
+                <input id="fadeTime" type="range" min="0" max="2000" step="100" value="200" class="form-control-range custom-range">
+            </div>
+            <button id="stateButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light" value="OFF">Turn ON</button>
+            <script>
+                fadeTimeDebounce = Date.now()
+
+                messageEventList.push(handleStateMessage)
+                messageEventList.push(handleModeMessage)
+                messageEventList.push(handleFadeTimeMessage)
+
+                $("#stateButton").click(function () {
+                    var newState = $("#stateButton").val() == "ON" ? "OFF" : "ON"
+                    onStateButtonEvent(newState)
+                });
+                $("#fadeTime").on("input", function () {
+                    onFadeTimeEvent()
+                });
+                $("#fadeTime").on("change", function () {
+                    onFadeTimeEvent()
+                });
+
+                function handleModeMessage(jsonMessage) {
+                    if ("Mode" in jsonMessage) {
+                        jsonMessage = jsonMessage.Mode
+                        if (typeof jsonMessage === "string") {
+                            $("#currentModeLabel").html(jsonMessage)
+                        }
+                    }
+                }
+
+                function handleStateMessage(jsonMessage) {
+                    if ("State" in jsonMessage) {
+                        jsonMessage = jsonMessage.State
+                        if (typeof jsonMessage === "boolean") {
+                            if (jsonMessage) {
+                                $("#stateButton").val("ON")
+                                $("#stateButton").html("Turn OFF")
+                            }
+                            else {
+                                $("#stateButton").val("OFF")
+                                $("#stateButton").html("Turn ON")
+                            }
+                        }
+                    }
+                }
+
+                function handleFadeTimeMessage(jsonMessage) {
+                    if ("Fade Time" in jsonMessage) {
+                        jsonMessage = jsonMessage["Fade Time"]
+                        if (typeof jsonMessage === "number") {
+                            $("#fadeTime").val(jsonMessage)
+                            $("#fadeTimeLabel").html(jsonMessage)
+                        }
+                    }
+                }
+
+                function onStateButtonEvent(currentState) {
+                    if (currentState != $("#stateButton").val()) {
+                        if (currentState === "OFF") {
+                            msgValue = false
+                            $("#stateButton").val("OFF")
+                            $("#stateButton").html("Turn ON")
+                        }
+                        else if (currentState === "ON") {
+                            msgValue = true
+                            $("#stateButton").val("ON")
+                            $("#stateButton").html("Turn OFF")
+                        }
+
+                        msg = {
+                            "State": msgValue
+                        }
+
+                        sendMessage(msg)
+                    }
+                }
+
+                function onFadeTimeEvent() {
+                    let currentFadeTimeValue = parseInt($("#fadeTime").val(), 10)
+                    $("#fadeTimeLabel").html(currentFadeTimeValue)
+
+                    msg = {
+                        "Fade Time": currentFadeTimeValue
+                    }
+
+                    if (Date.now() - fadeTimeDebounce > 50) {
+                        fadeTimeDebounce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+            <hr>
+        </div>
+        <div id="Home" class="container tab-pane active">
+            <h1>Home</h1>
+            <p>Welcome to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>
+            <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi Config</button>
+
+            <script>
+                $("#wifiButton").click(function () {
+                    $('#navbarHeader a[href="#WfiConfig"]').tab('show')
+                });
+            </script>
+        </div>
+        <div id="WfiConfig" class="container pb-5 tab-pane fade">
+            <h2>Wifi Configuration</h2>
+            <p>This is the WiFi configuration page. Here you can choose the wifi access point to connect to or go back
+                to access point mode. This will be remebered through reboot for you so you wont have to set this up
+                every time. <b>Please allow a few seconds for this page to update the table.</b> </p>
+            <table class="table table-hover">
+                <thead id="wifiTableHead">
+                    <tr>
+                        <th>SSID</th>
+                        <th>RSSI</th>
+                        <th>BSSID</th>
+                        <th>Channel</th>
+                        <th>Encrypted</th>
+                    </tr>
+                </thead>
+                <tbody id="wifiTableBody">
+                </tbody>
+            </table>
+
+            <button id="rescanButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rescan</button>
+
+            <div id="wifiConfigForm">
+                <div class="form-group">
+                    <label for="SSIDInput">SSID</label>
+                    <input id="SSIDInput" class="form-control" placeholder="SSID" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="PassInput">Password</label>
+                    <input id="PassInput" class="form-control" placeholder="Password" type="text">
+                </div>
+                <button id="wifiConfigSubmitButton" type="submit" class="btn btn-lg btn-outline-light">Submit</button>
+            </div>
+
+            <script>
+                wifiDebounce = Date.now()
+
+                messageEventList.push(handleWifiMessage)
+
+                $("#rescanButton").click(function () {
+                    onRescanWifiEvent()
+                });
+                $("#wifiConfigSubmitButton").click(function () {
+                    onSubmitWifiEvent()
+                });
+
+                function handleWifiMessage(jsonMessage) {
+                    // {
+                    //     "Wifi" : {
+                    //         "ScanResults" : [
+                    //             {
+                    //                 "SSID" : "Test",
+                    //                 "RSSI" : -70,
+                    //                 "BSSID" : "MAC",
+                    //                 "Channel" : 1,
+                    //                 "Encrypt" : "Yes"
+                    //             }
+                    //         ]
+                    //     }
+                    // }
+
+                    if ("Wifi" in jsonMessage) {
+                        jsonMessage = jsonMessage.Wifi
+                        if (typeof jsonMessage === "object") {
+                            if (("ScanResults" in jsonMessage)) {
+                                if (typeof jsonMessage.ScanResults === "object") {
+                                    let specific_tbody = document.getElementById("wifiTableBody");
+                                    for (var i = specific_tbody.rows.length - 1; i > -1; i--) {
+                                        specific_tbody.deleteRow(i);
+                                    }
+
+                                    for (var i = 0; i < jsonMessage.ScanResults.length; i++) {
+                                        let row = specific_tbody.insertRow(-1);
+                                        let ssidCell = row.insertCell(0).appendChild(document.createTextNode(jsonMessage.ScanResults[i].SSID));
+                                        let rssiCell = row.insertCell(1).appendChild(document.createTextNode(jsonMessage.ScanResults[i].RSSI));
+                                        let bssidCell = row.insertCell(2).appendChild(document.createTextNode(jsonMessage.ScanResults[i].BSSID));
+                                        let channelCell = row.insertCell(3).appendChild(document.createTextNode(jsonMessage.ScanResults[i].CHANNEL));
+                                        let encryptedCell = row.insertCell(4).appendChild(document.createTextNode(jsonMessage.ScanResults[i].ENCRYPT));
+
+                                        row.addEventListener("click", function () {
+                                            document.getElementById('SSIDInput').value = this.firstChild.innerHTML;
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function onRescanWifiEvent() {
+                    msg = {
+                        "Wifi": {
+                            "Rescan": true
+                        }
+                    }
+
+                    if (Date.now() - wifiDebounce > 2000) {
+                        wifiDebounce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+
+                function onSubmitWifiEvent() {
+                    msg = {
+                        "Wifi": {
+                            "SSID": $("#SSIDInput").val(),
+                            "Password": $("#PassInput").val()
+                        }
+                    }
+
+                    $("#SSIDInput").val("")
+                    $("#PassInput").val("")
+
+                    if (Date.now() - wifiDebounce > 2000) {
+                        wifiDebounce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

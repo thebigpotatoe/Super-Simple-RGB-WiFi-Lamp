@@ -1,0 +1,1605 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
+
+    <title>RGB WiFi Lamp</title>
+    <script>
+        var websock;
+        var messageEventList = []
+        var reconnectTimer;
+
+        $(function () {
+            connectToWebsockets()
+            messageEventList.push(createNewTab)
+        })
+
+        function connectToWebsockets() {
+
+            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+
+            $("#currentModeLabel").html("Connecting to lamp...")
+            websock.onopen = function (evt) {
+                console.log('websock opened');
+            }
+            websock.onclose = function (evt) {
+                console.log('websock closed. Reconnecting in 5 seconds');
+                $("#currentModeLabel").html("Lost connection to lamp! Trying to reconnect.");
+                if (reconnectTimer) clearTimeout(reconnectTimer);
+                reconnectTimer = setTimeout(function () {
+                    connectToWebsockets()
+                }, 5000);
+            }
+            websock.onerror = function (evt) {
+                console.error(evt);
+            }
+            websock.onmessage = function (evt) {
+                // console.log("Incoming Data is: " + evt.data)
+                try {
+                    // Parse the jsonString
+                    let jsonMessage = JSON.parse(evt.data);
+
+                    // Pass the JSON object to each callback
+                    messageEventList.forEach((eventMethod) => {
+                        eventMethod(jsonMessage)
+                    })
+                }
+                catch (err) {
+                    console.warn(err)
+                }
+            }
+        }
+
+        function sendMessage(jsonMessage) {
+            console.log("Sending: " + JSON.stringify(jsonMessage))
+            if (websock != null && websock.readyState == 1) {
+                websock.send(JSON.stringify(jsonMessage));
+            } else {
+                alert("Websockets are closed")
+                console.warn("Websockets are closed")
+            }
+        }
+
+        function setPickerColor(picker, r, g, b) {
+            var rgb_color = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+            picker.val(rgb_color);
+            picker.colorPicker.color.setColor(rgb_color);
+            picker.css({
+                backgroundColor: rgb_color,
+                color: picker.colorPicker.color.colors.RGBLuminance > 0.22 ? '#222' : '#ddd'
+            }).text(rgb_color);
+        }
+
+        function createNewTab(jsonMessage) {
+            if ("Tab" in jsonMessage) {
+                // Get  the Tab message
+                jsonMessage = jsonMessage.Tab
+
+                // Check if valid keys in message
+                if ("Name" in jsonMessage && "tabHtml" in jsonMessage && "tabScript" in jsonMessage) {
+                    // Get a safe name to use for the id of HTML elements
+                    let safeName = jsonMessage.Name.replace(" ", "")
+
+                    // Check if the tab already exists
+                    if ($("#" + safeName).length != 0) return
+
+                    // Create the nav bar link
+                    let navBarScript = document.createElement("script");
+                    let inlineNavBarScript = document.createTextNode(`$("#` + safeName + `TabNavItem").click(function () {\r\n
+                        sendMessage({ "Mode": "` + jsonMessage.Name + `" })\r\n
+                    });`);
+                    navBarScript.appendChild(inlineNavBarScript);
+                    $("#navBar").append(`<li id="` + safeName + `TabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#` + safeName + `">` + jsonMessage.Name + `</a></li>`)
+                    $("#navBar").append(navBarScript);
+
+                    // Create the home button
+                    let buttonScript = document.createElement("script");
+                    let inlineButtonScript = document.createTextNode(`$("#` + safeName + `NavButton").click(function () {\r\n
+                        $('#navbarHeader a[href="#` + safeName + `"]').tab('show')\r\n
+                        sendMessage({ "Mode": "` + jsonMessage.Name + `" })\r\n
+                    });`);
+                    buttonScript.appendChild(inlineButtonScript);
+                    $("#Home").append(`<button id="` + safeName + `NavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">` + jsonMessage.Name + `</button>`)
+                    $("#navBar").append(buttonScript);
+
+                    // Create the tab body
+                    var tabScript = document.createElement("script");
+                    var tabInlineScript = document.createTextNode(jsonMessage.tabScript);
+                    tabScript.appendChild(tabInlineScript);
+                    $("#tabs").append("<div id=\"" + safeName + "\" class=\"container pb-5 tab-pane fade\">\n" + jsonMessage.tabHtml + "\n</div>");
+                    $("#" + safeName).append(tabScript);
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body class="bg-dark text-light text-justify">
+    <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top" id="navbarHeader">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" id="HomeButton">RGB WiFi Lamp</a>
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul id="navBar" class="nav navbar-nav">
+                    <li class="nav-item">
+                        <a id="homeTabNavItem" class="nav-link" data-toggle="tab" href="#Home">Home</a>
+                    </li>
+                    <li id="wifiTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#WfiConfig">Wifi</a>
+                    </li>
+                    <li id="BellCurveTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#BellCurve">Bell Curve</a></li>
+                    <script>$("#BellCurveTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Bell Curve" })
+
+                        });</script>
+                    <script>$("#BellCurveNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#BellCurve"]').tab('show')
+
+                            sendMessage({ "Mode": "Bell Curve" })
+
+                        });</script>
+                    <li id="CircleTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#Circle">Circle</a></li>
+                    <script>$("#CircleTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Circle" })
+
+                        });</script>
+                    <script>$("#CircleNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Circle"]').tab('show')
+
+                            sendMessage({ "Mode": "Circle" })
+
+                        });</script>
+                    <li id="ClockTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#Clock">Clock</a></li>
+                    <script>$("#ClockTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Clock" })
+
+                        });</script>
+                    <script>$("#ClockNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Clock"]').tab('show')
+
+                            sendMessage({ "Mode": "Clock" })
+
+                        });</script>
+                    <li id="ColourTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#Colour">Colour</a></li>
+                    <script>$("#ColourTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Colour" })
+
+                        });</script>
+                    <script>$("#ColourNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Colour"]').tab('show')
+
+                            sendMessage({ "Mode": "Colour" })
+
+                        });</script>
+                    <li id="NightRiderTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#NightRider">Night Rider</a></li>
+                    <script>$("#NightRiderTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Night Rider" })
+
+                        });</script>
+                    <script>$("#NightRiderNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#NightRider"]').tab('show')
+
+                            sendMessage({ "Mode": "Night Rider" })
+
+                        });</script>
+                    <li id="RainbowTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#Rainbow">Rainbow</a></li>
+                    <script>$("#RainbowTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Rainbow" })
+
+                        });</script>
+                    <script>$("#RainbowNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Rainbow"]').tab('show')
+
+                            sendMessage({ "Mode": "Rainbow" })
+
+                        });</script>
+                    <li id="ColourWipeTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#ColourWipe">Colour Wipe</a></li>
+                    <script>$("#ColourWipeTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Colour Wipe" })
+
+                        });</script>
+                    <script>$("#ColourWipeNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#ColourWipe"]').tab('show')
+
+                            sendMessage({ "Mode": "Colour Wipe" })
+
+                        });</script>
+                    <li id="ConfettiTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#Confetti">Confetti</a></li>
+                    <script>$("#ConfettiTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Confetti" })
+
+                        });</script>
+                    <script>$("#ConfettiNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Confetti"]').tab('show')
+
+                            sendMessage({ "Mode": "Confetti" })
+
+                        });</script>
+                    <li id="SparkleTabNavItem" class="nav-item"><a class="nav-link" data-toggle="tab" href="#Sparkle">Sparkle</a></li>
+                    <script>$("#SparkleTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Sparkle" })
+
+                        });</script>
+                    <script>$("#SparkleNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Sparkle"]').tab('show')
+
+                            sendMessage({ "Mode": "Sparkle" })
+
+                        });</script>
+                    <li id="VisualiserTabNavItem" class="nav-item"><a class="nav-link active show" data-toggle="tab" href="#Visualiser">Visualiser</a></li>
+                    <script>$("#VisualiserTabNavItem").click(function () {
+
+                            sendMessage({ "Mode": "Visualiser" })
+
+                        });</script>
+                    <script>$("#VisualiserNavButton").click(function () {
+
+                            $('#navbarHeader a[href="#Visualiser"]').tab('show')
+
+                            sendMessage({ "Mode": "Visualiser" })
+
+                        });</script>
+                </ul>
+
+                <script>
+                    $(function () {
+                        $(".nav-item").click(function () {
+                            $(".collapse").collapse('hide');
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+
+    </nav>
+    <div id="tabs" class="tab-content container" style="margin-top:80px">
+        <div id="modeDisplay" class="container">
+            <h1>Mode: <span id="currentModeLabel">Visualiser</span></h1>
+            <div class="col mb-4">
+                <label for="fadeTime">Fade Time: <span id="fadeTimeLabel">200</span> milliseconds</label>
+                <input id="fadeTime" type="range" min="0" max="2000" step="100" value="200" class="form-control-range custom-range">
+            </div>
+            <button id="stateButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light" value="ON">Turn OFF</button>
+            <script>
+                fadeTimeDebounce = Date.now()
+
+                messageEventList.push(handleStateMessage)
+                messageEventList.push(handleModeMessage)
+                messageEventList.push(handleFadeTimeMessage)
+
+                $("#stateButton").click(function () {
+                    var newState = $("#stateButton").val() == "ON" ? "OFF" : "ON"
+                    onStateButtonEvent(newState)
+                });
+                $("#fadeTime").on("input", function () {
+                    onFadeTimeEvent()
+                });
+                $("#fadeTime").on("change", function () {
+                    onFadeTimeEvent()
+                });
+
+                function handleModeMessage(jsonMessage) {
+                    if ("Mode" in jsonMessage) {
+                        jsonMessage = jsonMessage.Mode
+                        if (typeof jsonMessage === "string") {
+                            $("#currentModeLabel").html(jsonMessage)
+                        }
+                    }
+                }
+
+                function handleStateMessage(jsonMessage) {
+                    if ("State" in jsonMessage) {
+                        jsonMessage = jsonMessage.State
+                        if (typeof jsonMessage === "boolean") {
+                            if (jsonMessage) {
+                                $("#stateButton").val("ON")
+                                $("#stateButton").html("Turn OFF")
+                            }
+                            else {
+                                $("#stateButton").val("OFF")
+                                $("#stateButton").html("Turn ON")
+                            }
+                        }
+                    }
+                }
+
+                function handleFadeTimeMessage(jsonMessage) {
+                    if ("Fade Time" in jsonMessage) {
+                        jsonMessage = jsonMessage["Fade Time"]
+                        if (typeof jsonMessage === "number") {
+                            $("#fadeTime").val(jsonMessage)
+                            $("#fadeTimeLabel").html(jsonMessage)
+                        }
+                    }
+                }
+
+                function onStateButtonEvent(currentState) {
+                    if (currentState != $("#stateButton").val()) {
+                        if (currentState === "OFF") {
+                            msgValue = false
+                            $("#stateButton").val("OFF")
+                            $("#stateButton").html("Turn ON")
+                        }
+                        else if (currentState === "ON") {
+                            msgValue = true
+                            $("#stateButton").val("ON")
+                            $("#stateButton").html("Turn OFF")
+                        }
+
+                        msg = {
+                            "State": msgValue
+                        }
+
+                        sendMessage(msg)
+                    }
+                }
+
+                function onFadeTimeEvent() {
+                    let currentFadeTimeValue = parseInt($("#fadeTime").val(), 10)
+                    $("#fadeTimeLabel").html(currentFadeTimeValue)
+
+                    msg = {
+                        "Fade Time": currentFadeTimeValue
+                    }
+
+                    if (Date.now() - fadeTimeDebounce > 50) {
+                        fadeTimeDebounce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+            <hr>
+        </div>
+        <div id="Home" class="container tab-pane">
+            <h1>Home</h1>
+            <p>Welcome to your RGB WiFi Lamp web page! Here you can change the mode to one of the pre programmed ones below. Click any of the buttons to interact with the light.</p>
+            <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi Config</button>
+
+            <script>
+                $("#wifiButton").click(function () {
+                    $('#navbarHeader a[href="#WfiConfig"]').tab('show')
+                });
+            </script>
+            <button id="BellCurveNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Bell Curve</button><button id="CircleNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Circle</button><button id="ClockNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Clock</button><button id="ColourNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Colour</button><button id="NightRiderNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Night Rider</button><button id="RainbowNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rainbow</button><button id="ColourWipeNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Colour Wipe</button><button id="ConfettiNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Confetti</button><button id="SparkleNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Sparkle</button><button id="VisualiserNavButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
+        </div>
+        <div id="WfiConfig" class="container pb-5 tab-pane fade">
+            <h2>Wifi Configuration</h2>
+            <p>This is the WiFi configuration page. Here you can choose the wifi access point to connect to or go back
+                to access point mode. This will be remebered through reboot for you so you wont have to set this up
+                every time. <b>Please allow a few seconds for this page to update the table.</b> </p>
+            <table class="table table-hover">
+                <thead id="wifiTableHead">
+                    <tr>
+                        <th>SSID</th>
+                        <th>RSSI</th>
+                        <th>BSSID</th>
+                        <th>Channel</th>
+                        <th>Encrypted</th>
+                    </tr>
+                </thead>
+                <tbody id="wifiTableBody">
+                </tbody>
+            </table>
+
+            <button id="rescanButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rescan</button>
+
+            <div id="wifiConfigForm">
+                <div class="form-group">
+                    <label for="SSIDInput">SSID</label>
+                    <input id="SSIDInput" class="form-control" placeholder="SSID" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="PassInput">Password</label>
+                    <input id="PassInput" class="form-control" placeholder="Password" type="text">
+                </div>
+                <button id="wifiConfigSubmitButton" type="submit" class="btn btn-lg btn-outline-light">Submit</button>
+            </div>
+
+            <script>
+                wifiDebounce = Date.now()
+
+                messageEventList.push(handleWifiMessage)
+
+                $("#rescanButton").click(function () {
+                    onRescanWifiEvent()
+                });
+                $("#wifiConfigSubmitButton").click(function () {
+                    onSubmitWifiEvent()
+                });
+
+                function handleWifiMessage(jsonMessage) {
+                    // {
+                    //     "Wifi" : {
+                    //         "ScanResults" : [
+                    //             {
+                    //                 "SSID" : "Test",
+                    //                 "RSSI" : -70,
+                    //                 "BSSID" : "MAC",
+                    //                 "Channel" : 1,
+                    //                 "Encrypt" : "Yes"
+                    //             }
+                    //         ]
+                    //     }
+                    // }
+
+                    if ("Wifi" in jsonMessage) {
+                        jsonMessage = jsonMessage.Wifi
+                        if (typeof jsonMessage === "object") {
+                            if (("ScanResults" in jsonMessage)) {
+                                if (typeof jsonMessage.ScanResults === "object") {
+                                    let specific_tbody = document.getElementById("wifiTableBody");
+                                    for (var i = specific_tbody.rows.length - 1; i > -1; i--) {
+                                        specific_tbody.deleteRow(i);
+                                    }
+
+                                    for (var i = 0; i < jsonMessage.ScanResults.length; i++) {
+                                        let row = specific_tbody.insertRow(-1);
+                                        let ssidCell = row.insertCell(0).appendChild(document.createTextNode(jsonMessage.ScanResults[i].SSID));
+                                        let rssiCell = row.insertCell(1).appendChild(document.createTextNode(jsonMessage.ScanResults[i].RSSI));
+                                        let bssidCell = row.insertCell(2).appendChild(document.createTextNode(jsonMessage.ScanResults[i].BSSID));
+                                        let channelCell = row.insertCell(3).appendChild(document.createTextNode(jsonMessage.ScanResults[i].CHANNEL));
+                                        let encryptedCell = row.insertCell(4).appendChild(document.createTextNode(jsonMessage.ScanResults[i].ENCRYPT));
+
+                                        row.addEventListener("click", function () {
+                                            document.getElementById('SSIDInput').value = this.firstChild.innerHTML;
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function onRescanWifiEvent() {
+                    msg = {
+                        "Wifi": {
+                            "Rescan": true
+                        }
+                    }
+
+                    if (Date.now() - wifiDebounce > 2000) {
+                        wifiDebounce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+
+                function onSubmitWifiEvent() {
+                    msg = {
+                        "Wifi": {
+                            "SSID": $("#SSIDInput").val(),
+                            "Password": $("#PassInput").val()
+                        }
+                    }
+
+                    $("#SSIDInput").val("")
+                    $("#PassInput").val("")
+
+                    if (Date.now() - wifiDebounce > 2000) {
+                        wifiDebounce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+        <div id="BellCurve" class="container pb-5 tab-pane fade">
+            <h2>Bell Curve Mode</h2>
+            <p>In this mode the lamp will shape the light into a bell curve. This is meant to be more asthetically
+                pleasing than the regular colour mode.</p>
+            <div class="row my-3">
+                <input id="bellCurveSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)" readonly="readonly" style="background-color: rgb(152, 132, 128); color: rgb(34, 34, 34);">
+            </div>
+
+            <script>bellCurveDebunce = Date.now()
+                var bellRed = 0
+                var bellGreen = 0
+                var bellBlue = 0
+
+                messageEventList.push(handleBellCurveMessage)
+
+                var bellCurveSelectButton = $('#bellCurveSelectButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon: '.cp-disp {padding:10px; margin-bottom:6px; font-size:19px; height:20px; line-height:20px}' +
+                        '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onOnBellCurvePickerEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                        setPickerColor(bellCurveSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+
+                function handleBellCurveMessage(jsonMessage) {
+                    if ("Bell Curve" in jsonMessage) {
+                        jsonMessage = jsonMessage["Bell Curve"]
+                        if (typeof jsonMessage === "object") {
+                            var newRed = bellRed
+                            var newGreen = bellGreen
+                            var newBlue = bellBlue
+
+                            if (("Red" in jsonMessage)) {
+                                if (typeof jsonMessage.Red === "number") {
+                                    newRed = jsonMessage.Red
+                                }
+                            }
+                            if (("Green" in jsonMessage)) {
+                                if (typeof jsonMessage.Green === "number") {
+                                    newGreen = jsonMessage.Green
+                                }
+                            }
+                            if (("Blue" in jsonMessage)) {
+                                if (typeof jsonMessage.Blue === "number") {
+                                    newBlue = jsonMessage.Blue
+                                }
+                            }
+
+                            setPickerColor(bellCurveSelectButton, newRed, newGreen, newBlue);
+                        }
+                    }
+                }
+
+                function onOnBellCurvePickerEvent(red, green, blue) {
+                    if (bellRed != red || bellGreen != green || bellBlue != blue) {
+                        msg = {
+                            "State": true,
+                            "Mode": "Bell Curve",
+                            "Bell Curve": {
+                                "Red": red,
+                                "Green": green,
+                                "Blue": blue
+                            }
+                        }
+
+                        if (Date.now() - bellCurveDebunce > 50) {
+                            bellCurveDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                    }
+                }
+            </script>
+        </div>
+        <div id="Circle" class="container pb-5 tab-pane fade">
+            <h2>Circle Mode</h2>
+            <p>A simple dot moving round the lamp.</p>
+            <script>messageEventList.push(handleCircleMessage);
+                function handleCircleMessage(jsonMessage) {
+                    if ("Circle" in jsonMessage) {
+                        jsonMessage = jsonMessage.Circle
+                        if (typeof jsonMessage === "object") { }
+                    }
+                }
+            </script>
+        </div>
+        <div id="Clock" class="container pb-5 tab-pane fade">
+            <h2>Clock Mode</h2>
+            <p>In this mode the light will display the current time in 12 hr format uisng the
+                top and bottom side of the light. On the top is the current hour, and the bottom is the minute. The left
+                of teh light represents 0 and the right represents either 12hr or 60mins. You can choose the colour of
+                the hour and minute light to what you would desire. If your clock is out of sync
+                you can click the resync button (note this should be automatically done on the device for you)</p>
+            <h2>Current Time: <span id="clockPrintOut">08:32:26 PM</span></h2>
+            <div class="row my-3">
+                <button id="clockHourColourButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" readonly="readonly" style="background-color: rgb(125, 99, 99); color: rgb(221, 221, 221);" value="rgb(125, 99, 99)">rgb(125, 99, 99)</button>
+                <button id="clockMinuteColourButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" readonly="readonly" style="background-color: rgba(0, 0, 0, 0); color: rgb(221, 221, 221);">Minute Colour</button>
+            </div>
+
+            <script>clockHourDebunce = Date.now()
+                clockMinDebunce = Date.now()
+                var currentHourRed = 0
+                var currentHourGreen = 0
+                var currentHourBlue = 0
+                var currentMinRed = 0
+                var currentMinGreen = 0
+                var currentMinBlue = 0
+
+                messageEventList.push(handleClockMessage)
+
+                var clockHourColourButton = $('#clockHourColourButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon: '.cp-disp {padding:10px; margin-bottom:6px; font-size:19px; height:20px; line-height:20px}' +
+                        '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onHourPickerEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                        setPickerColor(clockHourColourButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+                var clockMinuteColourButton = $('#clockMinuteColourButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon: '.cp-disp {padding:10px; margin-bottom:6px; font-size:19px; height:20px; line-height:20px}' +
+                        '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onMinPickerEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                        setPickerColor(clockMinuteColourButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+
+                $(function () {
+                    clockTick()
+                });
+
+                function clockTick() {
+                    let today = new Date();
+                    let h = (today.getHours() % 12 < 10) ? "0" + today.getHours() % 12 : today.getHours() % 12
+                    let m = (today.getMinutes() < 10) ? "0" + today.getMinutes() : today.getMinutes()
+                    let s = (today.getSeconds() < 10) ? "0" + today.getSeconds() : today.getSeconds()
+                    let ampm = (today.getHours() >= 12) ? 'PM' : 'AM';
+                    h = (today.getHours() != 0) ? h : "12";
+
+                    var t = setTimeout(clockTick, 1000);
+                    $("#clockPrintOut").html(h + ":" + m + ":" + s + " " + ampm)
+                }
+
+                function handleClockMessage(jsonMessage) {
+                    if ("Clock" in jsonMessage) {
+                        jsonMessage = jsonMessage.Clock
+                        if (typeof jsonMessage === "object") {
+                            if (("hourColour" in jsonMessage)) {
+                                if (typeof jsonMessage.hourColour === "object") {
+                                    var newRed = currentHourRed
+                                    var newGreen = currentHourGreen
+                                    var newBlue = currentHourBlue
+
+                                    if (("Red" in jsonMessage.hourColour)) {
+                                        if (typeof jsonMessage.hourColour.Red === "number") {
+                                            newRed = jsonMessage.hourColour.Red
+                                        }
+                                    }
+                                    if (("Green" in jsonMessage.hourColour)) {
+                                        if (typeof jsonMessage.hourColour.Green === "number") {
+                                            newGreen = jsonMessage.hourColour.Green
+                                        }
+                                    }
+                                    if (("Blue" in jsonMessage.hourColour)) {
+                                        if (typeof jsonMessage.hourColour.Blue === "number") {
+                                            newBlue = jsonMessage.hourColour.Blue
+                                        }
+                                    }
+
+                                    setPickerColor(clockHourColourButton, newRed, newGreen, newBlue);
+                                }
+                            }
+
+                            if (("minuteColour" in jsonMessage)) {
+                                if (typeof jsonMessage.minuteColour === "object") {
+                                    var newRed = currentMinRed
+                                    var newGreen = currentMinGreen
+                                    var newBlue = currentMinBlue
+
+                                    if (("Red" in jsonMessage.minuteColour)) {
+                                        if (typeof jsonMessage.minuteColour.Red === "number") {
+                                            newRed = jsonMessage.minuteColour.Red
+                                        }
+                                    }
+                                    if (("Green" in jsonMessage.minuteColour)) {
+                                        if (typeof jsonMessage.minuteColour.Green === "number") {
+                                            newGreen = jsonMessage.minuteColour.Green
+                                        }
+                                    }
+                                    if (("Blue" in jsonMessage.minuteColour)) {
+                                        if (typeof jsonMessage.minuteColour.Blue === "number") {
+                                            newBlue = jsonMessage.minuteColour.Blue
+                                        }
+                                    }
+
+                                    setPickerColor(clockMinuteColourButton, newRed, newGreen, newBlue);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function onHourPickerEvent(red, green, blue) {
+                    if (currentHourRed != red || currentHourGreen != green || currentHourBlue != blue) {
+                        currentHourRed = red
+                        currentHourGreen = green
+                        currentHourBlue = blue
+
+                        msg = {
+                            "State": true,
+                            "Mode": "Clock",
+                            "Clock": {
+                                "hourColour": {
+                                    "Red": red,
+                                    "Green": green,
+                                    "Blue": blue
+                                }
+                            }
+                        }
+
+                        if (Date.now() - clockHourDebunce > 50) {
+                            clockHourDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                    }
+                }
+
+                function onMinPickerEvent(red, green, blue) {
+                    if (currentMinRed != red || currentMinGreen != green || currentMinBlue != blue) {
+                        currentMinRed = red
+                        currentMinGreen = green
+                        currentMinBlue = blue
+
+                        msg = {
+                            "State": true,
+                            "Mode": "Clock",
+                            "Clock": {
+                                "minColour": {
+                                    "Red": red,
+                                    "Green": green,
+                                    "Blue": blue
+                                }
+                            }
+                        }
+
+                        if (Date.now() - clockMinDebunce > 50) {
+                            clockMinDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                    }
+                }
+            </script>
+        </div>
+        <div id="Colour" class="container pb-5 tab-pane fade">
+            <h2>Colour Mode</h2>
+            <p>Here you can set the light to any colour you desire. There are also a couple of buttons for setting the light to different shades of white</p>
+
+            <div class="row my-3">
+                <input id="colourSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)" readonly="readonly" style="background-color: rgb(128, 128, 128); color: rgb(221, 221, 221);">
+            </div>
+            <div class="row my-3">
+                <button id="redButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Red</button>
+                <button id="greenButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Green</button>
+                <button id="blueButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Blue</button>
+            </div>
+            <div class="row my-3">
+                <button id="yellowButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Yellow</button>
+                <button id="cyanButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Cyan</button>
+                <button id="magentaButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Magenta</button>
+            </div>
+            <div class="row my-3">
+                <button id="2500Button" class="col mb-2 mx-2 btn btn-lg btn-outline-light">2500K</button>
+                <button id="3000Button" class="col mb-2 mx-2 btn btn-lg btn-outline-light">3000K</button>
+                <button id="4000Button" class="col mb-2 mx-2 btn btn-lg btn-outline-light">4000K</button>
+            </div>
+
+            <script>var currentRed = 0;
+                var currentGreen = 0;
+                var currentBlue = 0;
+                var colourDebunce = Date.now()
+
+                messageEventList.push(handleColourMessage)
+
+                var colourSelectButton = $('#colourSelectButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon:
+                        '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onColourButtonEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                        setPickerColor(colourSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+                $("#redButton").click(function () {
+                    onColourButtonEvent(255, 0, 0)
+                });
+                $("#greenButton").click(function () {
+                    onColourButtonEvent(0, 255, 0)
+                });
+                $("#blueButton").click(function () {
+                    onColourButtonEvent(0, 0, 255)
+                });
+                $("#yellowButton").click(function () {
+                    onColourButtonEvent(255, 255, 0)
+                });
+                $("#cyanButton").click(function () {
+                    onColourButtonEvent(0, 255, 255)
+                });
+                $("#magentaButton").click(function () {
+                    onColourButtonEvent(255, 0, 255)
+                });
+                $("#2500Button").click(function () {
+                    onColourButtonEvent(206, 57, 18)
+                });
+                $("#3000Button").click(function () {
+                    onColourButtonEvent(235, 71, 30)
+                });
+                $("#4000Button").click(function () {
+                    onColourButtonEvent(238, 99, 63)
+                });
+
+                function handleColourMessage(jsonMessage) {
+                    if ("Colour" in jsonMessage) {
+                        jsonMessage = jsonMessage.Colour
+                        if (typeof jsonMessage === "object") {
+                            var newRed = currentRed
+                            var newGreen = currentGreen
+                            var newBlue = currentBlue
+
+                            if (("Red" in jsonMessage)) {
+                                if (typeof jsonMessage.Red === "number") {
+                                    newRed = jsonMessage.Red
+                                }
+                            }
+                            if (("Green" in jsonMessage)) {
+                                if (typeof jsonMessage.Green === "number") {
+                                    newGreen = jsonMessage.Green
+                                }
+                            }
+                            if (("Blue" in jsonMessage)) {
+                                if (typeof jsonMessage.Blue === "number") {
+                                    newBlue = jsonMessage.Blue
+                                }
+                            }
+
+                            setPickerColor(colourSelectButton, newRed, newGreen, newBlue);
+                        }
+                    }
+                }
+
+                function onColourButtonEvent(red, green, blue) {
+                    if (currentRed != red || currentGreen != green || currentBlue != blue) {
+                        currentRed = red
+                        currentGreen = green
+                        currentBlue = blue
+
+                        msg = {
+                            "State": true,
+                            "Mode": "Colour",
+                            "Colour": {
+                                "Red": red,
+                                "Green": green,
+                                "Blue": blue
+                            }
+                        }
+                        if (Date.now() - colourDebunce > 50) {
+                            colourDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                    }
+                }
+            </script>
+        </div>
+        <div id="NightRider" class="container pb-5 tab-pane fade">
+            <h2>Night Rider Mode</h2>
+            <p>Knight Rider. A shadowy flight into the dangerous world of a man who does not exist.
+                Michael Knight: a young loner on a crusade to champion the cause of the innocent,
+                the helpless, the powerless, in a world of criminals who operate above the law.</p>
+
+            <script>messageEventList.push(handleNightRiderMessage)
+
+                function handleNightRiderMessage(jsonMessage) {
+                    if ("Night Rider" in jsonMessage) {
+                        jsonMessage = jsonMessage["Night Rider"]
+                        if (typeof jsonMessage === "object") {
+
+                        }
+                    }
+                }
+            </script>
+        </div>
+        <div id="Rainbow" class="container pb-5 tab-pane fade">
+            <h2>Rainbow Mode</h2>
+            <p>Here you can set the mode to rainbow. This mode produces a rainbow all the way around the light and
+                slowly shifts the colours clockwise. On this page you can set the speed of this as well as the
+                brightness of the light</p>
+            <div>
+                <label for="rainbowHue">Start Hue: <span id="rainbowHueLabel">0</span> Degrees</label>
+                <input id="rainbowHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="rainbowBrightness">Rainbow Brightness: <span id="rainbowBrightnessLabel">39</span>%</label>
+                <input id="rainbowBrightness" type="range" min="0" max="100" step="1" value="100" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="rainbowSpeed">Rainbow Speed: <span id="rainbowSpeedLabel">10</span> seconds</label>
+                <input id="rainbowSpeed" type="range" min="0" max="10" step="1" value="10" class="form-control-range custom-range">
+            </div>
+
+            <script>var rainbowDebunce = Date.now()
+                var rainbowLastMessage = ""
+
+                messageEventList.push(handleRainbowMessage)
+
+                $("#rainbowHue").on("input", function () {
+                    onRainboWHueEvent()
+                });
+                $("#rainbowHue").on("change", function () {
+                    onRainboWHueEvent()
+                });
+                $("#rainbowSpeed").on("input", function () {
+                    onRainboWEvent()
+                });
+                $("#rainbowSpeed").on("change", function () {
+                    onRainboWEvent()
+                });
+                $("#rainbowBrightness").on("input", function () {
+                    onRainboWEvent()
+                });
+                $("#rainbowBrightness").on("change", function () {
+                    onRainboWEvent()
+                });
+
+                function handleRainbowMessage(jsonMessage) {
+                    if ("Rainbow" in jsonMessage) {
+                        jsonMessage = jsonMessage.Rainbow
+                        if (typeof jsonMessage === "object") {
+                            if (("Hue" in jsonMessage)) {
+                                if (typeof jsonMessage.Hue === "number") {
+                                    $("#rainbowHue").val(Math.round(jsonMessage.Hue / 255 * 360))
+                                    $("#rainbowHueLabel").html(Math.round(jsonMessage.Hue / 255 * 360))
+                                }
+                            }
+                            if (("Speed" in jsonMessage)) {
+                                if (typeof jsonMessage.Speed === "number") {
+                                    $("#rainbowSpeed").val(jsonMessage.Speed)
+                                    $("#rainbowSpeedLabel").html(jsonMessage.Speed)
+                                }
+                            }
+                            if (("Brightness" in jsonMessage)) {
+                                if (typeof jsonMessage.Brightness === "number") {
+                                    $("#rainbowBrightness").val(Math.round(jsonMessage.Brightness / 255 * 100))
+                                    $("#rainbowBrightnessLabel").html(Math.round(jsonMessage.Brightness / 255 * 100))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function onRainboWHueEvent() {
+
+                    let currentHueValue = parseInt($("#rainbowHue").val(), 10)
+                    let currentBrightnessValue = parseInt($("#rainbowBrightness").val(), 10)
+
+                    $("#rainbowSpeed").val = 0;
+                    $("#rainbowSpeedLabel").html(0)
+                    $("#rainbowHueLabel").html(currentHueValue)
+                    $("#rainbowBrightnessLabel").html(currentBrightnessValue)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Rainbow",
+                        "Rainbow": {
+                            "Hue": Math.round(currentHueValue / 360 * 255),
+                            "Speed": 0,
+                            "Brightness": Math.round(currentBrightnessValue / 100 * 255)
+                        }
+                    }
+
+                    if (msg != rainbowLastMessage && Date.now() - rainbowDebunce > 50) {
+                        rainbowDebunce = Date.now()
+                        rainbowLastMessage = msg
+                        sendMessage(msg)
+                    }
+                }
+
+                function onRainboWEvent() {
+                    let currentSpeedValue = parseFloat($("#rainbowSpeed").val())
+                    let currentBrightnessValue = parseInt($("#rainbowBrightness").val(), 10)
+
+                    $("#rainbowSpeedLabel").html(currentSpeedValue)
+                    $("#rainbowBrightnessLabel").html(currentBrightnessValue)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Rainbow",
+                        "Rainbow": {
+                            "Speed": currentSpeedValue,
+                            "Brightness": Math.round(currentBrightnessValue / 100 * 255)
+                        }
+                    }
+
+                    if (msg != rainbowLastMessage && Date.now() - rainbowDebunce > 50) {
+                        rainbowDebunce = Date.now()
+                        rainbowLastMessage = msg
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+        <div id="ColourWipe" class="container pb-5 tab-pane fade">
+            <h2>Color Wipe Mode</h2>
+            <p>Color Wipe will fill the light with a color in a wiping fashion then wipe the light away.</p>
+            <div class="row my-3">
+                <input id="colorWipeSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)" readonly="readonly" style="background-color: rgb(255, 0, 255); color: rgb(34, 34, 34);">
+            </div>
+
+            <script>var colorWipeLastMessage = ""
+                var colorWipeRed = 0
+                var colorWipeGreen = 0
+                var colorWipeBlue = 0
+                var colorWipeDebunce = Date.now()
+
+                messageEventList.push(handleColorWipeMessage)
+
+                var colorWipeSelectButton = $('#colorWipeSelectButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon: '.cp-disp {padding:10px; margin-bottom:6px; font-size:19px; height:20px; line-height:20px}' +
+                        '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onColorWipeButtonEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+
+                        setPickerColor(colorWipeSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+
+                function handleColorWipeMessage(jsonMessage) {
+                    if ("Color Wipe" in jsonMessage) {
+                        jsonMessage = jsonMessage["Color Wipe"]
+                        if (typeof jsonMessage === "object") {
+                            var newRed = currentRed
+                            var newGreen = currentGreen
+                            var newBlue = currentBlue
+
+                            if (("Red" in jsonMessage)) {
+                                if (typeof jsonMessage.Red === "number") {
+                                    newRed = jsonMessage.Red
+                                }
+                            }
+                            if (("Green" in jsonMessage)) {
+                                if (typeof jsonMessage.Green === "number") {
+                                    newGreen = jsonMessage.Green
+                                }
+                            }
+                            if (("Blue" in jsonMessage)) {
+                                if (typeof jsonMessage.Blue === "number") {
+                                    newBlue = jsonMessage.Blue
+                                }
+                            }
+                            setPickerColor(colorWipeSelectButton, newRed, newGreen, newBlue);
+                        }
+                    }
+                }
+
+                function onColorWipeButtonEvent(red, green, blue) {
+                    if (currentRed != red || currentGreen != green || currentBlue != blue) {
+                        currentRed = red
+                        currentGreen = green
+                        currentBlue = blue
+
+                        msg = {
+                            "State": true,
+                            "Mode": "Color Wipe",
+                            "Color Wipe": {
+                                "Red": red,
+                                "Green": green,
+                                "Blue": blue
+                            }
+                        }
+
+                        if (Date.now() - colorWipeDebunce > 50) {
+                            colorWipeDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                        if (msg != colorWipeLastMessage && Date.now() - colorWipeDebunce > 50) {
+                            colorWipeDebunce = Date.now()
+                            colorWipeLastMessage = msg
+                            sendMessage(msg)
+                        }
+                    }
+                }
+            </script>
+        </div>
+        <div id="Confetti" class="container pb-5 tab-pane fade">
+            <h2>Confetti Mode</h2>
+            <p>Confetti will flash random colors to emulate confetti.</p>
+
+            <script>var confettiLastMessage = ""
+                var confettiRed = 0;
+                var confettiGreen = 0;
+                var confettiBlue = 0;
+                var confettiDebunce = Date.now()
+
+                messageEventList.push(handleConfettiMessage)
+
+                var confettiSelectButton = $('#confettiSelectButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon:
+                        '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onConfettiButtonEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                        setPickerColor(confettiSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+
+                function onConfettiEvent() {
+                    let currentSpeedValue = parseFloat($("#confettiSpeed").val())
+
+                    $("#confettiSpeedLabel").html(currentSpeedValue)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Confetti",
+                        "Confetti": {
+                            "Speed": currentSpeedValue,
+                        }
+                    }
+
+                    if (msg != confettiLastMessage && Date.now() - confettiDebunce > 50) {
+                        confettiDebunce = Date.now()
+                        confettiLastMessage = msg
+                        sendMessage(msg)
+                    }
+                }
+
+                function handleConfettiMessage(jsonMessage) {
+                    if ("Confetti" in jsonMessage) {
+                        jsonMessage = jsonMessage.Confetti
+                        if (typeof jsonMessage === "object") {
+                            var newRed = currentRed
+                            var newGreen = currentGreen
+                            var newBlue = currentBlue
+
+                            if (("Red" in jsonMessage)) {
+                                if (typeof jsonMessage.Red === "number") {
+                                    newRed = jsonMessage.Red
+                                }
+                            }
+                            if (("Green" in jsonMessage)) {
+                                if (typeof jsonMessage.Green === "number") {
+                                    newGreen = jsonMessage.Green
+                                }
+                            }
+                            if (("Blue" in jsonMessage)) {
+                                if (typeof jsonMessage.Blue === "number") {
+                                    newBlue = jsonMessage.Blue
+                                }
+                            }
+                            setPickerColor(confettiSelectButton, newRed, newGreen, newBlue);
+                        }
+                    }
+                }
+
+                function onConfettiButtonEvent(red, green, blue) {
+                    if (currentRed != red || currentGreen != green || currentBlue != blue) {
+                        currentRed = red
+                        currentGreen = green
+                        currentBlue = blue
+
+                        msg = {
+                            "State": true,
+                            "Mode": "Confetti",
+                            "Confetti": {
+                                "Red": red,
+                                "Green": green,
+                                "Blue": blue
+                            }
+                        }
+                        if (Date.now() - confettiDebunce > 50) {
+                            confettiDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                    }
+                    if (msg != confettiLastMessage && Date.now() - confettiDebunce > 50) {
+                        confettiDebunce = Date.now()
+                        confettiLastMessage = msg
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+        <div id="Sparkle" class="container pb-5 tab-pane fade">
+            <h2>Sparkle Mode</h2>
+            <p>This is the Sparkle mode.</p>
+            <div class="row my-3">
+                <input id="sparkleSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)" readonly="readonly" style="background-color: rgb(128, 128, 128); color: rgb(221, 221, 221);">
+            </div>
+
+            <script>var sparkleLastMessage = ""
+                var sparkleRed = 0;
+                var sparkleGreen = 0;
+                var sparkleBlue = 0;
+                var sparkleDebunce = Date.now()
+
+                messageEventList.push(handleSparkleMessage)
+
+                var sparkleSelectButton = $('#sparkleSelectButton').colorPicker({
+                    customBG: '#222',
+                    margin: '4px -2px 0',
+                    doRender: 'div div',
+                    preventFocus: true,
+                    animationSpeed: 150,
+                    forceAlpha: false,
+
+                    // demo on how to make plugins... mobile support plugin
+                    buildCallback: function ($elm) {
+                        this.$colorPatch = $elm.prepend('<div class="cp-disp">').find('.cp-disp');
+                    },
+                    cssAddon: '.cp-xy-slider {width:200px; height:200px;}' +
+                        '.cp-xy-cursor {width:16px; height:16px; border-width:2px; margin:-8px}' +
+                        '.cp-z-slider {height:200px; width:40px;}' +
+                        '.cp-z-cursor {border-width:8px; margin-top:-8px;}' +
+                        '.cp-alpha {height:40px;}' +
+                        '.cp-alpha-cursor {border-width:8px; margin-left:-8px;}',
+
+                    renderCallback: function ($elm, toggled) {
+                        var colors = this.color.colors;
+                        onSparkleButtonEvent(Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                        setPickerColor(sparkleSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
+                    }
+                })
+                $("#sparkleSpeed").on("input", function () {
+                    onSparkleEvent()
+                });
+                $("#sparkleSpeed").on("change", function () {
+                    onSparkleEvent()
+                });
+
+
+                function handleSparkleMessage(jsonMessage) {
+                    if ("Sparkle" in jsonMessage) {
+                        jsonMessage = jsonMessage.Sparkle
+                        if (typeof jsonMessage === "object") {
+                            var newRed = currentRed
+                            var newGreen = currentGreen
+                            var newBlue = currentBlue
+
+                            if (("Red" in jsonMessage)) {
+                                if (typeof jsonMessage.Red === "number") {
+                                    newRed = jsonMessage.Red
+                                }
+                            }
+                            if (("Green" in jsonMessage)) {
+                                if (typeof jsonMessage.Green === "number") {
+                                    newGreen = jsonMessage.Green
+                                }
+                            }
+                            if (("Blue" in jsonMessage)) {
+                                if (typeof jsonMessage.Blue === "number") {
+                                    newBlue = jsonMessage.Blue
+                                }
+                            }
+                            setPickerColor(sparkleSelectButton, newRed, newGreen, newBlue);
+                        }
+                    }
+                }
+
+                function onSparkleEvent() {
+                    let currentSpeedValue = parseFloat($("#sparkleSpeed").val())
+
+                    $("#sparkleSpeedLabel").html(currentSpeedValue)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Sparkle",
+                        "Sparkle": {
+                            "Speed": currentSpeedValue,
+                        }
+                    }
+
+                    if (msg != sparkleLastMessage && Date.now() - sparkleDebunce > 50) {
+                        sparkleDebunce = Date.now()
+                        sparkleLastMessage = msg
+                        sendMessage(msg)
+                    }
+                }
+
+                function onSparkleButtonEvent(red, green, blue) {
+                    if (currentRed != red || currentGreen != green || currentBlue != blue) {
+                        currentRed = red
+                        currentGreen = green
+                        currentBlue = blue
+
+                        msg = {
+                            "State": true,
+                            "Mode": "Sparkle",
+                            "Sparkle": {
+                                "Red": red,
+                                "Green": green,
+                                "Blue": blue
+                            }
+                        }
+                        if (Date.now() - sparkleDebunce > 50) {
+                            sparkleDebunce = Date.now()
+                            sendMessage(msg)
+                        }
+                    }
+                    if (msg != sparkleLastMessage && Date.now() - sparkleDebunce > 50) {
+                        sparkleDebunce = Date.now()
+                        sparkleLastMessage = msg
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+        <div id="Visualiser" class="container pb-5 tab-pane fade active show">
+            <h2>Visualiser Mode</h2>
+            <p> Here you can set the mode to Visualiser. This mode does an FFT on the ADC of the ESP8266 and maps the
+                frequencies
+                to the number of top and bottom LED's. To use this mode, an input source must be present on the ADC such
+                as an amplified mic
+                or an input from a music source such as a Chromecast.
+            </p>
+            <div>
+                <label for="visualiserPeriod"><b>Frequency Range</b>: <span id="visualiserPeriodLabel">417</span>Hz</label>
+                <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span id="visualiserMinThresholdLabel">180</span></label>
+                <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span id="visualiserMaxThresholdLabel">1350</span></label>
+                <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="visualiserFadeUp"><b>Fade Up Delay</b>: <span id="visualiserFadeUpLabel">32</span></label>
+                <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span id="visualiserFadeDownLabel">32</span></label>
+                <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="visualiserHueOffset"><b>Hue Offset</b>: <span id="visualiserHueOffsetLabel">240</span></label>
+                <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170" class="form-control-range custom-range">
+            </div>
+            <h6 class="pt-4">Variable Description</h6>
+            <ul>
+                <li><b>Frequency Range</b> - The displayed frequency spectrum from left to right starting from 0Hz</li>
+                <li><b>Minimum Threshold</b> - The minimum value of the FFT calculations to map to the zero brightness
+                    of the LED's, useful to remove noise</li>
+                <li><b>Maximum Threshold</b> - The maximum ceiling value value of the FFT to map to max brightness of
+                    the LED's</li>
+                <li><b>Fade Up Delay</b> - A multiplier to control the speed of animation when setting the light to new
+                    brightness</li>
+                <li><b>Fade Down Delay</b> - A multiplier to control how fast the LED's fade out when no new brightness
+                    has been set</li>
+                <li><b>Hue Offset</b> - The offset hue value from 0 for the start of the rainbow</li>
+            </ul>
+
+            <script>var visualiserDebunce = Date.now()
+                var lastVisualiserMessaeg = ""
+
+                messageEventList.push(handleVisualiserMessage)
+
+                $("#visualiserPeriod").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserPeriod").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMinThreshold").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMinThreshold").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMaxThreshold").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserMaxThreshold").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeUp").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeUp").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeDown").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserFadeDown").on("change", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserHueOffset").on("input", function () {
+                    onVisualiserEvent()
+                });
+                $("#visualiserHueOffset").on("change", function () {
+                    onVisualiserEvent()
+                });
+
+                function handleVisualiserMessage(jsonMessage) {
+                    if ("Visualiser" in jsonMessage) {
+                        jsonMessage = jsonMessage.Visualiser
+                        if (typeof jsonMessage === "object") {
+                            if (("Period" in jsonMessage)) {
+                                if (typeof jsonMessage.Period === "number") {
+                                    $("#visualiserPeriod").val(jsonMessage.Period)
+                                    $("#visualiserPeriodLabel").html(Math.round(1000000 / jsonMessage.Period / 2))
+                                }
+                            }
+                            if (("MinThreshold" in jsonMessage)) {
+                                if (typeof jsonMessage.MinThreshold === "number") {
+                                    $("#visualiserMinThreshold").val(jsonMessage.MinThreshold)
+                                    $("#visualiserMinThresholdLabel").html(jsonMessage.MinThreshold)
+                                }
+                            }
+                            if (("MaxThreshold" in jsonMessage)) {
+                                if (typeof jsonMessage.MaxThreshold === "number") {
+                                    $("#visualiserMaxThreshold").val(jsonMessage.MaxThreshold)
+                                    $("#visualiserMaxThresholdLabel").html(jsonMessage.MaxThreshold)
+                                }
+                            }
+                            if (("FadeUp" in jsonMessage)) {
+                                if (typeof jsonMessage.FadeUp === "number") {
+                                    $("#visualiserFadeUp").val(jsonMessage.FadeUp)
+                                    $("#visualiserFadeUpLabel").html(jsonMessage.FadeUp)
+                                }
+                            }
+                            if (("FadeDown" in jsonMessage)) {
+                                if (typeof jsonMessage.FadeDown === "number") {
+                                    $("#visualiserFadeDown").val(jsonMessage.FadeDown)
+                                    $("#visualiserFadeDownLabel").html(jsonMessage.FadeDown)
+                                }
+                            }
+                            if (("HueOffset" in jsonMessage)) {
+                                if (typeof jsonMessage.HueOffset === "number") {
+                                    $("#visualiserHueOffset").val(Math.round(jsonMessage.HueOffset / 255 * 360))
+                                    $("#visualiserHueOffsetLabel").html(Math.round(jsonMessage.HueOffset / 255 * 360))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function onVisualiserEvent() {
+                    let currentPeriod = parseInt($("#visualiserPeriod").val(), 10)
+                    let currentMinThreshold = parseInt($("#visualiserMinThreshold").val(), 10)
+                    let currentMaxThreshold = parseInt($("#visualiserMaxThreshold").val(), 10)
+                    let currentFadeUp = parseInt($("#visualiserFadeUp").val(), 10)
+                    let currentFadeDown = parseInt($("#visualiserFadeDown").val(), 10)
+                    let currentHueOffset = parseInt($("#visualiserHueOffset").val(), 10)
+
+                    $("#visualiserPeriodLabel").html(Math.round(1000000 / currentPeriod / 2))
+                    $("#visualiserMinThresholdLabel").html(currentMinThreshold)
+                    $("#visualiserMaxThresholdLabel").html(currentMaxThreshold)
+                    $("#visualiserFadeUpLabel").html(currentFadeUp)
+                    $("#visualiserFadeDownLabel").html(currentFadeDown)
+                    $("#visualiserHueOffsetLabel").html(currentHueOffset)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Visualiser",
+                        "Visualiser": {
+                            "Period": currentPeriod,
+                            "MinThreshold": currentMinThreshold,
+                            "MaxThreshold": currentMaxThreshold,
+                            "FadeUp": currentFadeUp,
+                            "FadeDown": currentFadeDown,
+                            "HueOffset": Math.round(currentHueOffset / 360 * 255)
+                        }
+                    }
+
+                    if (msg != lastVisualiserMessaeg && Date.now() - visualiserDebunce > 50) {
+                        lastVisualiserMessaeg = msg
+                        visualiserDebunce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>

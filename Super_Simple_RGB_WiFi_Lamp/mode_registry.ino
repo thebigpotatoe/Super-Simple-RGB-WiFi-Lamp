@@ -10,10 +10,4 @@ void ledModeInit() {
   modes["Clock"] = new ModeClock();
   modes["Bell Curve"] = new ModeBellCurve();
   modes["Night Rider"] = new ModeNightRider();
-  modes["Circle"] = new ModeCircle();
-  modes["Sparkle"] = new ModeSparkle();
-  modes["Color Wipe"] = new ModeColorWipe();
-  modes["Confetti"] = new ModeConfetti();
-  modes["Visualiser"] = new ModeVisualiser();
 }
-

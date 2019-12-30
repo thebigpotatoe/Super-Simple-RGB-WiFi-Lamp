@@ -80,6 +80,12 @@ bool updateClients() {
     // Debug 
     Serial.println("[updateClients] - Sending updated values to clients");
 
+    // Send each of the modes data
+    for ( auto it = modes.begin(); it != modes.end(); it++ ) {
+      String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + it->second->getName() + "\", \"tabHtml\" : \"" + it->second->getTabHtml() + "\", \"tabScript\" : \"" + it->second->getTabScript() + "\"}}";
+      webSocket.broadcastTXT(htmlJSON.c_str());
+    }
+
     // Get and Send
     sendConfigViaWS();
 

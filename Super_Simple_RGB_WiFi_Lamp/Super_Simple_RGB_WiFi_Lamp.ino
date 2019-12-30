@@ -59,6 +59,9 @@ class ModeBase
 public:
     virtual void render();
     virtual void applyConfig(JsonVariant& settings);
+    virtual const char *getName();
+    virtual const char *getTabHtml();
+    virtual const char *getTabScript();
 };
 
 std::map<String, ModeBase*> modes;
