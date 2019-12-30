@@ -44,15 +44,23 @@ public:
     settings["Speed"] = colorWipeSpeed = settings["Speed"] | colorWipeSpeed;
   }
 
-  virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+  virtual const char *getName()
   {
-    const char *modeName = "Colour Wipe";
-    const char *tabHtml = PSTR("<h2>Color Wipe Mode<\\/h2>\\r\\n"
+    return "Colour Wipe";
+  }
+
+  virtual const char *getTabHtml()
+  {
+    return PSTR("<h2>Color Wipe Mode<\\/h2>\\r\\n"
                                "<p>Color Wipe will fill the light with a color in a wiping fashion then wipe the light away.<\\/p>\\r\\n"
                                "<div class=\\\"row my-3\\\">\\r\\n"
                                "    <input id=\\\"colorWipeSelectButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\" value=\\\"rgb(0,0,0)\\\"><\\/input>\\r\\n"
                                "<\\/div>\\r\\n");
-    const char *tabScript = PSTR("var colorWipeLastMessage = \\\"\\\"\\r\\n"
+  }
+
+  virtual const char *getTabScript()
+  {
+    return PSTR("var colorWipeLastMessage = \\\"\\\"\\r\\n"
                                  "var colorWipeRed = 0\\r\\n"
                                  "var colorWipeGreen = 0\\r\\n"
                                  "var colorWipeBlue = 0\\r\\n"
@@ -143,8 +151,5 @@ public:
                                  "        }\\r\\n"
                                  "    }\\r\\n"
                                  "}\\r\\n");
-    String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-    _webSocketServer.broadcastTXT(htmlJSON.c_str());
   }
 };

@@ -103,10 +103,14 @@ public:
         }
     }
 
-    virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+    virtual const char *getName()
     {
-        const char *modeName = "Clock";
-        const char *tabHtml = PSTR("<h2>Clock Mode<\\/h2>\\r\\n"
+        return "Clock";
+    }
+
+    virtual const char *getTabHtml()
+    {
+        return PSTR("<h2>Clock Mode<\\/h2>\\r\\n"
                                    "<p>In this mode the light will display the current time in 12 hr format uisng the\\r\\n"
                                    "    top and bottom side of the light. On the top is the current hour, and the bottom is the minute. The left\\r\\n"
                                    "    of teh light represents 0 and the right represents either 12hr or 60mins. You can choose the colour of\\r\\n"
@@ -117,7 +121,11 @@ public:
                                    "    <button id=\\\"clockHourColourButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\">Hour Colour<\\/button>\\r\\n"
                                    "    <button id=\\\"clockMinuteColourButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\">Minute Colour<\\/button>\\r\\n"
                                    "<\\/div>\\r\\n");
-        const char *tabScript = PSTR("clockHourDebunce = Date.now()\\r\\n"
+    }
+
+    virtual const char *getTabScript()
+    {
+        return PSTR("clockHourDebunce = Date.now()\\r\\n"
                                      "clockMinDebunce = Date.now()\\r\\n"
                                      "var currentHourRed = 0\\r\\n"
                                      "var currentHourGreen = 0\\r\\n"
@@ -305,8 +313,5 @@ public:
                                      "        }\\r\\n"
                                      "    }\\r\\n"
                                      "}\\r\\n");
-        String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-        _webSocketServer.broadcastTXT(htmlJSON.c_str());
     }
 };

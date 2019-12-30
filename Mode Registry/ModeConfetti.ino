@@ -30,12 +30,20 @@ public:
     settings["Speed"] = confettiSpeed = settings["Speed"] | confettiSpeed;
   }
 
-  virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+  virtual const char *getName()
   {
-    const char *modeName = "Confetti";
-    const char *tabHtml = PSTR("<h2>Confetti Mode<\\/h2>\\r\\n"
-                               "<p>Confetti will flash random colors to emulate confetti.<\\/p>\\r\\n");
-    const char *tabScript = PSTR("var confettiLastMessage = \\\"\\\"\\r\\n"
+    return "Confetti";
+  }
+
+  virtual const char *getTabHtml()
+  {
+    return PSTR("<h2>Confetti Mode<\\/h2>\\r\\n"
+                "<p>Confetti will flash random colors to emulate confetti.<\\/p>\\r\\n");
+  }
+
+  virtual const char *getTabScript()
+  {
+    return PSTR("var confettiLastMessage = \\\"\\\"\\r\\n"
                                  "                var confettiRed = 0;\\r\\n"
                                  "                var confettiGreen = 0;\\r\\n"
                                  "                var confettiBlue = 0;\\r\\n"
@@ -144,9 +152,5 @@ public:
                                  "                        sendMessage(msg)\\r\\n"
                                  "                    }\\r\\n"
                                  "                }\\r\\n");
-
-    String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-    _webSocketServer.broadcastTXT(htmlJSON.c_str());
   }
 };

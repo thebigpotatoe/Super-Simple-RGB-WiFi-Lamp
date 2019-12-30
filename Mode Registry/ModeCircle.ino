@@ -54,20 +54,25 @@ public:
 
   virtual void applyConfig(JsonVariant &settings) {}
 
-  virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+  virtual const char *getName()
   {
-    const char *modeName = "Circle";
-    const char *tabHtml = PSTR("<h2>Circle Mode<\\/h2>"
-                               "<p>A simple dot moving round the lamp.<\\/p>");
-    const char *tabScript = PSTR("messageEventList.push(handleCircleMessage);\\r\\n"
+    return "Circle";
+  }
+
+  virtual const char *getTabHtml()
+  {
+    return PSTR("<h2>Circle Mode<\\/h2>"
+                "<p>A simple dot moving round the lamp.<\\/p>");
+  }
+
+  virtual const char *getTabScript()
+  {
+    return PSTR("messageEventList.push(handleCircleMessage);\\r\\n"
                                  "function handleCircleMessage(jsonMessage) {\\r\\n"
                                  "     if (\\\"Circle\\\" in jsonMessage) {\\r\\n"
                                  "         jsonMessage = jsonMessage.Circle\\r\\n"
                                  "        if (typeof jsonMessage === \\\"object\\\") {}\\r\\n"
                                  "     }\\r\\n"
                                  " }\\r\\n");
-    String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-    _webSocketServer.broadcastTXT(htmlJSON.c_str());
   }
 };

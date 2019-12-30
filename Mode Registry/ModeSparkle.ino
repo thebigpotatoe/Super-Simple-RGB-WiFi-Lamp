@@ -36,15 +36,23 @@ public:
         settings["Speed"] = sparkleSpeed = settings["Speed"] | sparkleSpeed;
     }
 
-    virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+    virtual const char *getName()
     {
-        const char *modeName = "Sparkle";
-        const char *tabHtml = PSTR("<h2>Sparkle Mode<\\/h2>\\r\\n"
+      return "Sparkle";
+    }
+
+    virtual const char *getTabHtml()
+    {
+        return PSTR("<h2>Sparkle Mode<\\/h2>\\r\\n"
                                    "<p>This is the Sparkle mode.<\\/p>\\r\\n"
                                    "<div class=\\\"row my-3\\\">\\r\\n"
                                    "    <input id=\\\"sparkleSelectButton\\\" class=\\\"color col mb-2 mx-2 btn btn-lg btn-outline-light\\\" value=\\\"rgb(0,0,0)\\\"><\\/input>\\r\\n"
                                    "<\\/div>\\r\\n");
-        const char *tabScript = PSTR("var sparkleLastMessage = \\\"\\\"\\r\\n"
+    }
+
+    virtual const char *getTabScript()
+    {
+        return PSTR("var sparkleLastMessage = \\\"\\\"\\r\\n"
                                      "var sparkleRed = 0;\\r\\n"
                                      "var sparkleGreen = 0;\\r\\n"
                                      "var sparkleBlue = 0;\\r\\n"
@@ -159,9 +167,5 @@ public:
                                      "        sendMessage(msg)\\r\\n"
                                      "    }\\r\\n"
                                      "}\\r\\n");
-
-        String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-        _webSocketServer.broadcastTXT(htmlJSON.c_str());
     }
 };

@@ -19,10 +19,14 @@ public:
         settings["Blue"] = colourBlue = settings["Blue"] | colourBlue;
     }
 
-    virtual void sendWebsiteData(WebSocketsServer &_webSocketServer)
+    virtual const char *getName()
     {
-        const char *modeName = "Colour";
-        const char *tabHtml = PSTR("<h2>Colour Mode<\\/h2>\\r\\n"
+        return "Colour";
+    }
+
+    virtual const char *getTabHtml()
+    {
+        return PSTR("<h2>Colour Mode<\\/h2>\\r\\n"
                                    "<p>Here you can set the light to any colour you desire. There are also a couple of buttons for setting the light to different shades of white<\\/p>\\r\\n"
                                    "\\r\\n"
                                    "<div class=\\\"row my-3\\\">\\r\\n"
@@ -43,7 +47,11 @@ public:
                                    "    <button id=\\\"3000Button\\\" class=\\\"col mb-2 mx-2 btn btn-lg btn-outline-light\\\">3000K<\\/button>\\r\\n"
                                    "    <button id=\\\"4000Button\\\" class=\\\"col mb-2 mx-2 btn btn-lg btn-outline-light\\\">4000K<\\/button>\\r\\n"
                                    "<\\/div>\\r\\n");
-        const char *tabScript = PSTR("var currentRed = 0;\\r\\n"
+    }
+
+    virtual const char *getTabScript()
+    {
+        return PSTR("var currentRed = 0;\\r\\n"
                                      "var currentGreen = 0;\\r\\n"
                                      "var currentBlue = 0;\\r\\n"
                                      "var colourDebunce = Date.now()\\r\\n"
@@ -154,9 +162,5 @@ public:
                                      "        }\\r\\n"
                                      "    }\\r\\n"
                                      "}\\r\\n");
-
-        String htmlJSON = String("{\"Tab\" : {") + "\"Name\": \"" + modeName + "\", \"tabHtml\" : \"" + tabHtml + "\", \"tabScript\" : \"" + tabScript + "\"}}";
-
-        _webSocketServer.broadcastTXT(htmlJSON.c_str());
     }
 };
