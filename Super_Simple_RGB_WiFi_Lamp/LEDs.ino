@@ -14,7 +14,7 @@ void ledStringInit() {
 void handleMode() {
   // This limitation is important to prevent LED flickering
   // See: https://github.com/thebigpotatoe/Super-Simple-RGB-WiFi-Lamp/issues/30
-  EVERY_N_MILLISECONDS(16) {
+  EVERY_N_MILLISECONDS(1000/FRAME_RATE) {
     // Adapt the leds to the current mode. Please note the differences between Mode and currentMode.
     //
     // Mode:        Is set by the config or the web interface to tell the lamp that a specific mode should
