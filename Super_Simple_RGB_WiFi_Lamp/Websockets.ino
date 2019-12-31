@@ -44,8 +44,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
           // serializeJson(jsonDocument, Serial);
           // Serial.println();
 
-          // Parse config and resend
-          parseConfig(jsonDocument, true);
+          // Parse config
+          parseConfig(jsonDocument);
+
+          // Send the updated config back to the clients via websocket
+          websocketSend(jsonDocument);
         }
         
         // Set the processing bool to false to allow more messages

@@ -75,7 +75,7 @@ bool checkFlashConfig();
 void getConfig();
 bool sendConfigViaWS();
 void saveConfigItem(JsonDocument& jsonSetting);
-void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
+void parseConfig(JsonDocument& jsonMessage);
 // LEDs.ino
 void ledStringInit();
 void ledModeInit();

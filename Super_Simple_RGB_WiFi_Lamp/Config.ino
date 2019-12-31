@@ -56,7 +56,7 @@ void getConfig() {
 
           // Check if file parsed correctly and decode
           if (!jsonError) {
-            parseConfig(jsonDocument, false);
+            parseConfig(jsonDocument);
           }
           else {
             Serial.print("[getConfig] - deserializeJson() failed: ");
@@ -105,7 +105,11 @@ bool sendConfigViaWS() {
 
           // Check if file parsed correctly and decode
           if (!jsonError) {
-            parseConfig(jsonDocument, true);
+            parseConfig(jsonDocument);
+
+            // Send the updated config back to the clients via websocket
+            websocketSend(jsonDocument);
+
             return true;
           }
           else {
@@ -200,7 +204,7 @@ void saveConfigItem(JsonDocument& jsonSetting) {
 }
 
 // Generic message parser
-void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
+void parseConfig(JsonDocument& jsonMessage) {
   // Config Parameters
   /*
   {
@@ -332,7 +336,4 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
 
   // Save the config
   saveConfigItem(jsonMessage);
-
-  // Send the message via websockets
-  if (sendViaWebsockets) websocketSend(jsonMessage);
 }
