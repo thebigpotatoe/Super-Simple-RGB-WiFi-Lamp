@@ -6,6 +6,9 @@ private:
 
 public:
     ModeSaturationFade() {}
+
+    virtual void initialize() {}
+    
     void render()
     {
         EVERY_N_MILLISECONDS(10)
