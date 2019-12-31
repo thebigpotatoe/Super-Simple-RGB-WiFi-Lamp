@@ -10,8 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
 
     <title>RGB WiFi Lamp</title>
     <script>
@@ -87,9 +86,17 @@
                 // console.log("Found Color Wipe Message")
                 handleColorWipeMessage(jsonMessage["Color Wipe"])
             }
+            if ("Saturation Fade" in jsonMessage) {
+                // console.log("Found Saturation Fade Message")
+                handleSaturationFadeMessage(jsonMessage["Saturation Fade"])
+            }
             if ("Confetti" in jsonMessage) {
                 // console.log("Found Confetti Message")
                 handleConfettiMessage(jsonMessage["Confetti"])
+            }
+            if ("Fireflies" in jsonMessage) {
+                // console.log("Found Fireflies Message")
+                handleFirefliesMessage(jsonMessage["Fireflies"])
             }
             if ("Night Rider" in jsonMessage) {
                 // console.log("Found Night Rider Message")
@@ -305,6 +312,13 @@
                     }
                 }
                 setPickerColor(sparkleSelectButton, newRed, newGreen, newBlue);
+
+                if (("Speed" in jsonMessage)) {
+                    if (typeof jsonMessage.Speed === "number") {
+                        $("#sparkleSpeed").val(jsonMessage.Speed)
+                        $("#sparkleSpeedLabel").html(jsonMessage.Speed)
+                    }
+                }
             }
         }
 
@@ -333,6 +347,23 @@
             }
         }
 
+        function handleSaturationFadeMessage(jsonMessage) {
+            if (typeof jsonMessage === "object") {
+                if (("Hue" in jsonMessage)) {
+                    if (typeof jsonMessage.Hue === "number") {
+                        $("#saturationFadeHue").val(Math.round(jsonMessage.Hue / 255 * 359))
+                        $("#saturationFadeHueLabel").html(Math.round(jsonMessage.Hue / 255 * 359))
+                    }
+                }
+                if (("Speed" in jsonMessage)) {
+                    if (typeof jsonMessage.Speed === "number") {
+                        $("#saturationFadeSpeed").val(jsonMessage.Speed)
+                        $("#saturationFadeSpeedLabel").html(jsonMessage.Speed)
+                    }
+                }
+            }
+        }
+
         function handleConfettiMessage(jsonMessage) {
             if (typeof jsonMessage === "object") {
                 var newRed = currentRed
@@ -355,6 +386,48 @@
                     }
                 }
                 setPickerColor(confettiSelectButton, newRed, newGreen, newBlue);
+
+                if (("Speed" in jsonMessage)) {
+                    if (typeof jsonMessage.Speed === "number") {
+                        $("#confettiSpeed").val(jsonMessage.Speed)
+                        $("#confettiSpeedLabel").html(jsonMessage.Speed)
+                    }
+                }
+            }
+        }
+
+        function handleFirefliesMessage(jsonMessage) {
+            if (typeof jsonMessage === "object") {
+                if ("Hue" in jsonMessage) {
+                    if (typeof jsonMessage.Hue === "number") {
+                        $("#firefliesHue").val(Math.round(jsonMessage.Hue / 255 * 359))
+                        $("#firefliesHueLabel").html(Math.round(jsonMessage.Hue / 255 * 359))
+                    }
+                }
+                if ("Brightness" in jsonMessage) {
+                    if (typeof jsonMessage.Brightness === "number") {
+                        $("#firefliesBrightness").val(Math.round(jsonMessage.Brightness / 255 * 100))
+                        $("#firefliesBrightnessLabel").html(Math.round(jsonMessage.Brightness / 255 * 100))
+                    }
+                }
+                if ("MinimumFlashDelay" in jsonMessage) {
+                    if (typeof jsonMessage.MinimumFlashDelay === "number") {
+                        $("#firefliesMinimumFlashDelay").val(jsonMessage.MinimumFlashDelay)
+                        $("#firefliesMinimumFlashDelayLabel").html(jsonMessage.MinimumFlashDelay)
+                    }
+                }
+                if ("MaximumFlashDelay" in jsonMessage) {
+                    if (typeof jsonMessage.MaximumFlashDelay === "number") {
+                        $("#firefliesMaximumFlashDelay").val(jsonMessage.MaximumFlashDelay)
+                        $("#firefliesMaximumFlashDelayLabel").html(jsonMessage.MaximumFlashDelay)
+                    }
+                }
+                if ("FlashLength" in jsonMessage) {
+                    if (typeof jsonMessage.FlashLength === "number") {
+                        $("#firefliesFlashLength").val(jsonMessage.FlashLength)
+                        $("#firefliesFlashLengthLabel").html(jsonMessage.FlashLength)
+                    }
+                }
             }
         }
 
@@ -498,8 +571,14 @@
                     <li id="colorWipeTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#ColorWipe">Color Wipe</a>
                     </li>
+                    <li id="saturationFadeTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#SaturationFade">Saturation Fade</a>
+                    </li>
                     <li id="confettiTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#Confetti">Confetti</a>
+                    </li>
+                    <li id="firefliesTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Fireflies">Fireflies</a>
                     </li>
                     <li id="visualiserTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#Visualiser">Visualiser</a>
@@ -533,8 +612,14 @@
                     $("#colorWipeTabNavItem").click(function () {
                         sendMessage({ "Mode": "Color Wipe" })
                     });
+                    $("#saturationFadeTabNavItem").click(function () {
+                        sendMessage({ "Mode": "Saturation Fade" })
+                    });
                     $("#confettiTabNavItem").click(function () {
                         sendMessage({ "Mode": "Confetti" })
+                    });
+                    $("#firefliesTabNavItem").click(function () {
+                        sendMessage({ "Mode": "Fireflies" })
                     });
                     $("#visualiserTabNavItem").click(function () {
                         sendMessage({ "Mode": "Visualiser" })
@@ -617,20 +702,16 @@
             <button id="colourButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Colour</button>
             <button id="rainbowButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rainbow</button>
             <button id="clockButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Clock</button>
-            <button id="bellCurveButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Bell
-                Curve</button>
+            <button id="bellCurveButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Bell Curve</button>
             <button id="circleButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Circle</button>
-            <button id="nightRiderButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Night
-                Rider</button>
+            <button id="nightRiderButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Night Rider</button>
             <button id="sparkleButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Sparkle</button>
-            <button id="colorWipeButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Color
-                Wipe</button>
-            <button id="confettiButton" type="submit"
-                class="col mb-2 mx-2 btn btn-lg btn-outline-light">Confetti</button>
-            <button id="visualiserButton" type="submit"
-                class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
-            <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi
-                Config</button>
+            <button id="colorWipeButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Color Wipe</button>
+            <button id="saturationFadeButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Saturation Fade</button>
+            <button id="confettiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Confetti</button>
+            <button id="firefliesButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Fireflies</button>
+            <button id="visualiserButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
+            <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi Config</button>
             <script>
                 $("#HomeButton").click(function () {
                     $('#navbarHeader a[href="#Home"]').tab('show')
@@ -667,9 +748,17 @@
                     $('#navbarHeader a[href="#ColorWipe"]').tab('show')
                     sendMessage({ "Mode": "Color Wipe" })
                 });
+                $("#saturationFadeButton").click(function () {
+                    $('#navbarHeader a[href="#SaturationFade"]').tab('show')
+                    sendMessage({ "Mode": "Saturation Fade" })
+                });
                 $("#confettiButton").click(function () {
                     $('#navbarHeader a[href="#Confetti"]').tab('show')
                     sendMessage({ "Mode": "Confetti" })
+                });
+                $("#firefliesButton").click(function () {
+                    $('#navbarHeader a[href="#Fireflies"]').tab('show')
+                    sendMessage({ "Mode": "Fireflies" })
                 });
                 $("#visualiserButton").click(function () {
                     $('#navbarHeader a[href="#Visualiser"]').tab('show')
@@ -686,8 +775,7 @@
                 light to different shades of white</p>
 
             <div class="row my-3">
-                <input id="colourSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)"></input>
+                <input id="colourSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)"></input>
             </div>
             <div class="row my-3">
                 <button id="redButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Red</button>
@@ -798,8 +886,7 @@
             </div>
             <div>
                 <label for="rainbowBrightness">Rainbow Brightness: <span id="rainbowBrightnessLabel">100</span>%</label>
-                <input id="rainbowBrightness" type="range" min="0" max="100" step="1" value="100"
-                    class="form-control-range custom-range">
+                <input id="rainbowBrightness" type="range" min="0" max="100" step="1" value="100" class="form-control-range custom-range">
             </div>
             <div>
                 <label for="rainbowSpeed">Rainbow Speed: <span id="rainbowSpeedLabel">10</span> seconds</label>
@@ -1032,8 +1119,7 @@
             <p>In this mode the lamp will shape the light into a bell curve. This is meant to be more asthetically
                 pleasing than the regular colour mode.</p>
             <div class="row my-3">
-                <input id="bellCurveSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)">
+                <input id="bellCurveSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)">
             </div>
             <script>
                 bellCurveDebunce = Date.now()
@@ -1103,9 +1189,15 @@
         <div id="Sparkle" class="container pb-5 tab-pane fade">
             <h2>Sparkle Mode</h2>
             <p>This is the Sparkle mode..</p>
+            <!--
+            <div>
+                <label for="sparkleSpeed"><b>Sparkle Speed</b>: <span id="sparkleSpeedLabel">30</span> milliseconds</label>
+                <input id="sparkleSpeed" type="range" min="10" max="255" step="5" value="30"
+                    class="form-control-range custom-range">
+            </div>
+            -->
             <div class="row my-3">
-                <input id="sparkleSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)"></input>
+                <input id="sparkleSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)"></input>
             </div>
             <script>
                 var sparkleLastMessage = ""
@@ -1200,8 +1292,7 @@
             <h2>Color Wipe Mode</h2>
             <p>Color Wipe will fill the light with a color in a wiping fashion then wipe the light away.</p>
             <div class="row my-3">
-                <input id="colorWipeSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)"></input>
+                <input id="colorWipeSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)"></input>
             </div>
             <script>
                 var colorWipeLastMessage = ""
@@ -1272,11 +1363,19 @@
         <div id="Confetti" class="container pb-5 tab-pane fade">
             <h2>Confetti Mode</h2>
             <p>Confetti will flash random colors to emulate confetti.</p>
+            <!--
+            <div>
+                <label for="confettiSpeed"><b>Confetti Speed</b>: <span id="confettiSpeedLabel">30</span> milliseconds</label>
+                <input id="confettiSpeed" type="range" min="10" max="255" step="5" value="30"
+                    class="form-control-range custom-range">
+            </div>
+            -->
             <script>
                 var confettiLastMessage = ""
                 var confettiRed = 0;
                 var confettiGreen = 0;
                 var confettiBlue = 0;
+                var confettiSpeed = 30;
                 var confettiDebunce = Date.now()
 
                 var confettiSelectButton = $('#confettiSelectButton').colorPicker({
@@ -1305,6 +1404,13 @@
                         setPickerColor(confettiSelectButton, Math.round(colors.rgb.r * 255), Math.round(colors.rgb.g * 255), Math.round(colors.rgb.b * 255))
                     }
                 })
+
+                $("#confettiSpeed").on("input", function () {
+                    onConfettiEvent()
+                });
+                $("#confettiSpeed").on("change", function () {
+                    onConfettiEvent()
+                });
 
                 function onConfettiEvent() {
                     let currentSpeedValue = parseFloat($("#confettiSpeed").val())
@@ -1354,6 +1460,151 @@
                 }
             </Script>
         </div>
+        <div id="Fireflies" class="container pb-5 tab-pane fade">
+            <h2>Fireflies Mode</h2>
+            <p class="text-center">
+                Here come real stars to fill the upper skies,<br />
+                And here on earth come emulating flies,<br />
+                That though they never equal stars in size,<br />
+                (And they were never really stars at heart)<br />
+                Achieve at times a very star-like start.<br />
+                Only, of course, they can't sustain the part.<br />
+                -- Robert Frost, "Fireflies in the Garden"
+            </p>
+            <div>
+                <label for="firefliesHue">Hue: <span id="firefliesHueLabel">0</span> Degrees</label>
+                <input id="firefliesHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="firefliesBrightness">Brightness: <span id="firefliesBrightnessLabel">100</span>%</label>
+                <input id="firefliesBrightness" type="range" min="0" max="100" step="1" value="100" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="firefliesMinimumFlashDelay">Minimum Flash Delay: <span id="firefliesMinimumFlashDelayLabel">1000</span> milliseconds</label>
+                <input id="firefliesMinimumFlashDelay" type="range" min="100" max="30000" step="100" value="1000" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="firefliesMaximumFlashDelay">Maximum Flash Delay: <span id="firefliesMaximumFlashDelayLabel">5000</span> milliseconds</label>
+                <input id="firefliesMaximumFlashDelay" type="range" min="100" max="30000" step="100" value="5000" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="firefliesFlashLength">Flash Length: <span id="firefliesFlashLengthLabel">500</span> milliseconds</label>
+                <input id="firefliesFlashLength" type="range" min="50" max="15000" step="50" value="500" class="form-control-range custom-range">
+            </div>
+            <script>
+                var firefliesDebunce = Date.now()
+
+                $("#firefliesHue").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesHue").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesBrightness").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesBrightness").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMinimumFlashDelay").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMinimumFlashDelay").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMaximumFlashDelay").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesMaximumFlashDelay").on("change", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesFlashLength").on("input", function () {
+                    onfirefliesEvent()
+                });
+                $("#firefliesFlashLength").on("change", function () {
+                    onfirefliesEvent()
+                });
+                function onfirefliesEvent() {
+                    let currentHueValue = parseInt($("#firefliesHue").val(), 10)
+                    let currentBrightnessValue = parseInt($("#firefliesBrightness").val(), 10)
+                    let currentMinimumFlashDelay = parseInt($("#firefliesMinimumFlashDelay").val(), 10)
+                    let currentMaximumFlashDelay = parseInt($("#firefliesMaximumFlashDelay").val(), 10)
+                    let currentFlashLength = parseInt($("#firefliesFlashLength").val(), 10)
+
+                    $("#firefliesHueLabel").html(currentHueValue)
+                    $("#firefliesBrightnessLabel").html(currentBrightnessValue)
+                    $("#firefliesMinimumFlashDelayLabel").html(currentMinimumFlashDelay)
+                    $("#firefliesMaximumFlashDelayLabel").html(currentMaximumFlashDelay)
+                    $("#firefliesFlashLengthLabel").html(currentFlashLength)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Fireflies",
+                        "Fireflies": {
+                            "Hue": Math.round(currentHueValue / 359 * 255),
+                            "Brightness": Math.round(currentBrightnessValue / 100 * 255),
+                            "MinimumFlashDelay": currentMinimumFlashDelay,
+                            "MaximumFlashDelay": currentMaximumFlashDelay,
+                            "FlashLength": currentFlashLength
+                        }
+                    }
+
+                    if (Date.now() - firefliesDebunce > 50) {
+                        firefliesDebunce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
+        <div id="SaturationFade" class="container pb-5 tab-pane fade">
+            <h2>Saturation Fade Mode</h2>
+            <p>Fade between a color and white</p>
+            <div>
+                <label for="saturationFadeHue">Hue: <span id="saturationFadeHueLabel">0</span> Degrees</label>
+                <input id="saturationFadeHue" type="range" min="0" max="359" step="1" value="0" class="form-control-range custom-range">
+            </div>
+            <div>
+                <label for="saturationFadeSpeed">Fade Speed: <span id="saturationFadeSpeedLabel">10</span> seconds</label>
+                <input id="saturationFadeSpeed" type="range" min="0" max="10" step="1" value="10" class="form-control-range custom-range">
+            </div>
+            <script>
+                var saturationFadeDebunce = Date.now()
+
+                $("#saturationFadeHue").on("input", function () {
+                    onSaturationFadeEvent()
+                });
+                $("#saturationFadeHue").on("change", function () {
+                    onSaturationFadeEvent()
+                });
+                $("#saturationFadeSpeed").on("input", function () {
+                    onSaturationFadeEvent()
+                });
+                $("#saturationFadeSpeed").on("change", function () {
+                    onSaturationFadeEvent()
+                });
+                function onSaturationFadeEvent() {
+                    let currentHueValue = parseInt($("#saturationFadeHue").val(), 10)
+                    let currentSpeedValue = parseInt($("#saturationFadeSpeed").val(), 10)
+
+                    $("#saturationFadeHueLabel").html(currentHueValue)
+                    $("#saturationFadeSpeedLabel").html(currentSpeedValue)
+
+                    msg = {
+                        "State": true,
+                        "Mode": "Saturation Fade",
+                        "Saturation Fade": {
+                            "Hue": Math.round(currentHueValue / 359 * 255),
+                            "Speed": currentSpeedValue
+                        }
+                    }
+
+                    if (Date.now() - saturationFadeDebunce > 50) {
+                        saturationFadeDebunce = Date.now()
+                        sendMessage(msg)
+                    }
+                }
+            </script>
+        </div>
         <div id="Visualiser" class="container pb-5 tab-pane fade">
             <h2>Visualiser Mode</h2>
             <p> Here you can set the mode to Visualiser. This mode does an FFT on the ADC of the ESP8266 and maps the
@@ -1363,39 +1614,28 @@
                 or an input from a music source such as a Chromecast.
             </p>
             <div>
-                <label for="visualiserPeriod"><b>Frequency Range</b>: <span
-                        id="visualiserPeriodLabel">2000</span>Hz</label>
-                <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250"
-                    class="form-control-range custom-range">
+                <label for="visualiserPeriod"><b>Frequency Range</b>: <span id="visualiserPeriodLabel">2000</span>Hz</label>
+                <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span
-                        id="visualiserMinThresholdLabel">100</span></label>
-                <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100"
-                    class="form-control-range custom-range">
+                <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span id="visualiserMinThresholdLabel">100</span></label>
+                <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span
-                        id="visualiserMaxThresholdLabel">750</span></label>
-                <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750"
-                    class="form-control-range custom-range">
+                <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span id="visualiserMaxThresholdLabel">750</span></label>
+                <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750" class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserFadeUp"><b>Fade Up Delay</b>: <span id="visualiserFadeUpLabel">32</span></label>
-                <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32"
-                    class="form-control-range custom-range">
+                <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span
-                        id="visualiserFadeDownLabel">32</span></label>
-                <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32"
-                    class="form-control-range custom-range">
+                <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span id="visualiserFadeDownLabel">32</span></label>
+                <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserHueOffset"><b>Hue Offset</b>: <span
-                        id="visualiserHueOffsetLabel">170</span></label>
-                <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170"
-                    class="form-control-range custom-range">
+                <label for="visualiserHueOffset"><b>Hue Offset</b>: <span id="visualiserHueOffsetLabel">170</span></label>
+                <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170" class="form-control-range custom-range">
             </div>
             <h6 class="pt-4">Variable Description</h6>
             <ul>

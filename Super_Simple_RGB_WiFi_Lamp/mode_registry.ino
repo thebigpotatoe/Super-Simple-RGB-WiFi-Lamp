@@ -3,7 +3,8 @@
 // TODO: Would be nice to have a structure where the modes can register
 // on their own, without the need to update the modes structure here.
 
-void ledModeInit() {
+void ledModeInit()
+{
   // All modes need to register an instance here
   modes["Colour"] = new ModeColour();
   modes["Rainbow"] = new ModeRainbow();
@@ -15,5 +16,6 @@ void ledModeInit() {
   modes["Color Wipe"] = new ModeColorWipe();
   modes["Confetti"] = new ModeConfetti();
   modes["Visualiser"] = new ModeVisualiser();
+  modes["Fireflies"] = new ModeFireflies();
+  modes["Saturation Fade"] = new ModeSaturationFade();
 }
-
