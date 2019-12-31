@@ -51,6 +51,10 @@
                 // console.log("Found State Message")
                 handleStateMessage(jsonMessage.State)
             }
+            if ("Name" in jsonMessage) {
+                // console.log("Found Name Message")
+                handleNameMessage(jsonMessage.Name)
+            }
             if ("Fade Time" in jsonMessage) {
                 // console.log("Found Fade Time Message")
                 handleFadeTimeMessage(jsonMessage["Fade Time"])
@@ -119,6 +123,13 @@
                     $("#stateButton").val("OFF")
                     $("#stateButton").html("Turn ON")
                 }
+            }
+        }
+
+        function handleNameMessage(name) {
+            if (typeof name === "string") {
+                $(document).attr("title", name);
+                $("#HomeButton").text(name);
             }
         }
 

@@ -28,9 +28,6 @@ public:
           if (circleActiveLedNumber == NUM_LEDS)
               circleActiveLedNumber = 0;
 
-          Serial.print("Active number: ");
-          Serial.println(circleActiveLedNumber);
-
           // Darken all LEDs to slightly dim the previous active LEDs
           fadeToBlackBy(ledString, NUM_LEDS, 80);
         };
