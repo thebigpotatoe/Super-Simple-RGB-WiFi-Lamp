@@ -46,6 +46,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
           // Parse config
           parseConfig(jsonDocument);
+          addLampInfo(jsonDocument);
 
           // Send the updated config back to the clients via websocket
           websocketSend(jsonDocument);
