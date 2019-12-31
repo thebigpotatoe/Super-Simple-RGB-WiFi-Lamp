@@ -10,8 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tinyColorPicker/1.1.1/jqColorPicker.min.js"></script>
 
     <title>RGB WiFi Lamp</title>
     <script>
@@ -620,7 +619,7 @@
                         sendMessage({ "Mode": "Confetti" })
                     });
                     $("#firefliesTabNavItem").click(function () {
-                        sendMessage({"Mode":"Fireflies"})
+                        sendMessage({ "Mode": "Fireflies" })
                     });
                     $("#visualiserTabNavItem").click(function () {
                         sendMessage({ "Mode": "Visualiser" })
@@ -759,7 +758,7 @@
                 });
                 $("#firefliesButton").click(function () {
                     $('#navbarHeader a[href="#Fireflies"]').tab('show')
-                    sendMessage({"Mode":"Fireflies"})
+                    sendMessage({ "Mode": "Fireflies" })
                 });
                 $("#visualiserButton").click(function () {
                     $('#navbarHeader a[href="#Visualiser"]').tab('show')
@@ -776,8 +775,7 @@
                 light to different shades of white</p>
 
             <div class="row my-3">
-                <input id="colourSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)"></input>
+                <input id="colourSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)"></input>
             </div>
             <div class="row my-3">
                 <button id="redButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Red</button>
@@ -888,8 +886,7 @@
             </div>
             <div>
                 <label for="rainbowBrightness">Rainbow Brightness: <span id="rainbowBrightnessLabel">100</span>%</label>
-                <input id="rainbowBrightness" type="range" min="0" max="100" step="1" value="100"
-                    class="form-control-range custom-range">
+                <input id="rainbowBrightness" type="range" min="0" max="100" step="1" value="100" class="form-control-range custom-range">
             </div>
             <div>
                 <label for="rainbowSpeed">Rainbow Speed: <span id="rainbowSpeedLabel">10</span> seconds</label>
@@ -1122,8 +1119,7 @@
             <p>In this mode the lamp will shape the light into a bell curve. This is meant to be more asthetically
                 pleasing than the regular colour mode.</p>
             <div class="row my-3">
-                <input id="bellCurveSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)">
+                <input id="bellCurveSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)">
             </div>
             <script>
                 bellCurveDebunce = Date.now()
@@ -1201,8 +1197,7 @@
             </div>
             -->
             <div class="row my-3">
-                <input id="sparkleSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)"></input>
+                <input id="sparkleSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)"></input>
             </div>
             <script>
                 var sparkleLastMessage = ""
@@ -1297,8 +1292,7 @@
             <h2>Color Wipe Mode</h2>
             <p>Color Wipe will fill the light with a color in a wiping fashion then wipe the light away.</p>
             <div class="row my-3">
-                <input id="colorWipeSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light"
-                    value="rgb(0,0,0)"></input>
+                <input id="colorWipeSelectButton" class="color col mb-2 mx-2 btn btn-lg btn-outline-light" value="rgb(0,0,0)"></input>
             </div>
             <script>
                 var colorWipeLastMessage = ""
@@ -1468,14 +1462,14 @@
         </div>
         <div id="Fireflies" class="container pb-5 tab-pane fade">
             <h2>Fireflies Mode</h2>
-            <p>
-              Here come real stars to fill the upper skies,<br/>
-              And here on earth come emulating flies,<br/>
-              That though they never equal stars in size,<br/>
-              (And they were never really stars at heart)<br/>
-              Achieve at times a very star-like start.<br/>
-              Only, of course, they can't sustain the part.<br/>
-              -- Robert Frost, "Fireflies in the Garden"
+            <p class="text-center">
+                Here come real stars to fill the upper skies,<br />
+                And here on earth come emulating flies,<br />
+                That though they never equal stars in size,<br />
+                (And they were never really stars at heart)<br />
+                Achieve at times a very star-like start.<br />
+                Only, of course, they can't sustain the part.<br />
+                -- Robert Frost, "Fireflies in the Garden"
             </p>
             <div>
                 <label for="firefliesHue">Hue: <span id="firefliesHueLabel">0</span> Degrees</label>
@@ -1544,11 +1538,11 @@
                     $("#firefliesFlashLengthLabel").html(currentFlashLength)
 
                     msg = {
-                        "State" : true,
-                        "Mode" : "Fireflies",
+                        "State": true,
+                        "Mode": "Fireflies",
                         "Fireflies": {
-                            "Hue" : Math.round(currentHueValue/359*255),
-                            "Brightness": Math.round(currentBrightnessValue/100*255),
+                            "Hue": Math.round(currentHueValue / 359 * 255),
+                            "Brightness": Math.round(currentBrightnessValue / 100 * 255),
                             "MinimumFlashDelay": currentMinimumFlashDelay,
                             "MaximumFlashDelay": currentMaximumFlashDelay,
                             "FlashLength": currentFlashLength
@@ -1596,11 +1590,11 @@
                     $("#saturationFadeSpeedLabel").html(currentSpeedValue)
 
                     msg = {
-                        "State" : true,
-                        "Mode" : "Saturation Fade",
+                        "State": true,
+                        "Mode": "Saturation Fade",
                         "Saturation Fade": {
-                            "Hue" : Math.round(currentHueValue/359*255),
-                            "Speed" : currentSpeedValue
+                            "Hue": Math.round(currentHueValue / 359 * 255),
+                            "Speed": currentSpeedValue
                         }
                     }
 
@@ -1620,39 +1614,28 @@
                 or an input from a music source such as a Chromecast.
             </p>
             <div>
-                <label for="visualiserPeriod"><b>Frequency Range</b>: <span
-                        id="visualiserPeriodLabel">2000</span>Hz</label>
-                <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250"
-                    class="form-control-range custom-range">
+                <label for="visualiserPeriod"><b>Frequency Range</b>: <span id="visualiserPeriodLabel">2000</span>Hz</label>
+                <input id="visualiserPeriod" type="range" min="100" max="2000" step="50" value="250" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span
-                        id="visualiserMinThresholdLabel">100</span></label>
-                <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100"
-                    class="form-control-range custom-range">
+                <label for="visualiserMinThreshold"><b>Minimum Threshold</b>: <span id="visualiserMinThresholdLabel">100</span></label>
+                <input id="visualiserMinThreshold" type="range" min="0" max="300" step="10" value="100" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span
-                        id="visualiserMaxThresholdLabel">750</span></label>
-                <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750"
-                    class="form-control-range custom-range">
+                <label for="visualiserMaxThreshold"><b>Maximum Threshold</b>: <span id="visualiserMaxThresholdLabel">750</span></label>
+                <input id="visualiserMaxThreshold" type="range" min="400" max="3000" step="50" value="750" class="form-control-range custom-range">
             </div>
             <div>
                 <label for="visualiserFadeUp"><b>Fade Up Delay</b>: <span id="visualiserFadeUpLabel">32</span></label>
-                <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32"
-                    class="form-control-range custom-range">
+                <input id="visualiserFadeUp" type="range" min="0" max="255" step="1" value="32" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span
-                        id="visualiserFadeDownLabel">32</span></label>
-                <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32"
-                    class="form-control-range custom-range">
+                <label for="visualiserFadeDown"><b>Fade Down Delay</b>: <span id="visualiserFadeDownLabel">32</span></label>
+                <input id="visualiserFadeDown" type="range" min="0" max="255" step="1" value="32" class="form-control-range custom-range">
             </div>
             <div>
-                <label for="visualiserHueOffset"><b>Hue Offset</b>: <span
-                        id="visualiserHueOffsetLabel">170</span></label>
-                <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170"
-                    class="form-control-range custom-range">
+                <label for="visualiserHueOffset"><b>Hue Offset</b>: <span id="visualiserHueOffsetLabel">170</span></label>
+                <input id="visualiserHueOffset" type="range" min="0" max="359" step="1" value="170" class="form-control-range custom-range">
             </div>
             <h6 class="pt-4">Variable Description</h6>
             <ul>
