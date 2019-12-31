@@ -1,11 +1,14 @@
 class ModeColour : public ModeBase
 {
 private:
+    // Config
     int colourRed   = 128;
     int colourGreen = 128;
     int colourBlue  = 128;
 public:
     ModeColour() {}
+    virtual void initialize() {}
+
     virtual void render() {
         fill_solid(ledString, NUM_LEDS, CRGB(colourRed, colourGreen, colourBlue));
     }

@@ -61,6 +61,12 @@ void adjustBrightnessAndSwitchMode() {
         // Clear the LEDs
         FastLED.clear();
 
+        // Initialize state of the new mode
+        auto modeIter = modes.find(Mode);
+        if (modeIter != modes.end()) {
+          modeIter->second->initialize();
+        }
+
         // Set the currentMode to Mode
         currentMode = Mode;
         modeChangeFadeAmount = 0;

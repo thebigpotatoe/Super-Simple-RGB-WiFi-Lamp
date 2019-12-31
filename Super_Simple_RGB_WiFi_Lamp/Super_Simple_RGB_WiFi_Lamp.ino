@@ -57,7 +57,13 @@ String Password = "";
 class ModeBase
 {
 public:
+    /// Override this to initialize state specific variables
+    virtual void initialize();
+
+    // Is called once per frame to update the LEDs
     virtual void render();
+
+    // Update config member variables based on the handed over settings
     virtual void applyConfig(JsonVariant& settings);
 };
 

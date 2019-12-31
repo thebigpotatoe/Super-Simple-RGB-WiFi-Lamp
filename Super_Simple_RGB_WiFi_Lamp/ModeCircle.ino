@@ -1,9 +1,14 @@
 class ModeCircle : public ModeBase
 {
 private:
-    int circleActiveLedNumber = 0;
+    int circleActiveLedNumber;
 public:
     ModeCircle() {}
+
+    virtual void initialize() {
+        circleActiveLedNumber = 0;
+    }
+
     virtual void render() {
         // First bring our logical arrays into a list of led numbers to iterate over
         int i;

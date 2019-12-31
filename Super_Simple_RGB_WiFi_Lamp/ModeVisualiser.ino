@@ -3,20 +3,29 @@
 class ModeVisualiser : public ModeBase
 {
 private:
+    // State
     ADC_MODE(ADC_TOUT);
     arduinoFFT FFT = arduinoFFT();
     double visualiserRealSamples[VISUALISER_NUM_SAMPLES];
     double visualiserImaginarySamples[VISUALISER_NUM_SAMPLES];
-    unsigned long visualiserLastSampleTime      = 0;
-    uint16_t visualiserPeriod                   = 250;
-    uint16_t visualiserMinThreshold             = 100;
-    uint16_t visualiserMaxThreshold             = 750;
-    uint8_t visualiserNumBinsToSkip             = 3;
-    uint8_t visualiserFadeUp                    = 32;
-    uint8_t visualiserFadeDown                  = 32;
-    uint8_t visualiserHueOffset                 = 170;
+    unsigned long visualiserLastSampleTime;
+    uint8_t visualiserNumBinsToSkip;
+
+    // Config
+    uint16_t visualiserPeriod        = 250;
+    uint16_t visualiserMinThreshold  = 100;
+    uint16_t visualiserMaxThreshold  = 750;
+    uint8_t visualiserFadeUp         = 32;
+    uint8_t visualiserFadeDown       = 32;
+    uint8_t visualiserHueOffset      = 170;
 public:
     ModeVisualiser() {}
+
+    virtual void initialize() {
+        visualiserLastSampleTime = 0;
+        visualiserNumBinsToSkip  = 3;
+    }
+
     virtual void render() {
         // Only use visualiser when not trying to access the NTP server
         if (((WiFi.isConnected() && ntpTimeSet) || softApStarted) && !webSocketConnecting) {

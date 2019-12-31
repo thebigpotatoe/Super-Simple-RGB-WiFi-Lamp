@@ -1,12 +1,21 @@
 class ModeConfetti : public ModeBase
 {
 private:
-    bool confettiActive = true;
+    // State
+    bool confettiActive;
+    int confettiPixel;
+
+    // Config
     int confettiSpeed = 100;
-    int confettiPixel = random(NUM_LEDS);
 
 public:
     ModeConfetti() {}
+
+    virtual void initialize() {
+        confettiActive = true;
+        confettiPixel = random(NUM_LEDS);
+    }
+
     virtual void render() {
         EVERY_N_MILLISECONDS(confettiSpeed) {
           if (confettiActive) {

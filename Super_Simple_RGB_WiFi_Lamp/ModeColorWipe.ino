@@ -1,15 +1,24 @@
 class ModeColorWipe : public ModeBase
 {
 private:
-    int colorWipePosition             = -1;
-    bool TurningOn                    = true;
-    int colorWipeRed                  = 255;
-    int colorWipeGreen                = 0;
-    int colorWipeBlue                 = 255;
-    int colorWipeSpeed                = 20;
+    // State
+    int colorWipePosition;
+    bool TurningOn;
+
+    // Config
+    int colorWipeRed   = 255;
+    int colorWipeGreen = 0;
+    int colorWipeBlue  = 255;
+    int colorWipeSpeed = 20;
 
 public:
     ModeColorWipe() {}
+
+    virtual void initialize() {
+        colorWipePosition = -1;
+        TurningOn         = true;
+    }
+
     virtual void render() {
         EVERY_N_MILLISECONDS(colorWipeSpeed) {
             colorWipePosition++;

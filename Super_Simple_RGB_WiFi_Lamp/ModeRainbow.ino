@@ -1,12 +1,21 @@
 class ModeRainbow : public ModeBase
 {
 private:
-    int rainbowStartHue   = 0;
-    int rainbowSpeed      = 10;
-    int rainbowBri        = 100;
-    float rainbowAddedHue = 0;
+    // Config
+    int rainbowStartHue = 0;
+    int rainbowSpeed    = 10;
+    int rainbowBri      = 100;
+
+    // State
+    float rainbowAddedHue;
+
 public:
     ModeRainbow() {}
+
+    virtual void initialize() {
+        rainbowAddedHue = 0;
+    }
+
     virtual void render() {
         int startHue = rainbowStartHue;
         int speed = rainbowSpeed;
