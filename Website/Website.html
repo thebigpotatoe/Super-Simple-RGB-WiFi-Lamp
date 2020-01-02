@@ -1760,19 +1760,21 @@
             <p>This is the WiFi configuration page. Here you can choose the wifi access point to connect to or go back
                 to access point mode. This will be remebered through reboot for you so you wont have to set this up
                 every time. <b>Please allow a few seconds for this page to update the table.</b> </p>
-            <table class="table table-hover">
-                <thead id="wifiTableHead">
-                    <tr>
-                        <th>SSID</th>
-                        <th>RSSI</th>
-                        <th>BSSID</th>
-                        <th>Channel</th>
-                        <th>Encrypted</th>
-                    </tr>
-                </thead>
-                <tbody id="wifiTableBody">
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead id="wifiTableHead">
+                        <tr>
+                            <th>SSID</th>
+                            <th>RSSI</th>
+                            <th>BSSID</th>
+                            <th>Channel</th>
+                            <th>Encrypted</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wifiTableBody">
+                    </tbody>
+                </table>
+            </div>
 
             <button id="rescanButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rescan</button>
 
@@ -1828,36 +1830,38 @@
                     }
                 }
             </script>
-        </div>
+    </div>
         <div id="LampInfo" class="container pb-5 tab-pane fade">
             <h2>Lamp information</h2>
             <p>This page gives you some information about the state and software of the current device</p>
-            <table class="table table-hover">
-                <tr>
-                    <th>Sketch</th>
-                    <td id="InfoSketch"></td>
-                </tr>
-                <tr>
-                    <th>Compile time</th>
-                    <td id="InfoCompileTime"></td>
-                </tr>
-                <tr>
-                    <th>ESP Version</th>
-                    <td id="InfoESPVersion"></td>
-                </tr>
-                <tr>
-                    <th>IDE Version</th>
-                    <td id="InfoIDEVersion"></td>
-                </tr>
-                <tr>
-                    <th>FastLED VErsion</th>
-                    <td id="InfoFastLEDVersion"></td>
-                </tr>
-                <tr>
-                    <th>Current time</th>
-                    <td id="InfoTime"></td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover text-left">
+                    <tr>
+                        <th>Sketch</th>
+                        <td id="InfoSketch"></td>
+                    </tr>
+                    <tr>
+                        <th>Compile time</th>
+                        <td id="InfoCompileTime"></td>
+                    </tr>
+                    <tr>
+                        <th>ESP Version</th>
+                        <td id="InfoESPVersion"></td>
+                    </tr>
+                    <tr>
+                        <th>IDE Version</th>
+                        <td id="InfoIDEVersion"></td>
+                    </tr>
+                    <tr>
+                        <th>FastLED VErsion</th>
+                        <td id="InfoFastLEDVersion"></td>
+                    </tr>
+                    <tr>
+                        <th>Current time</th>
+                        <td id="InfoTime"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </body>
