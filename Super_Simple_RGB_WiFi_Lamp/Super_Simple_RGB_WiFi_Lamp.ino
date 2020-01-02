@@ -40,6 +40,10 @@
 #define CHIPSET WS2812B
 #define COLOR_ORDER GRB
 
+// Limit the maximum frame rate to prevent flickering. Values around 400 or
+// above cause flickering LEDs because of the WS2821 update frequency.
+#define FRAME_RATE 60
+
 // Set up LED's for each side - These arrays hold which leds are on what sides. For the basic rectangular shape in the example this relates to 4
 // sides and 4 arrays. You must subract 1 off the count of the LED when entering it as the array is 0 based. For example the first LED on the 
 // string is entered as 0.

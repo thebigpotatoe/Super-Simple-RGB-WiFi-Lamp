@@ -12,34 +12,36 @@ void ledStringInit() {
 }
 
 void handleMode() {
-  // Adapt the leds to the current mode. Please note the differences between Mode and currentMode.
-  //
-  // Mode:        Is set by the config or the web interface to tell the lamp that a specific mode should
-  //              be shown. The lamp will then change to that mode slowly (see adjustBrightnessAndSwitchMode())
-  // currentMode: In case this is set to a mode name, the lamp came to the point where a mode should be
-  //              asked to render it's pattern.
-  //              During startup this is set to "". In this situation the mode should not be rendered, but
-  //              adjustBrightnessAndSwitchMode() should be called to introduce Mode.
+  // This limitation is important to prevent LED flickering
+  // See: https://github.com/thebigpotatoe/Super-Simple-RGB-WiFi-Lamp/issues/30
+  EVERY_N_MILLISECONDS(1000/FRAME_RATE) {
+    // Adapt the leds to the current mode. Please note the differences between Mode and currentMode.
+    //
+    // Mode:        Is set by the config or the web interface to tell the lamp that a specific mode should
+    //              be shown. The lamp will then change to that mode slowly (see adjustBrightnessAndSwitchMode())
+    // currentMode: In case this is set to a mode name, the lamp came to the point where a mode should be
+    //              asked to render it's pattern.
+    //              During startup this is set to "". In this situation the mode should not be rendered, but
+    //              adjustBrightnessAndSwitchMode() should be called to introduce Mode.
+    if (currentMode != "") {
+      auto modeIter = modes.find(currentMode);
+      if (modeIter == modes.end()) {
+        // Should only be reached when a user has configured a mode that does not exist (anymore)
+        Serial.println("[handleMode] - Mode \"" + currentMode + "\" not found, resetting to default");
+        Mode = "Colour"; // Automatically jump back to colour
+        return;
+      }
 
-  if (currentMode != "") {
-    auto modeIter = modes.find(currentMode);
-    if (modeIter == modes.end()) {
-      // Should only be reached when a user has configured a mode that does not exist (anymore)
-      Serial.println("[handleMode] - Mode \"" + currentMode + "\" not found, resetting to default");
-      Mode = "Colour"; // Automatically jump back to colour
-      return;
+      // If mode is found run its render function
+      modeIter->second->render();
     }
 
-    // If mode is found run its render function
-    modeIter->second->render();
+    // Globally adjust the brightness
+    adjustBrightnessAndSwitchMode();
+
+    // Handle Fast LED
+    FastLED.show();
   }
-
-  // Globally adjust the brightness
-  adjustBrightnessAndSwitchMode();
-
-  // Handle Fast LED
-  FastLED.show();
-  //  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
 
 void adjustBrightnessAndSwitchMode() {
