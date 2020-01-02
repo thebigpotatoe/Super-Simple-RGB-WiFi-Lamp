@@ -56,7 +56,7 @@ void getConfig() {
 
           // Check if file parsed correctly and decode
           if (!jsonError) {
-            parseConfig(jsonDocument, false);
+            parseConfig(jsonDocument);
           }
           else {
             Serial.print("[getConfig] - deserializeJson() failed: ");
@@ -105,7 +105,12 @@ bool sendConfigViaWS() {
 
           // Check if file parsed correctly and decode
           if (!jsonError) {
-            parseConfig(jsonDocument, true);
+            parseConfig(jsonDocument);
+            addLampInfo(jsonDocument);
+
+            // Send the updated config back to the clients via websocket
+            websocketSend(jsonDocument);
+
             return true;
           }
           else {
@@ -200,7 +205,7 @@ void saveConfigItem(JsonDocument& jsonSetting) {
 }
 
 // Generic message parser
-void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
+void parseConfig(JsonDocument& jsonMessage) {
   // Config Parameters
   /*
   {
@@ -332,7 +337,15 @@ void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets) {
 
   // Save the config
   saveConfigItem(jsonMessage);
+}
 
-  // Send the message via websockets
-  if (sendViaWebsockets) websocketSend(jsonMessage);
+// Adds useful diagnose information to the provided JSON document which
+// is later made available to the websocket clients.
+void addLampInfo(JsonDocument& jsonDocument) {
+  jsonDocument["Info"]["Sketch"] = SketchName;
+  jsonDocument["Info"]["CompileTime"] = __TIMESTAMP__;
+  jsonDocument["Info"]["IDEVersion"] = String(ARDUINO / 10000) + "." + String(ARDUINO % 10000 / 100) + "." + String(ARDUINO % 100 / 10 ? ARDUINO % 100 : ARDUINO % 10);
+  jsonDocument["Info"]["ESPVersion"] = ESP.getFullVersion();
+  jsonDocument["Info"]["FastLEDVersion"] = String(FASTLED_VERSION);
+  jsonDocument["Info"]["Time"] = get12hrAsString();
 }

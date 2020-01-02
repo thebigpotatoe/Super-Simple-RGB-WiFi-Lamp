@@ -110,6 +110,10 @@
                 // console.log("Found Wifi Message")
                 handleWifiMessage(jsonMessage.Wifi)
             }
+            if ("Info" in jsonMessage) {
+                // console.log("Found Info Message")
+                handleInfoMessage(jsonMessage.Info)
+            }
         }
 
         function handleModeMessage(jsonMessage) {
@@ -513,6 +517,22 @@
             }
         }
 
+        function handleInfoMessage(jsonMessage) {
+            // {
+            //     "Sketch":"Super_Simple_RGB_WiFi_Lamp.ino",
+            //     "Compile time":"Tue Dec 31 17:28:07 2019",
+            //     "IDE Version":"1.8.10",
+            //     "Esp Version":"SDK:2.2.2-dev(38a443e)/Core:2.6.3=20603000/lwIP:STABLE-2_1_2_RELEASE/glue:1.2-16-ge23a07e/BearSSL:89454af",
+            //     "FastLED Version":"3003002"
+            // }
+            if (typeof jsonMessage !== "object")
+                return;
+
+            $.each(jsonMessage, function(key, value) {
+                $("#Info"+key).text(value);
+            });
+        }
+
         function sendMessage(jsonMessage) {
             console.log("Sending: " + JSON.stringify(jsonMessage))
             if (websock != null && websock.readyState == 1) {
@@ -585,6 +605,9 @@
                     </li>
                     <li id="wifiTabNavItem" class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#WfiConfig">Wifi</a>
+                    </li>
+                    <li id="infoTabNavItem" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#LampInfo">Info</a>
                     </li>
                 </ul>
                 <script>
@@ -712,6 +735,7 @@
             <button id="firefliesButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Fireflies</button>
             <button id="visualiserButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Visualiser</button>
             <button id="wifiButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Wifi Config</button>
+            <button id="infoButton" type="submit" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Info</button>
             <script>
                 $("#HomeButton").click(function () {
                     $('#navbarHeader a[href="#Home"]').tab('show')
@@ -766,6 +790,9 @@
                 });
                 $("#wifiButton").click(function () {
                     $('#navbarHeader a[href="#WfiConfig"]').tab('show')
+                });
+                $("#infoButton").click(function () {
+                    $('#navbarHeader a[href="#LampInfo"]').tab('show')
                 });
             </script>
         </div>
@@ -1733,19 +1760,21 @@
             <p>This is the WiFi configuration page. Here you can choose the wifi access point to connect to or go back
                 to access point mode. This will be remebered through reboot for you so you wont have to set this up
                 every time. <b>Please allow a few seconds for this page to update the table.</b> </p>
-            <table class="table table-hover">
-                <thead id="wifiTableHead">
-                    <tr>
-                        <th>SSID</th>
-                        <th>RSSI</th>
-                        <th>BSSID</th>
-                        <th>Channel</th>
-                        <th>Encrypted</th>
-                    </tr>
-                </thead>
-                <tbody id="wifiTableBody">
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead id="wifiTableHead">
+                        <tr>
+                            <th>SSID</th>
+                            <th>RSSI</th>
+                            <th>BSSID</th>
+                            <th>Channel</th>
+                            <th>Encrypted</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wifiTableBody">
+                    </tbody>
+                </table>
+            </div>
 
             <button id="rescanButton" class="col mb-2 mx-2 btn btn-lg btn-outline-light">Rescan</button>
 
@@ -1801,6 +1830,38 @@
                     }
                 }
             </script>
+    </div>
+        <div id="LampInfo" class="container pb-5 tab-pane fade">
+            <h2>Lamp information</h2>
+            <p>This page gives you some information about the state and software of the current device</p>
+            <div class="table-responsive">
+                <table class="table table-hover text-left">
+                    <tr>
+                        <th>Sketch</th>
+                        <td id="InfoSketch"></td>
+                    </tr>
+                    <tr>
+                        <th>Compile time</th>
+                        <td id="InfoCompileTime"></td>
+                    </tr>
+                    <tr>
+                        <th>ESP Version</th>
+                        <td id="InfoESPVersion"></td>
+                    </tr>
+                    <tr>
+                        <th>IDE Version</th>
+                        <td id="InfoIDEVersion"></td>
+                    </tr>
+                    <tr>
+                        <th>FastLED VErsion</th>
+                        <td id="InfoFastLEDVersion"></td>
+                    </tr>
+                    <tr>
+                        <th>Current time</th>
+                        <td id="InfoTime"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </body>

@@ -79,7 +79,8 @@ bool checkFlashConfig();
 void getConfig();
 bool sendConfigViaWS();
 void saveConfigItem(JsonDocument& jsonSetting);
-void parseConfig(JsonDocument& jsonMessage, bool sendViaWebsockets);
+void parseConfig(JsonDocument& jsonMessage);
+void addLampInfo(JsonDocument& jsonMessage);
 // LEDs.ino
 void ledStringInit();
 void ledModeInit();
@@ -163,6 +164,7 @@ String  currentMode           = Mode;                                 // Placeho
 String  previousMode          = "";                                   // Placeholder variable for changing mode
 bool    previousState         = false;                                // Placeholder variable for changing state
 float   modeChangeFadeAmount  = 0;                                    // Place holder for global brightness during mode change
+String  SketchName            = __FILE__;                             // Name of the sketch file (used for info page)
 
 // Setup Method - Runs only once before the main loop. Useful for setting things up
 void setup() {
