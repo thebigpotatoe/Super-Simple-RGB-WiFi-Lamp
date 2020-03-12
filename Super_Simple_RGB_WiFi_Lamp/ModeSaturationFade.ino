@@ -8,11 +8,12 @@ public:
     ModeSaturationFade() {}
 
     virtual void initialize() {}
-    
+
     void render()
     {
         EVERY_N_MILLISECONDS(10)
         {
+            fadeSpeed = (fadeSpeed == 0) ? 1 : fadeSpeed;
             int fadeOffset = millis() / (fadeSpeed * 1000 / NUM_LEDS) % NUM_LEDS;
             for (int led = 0; led < NUM_LEDS; led++)
             {
